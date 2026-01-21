@@ -3,30 +3,51 @@ import { sleep, log } from './utils.js';
 export async function runVagasBot() {
     log("Iniciando Bot Vagas.com...");
 
-    // Check if we are on a search list or a single job page
+    // Check if we are on a search list
     if (document.querySelector('.vaga')) {
-        log("Lista de vagas detectada. Iterando...");
-        const jobLinks = document.querySelectorAll('a.link-detalhes-vaga');
+        log("Lista de vagas detectada.");
+        const cards = document.querySelectorAll('.vaga');
+        const urls = [];
 
-        // Note: Vagas.com opens new tabs/windows for jobs usually.
-        // A Content Script cannot easily control multiple tabs without Background script coordination.
-        // For MVP, we will only log that we found links.
-        log(`Encontrados ${jobLinks.length} links de vagas. O bot atual funciona melhor na página da vaga individual.`);
+        cards.forEach(card => {
+            const link = card.querySelector('a.link-detalhes-vaga');
+            if (link) {
+                // Vagas.com often uses relative URLs or full URLs
+                urls.push(link.href);
+            }
+        });
+
+        if (urls.length > 0) {
+            log(`Coletados ${urls.length} links. Enviando para fila de processamento...`);
+            chrome.runtime.sendMessage({
+                action: "QUEUE_JOBS",
+                urls: urls
+            }, (response) => {
+                log(`Background respondeu: ${response?.status} (${response?.count} na fila)`);
+            });
+        } else {
+            log("Nenhum link encontrado.");
+        }
 
     } else {
         // Single Job Page
+        // Check for "Candidatar-se" button
         const applyBtn = document.querySelector('button[name="btCandidatura"]');
-        // Vagas.com selectors vary often.
 
         if (applyBtn) {
             log("Botão de candidatura encontrado.");
             applyBtn.click();
             await sleep(2000);
 
-            // Handle follow-up questions often presented as a list of checkboxes/radios
-            // ...
+            // If already applied or success
+            if (document.body.innerText.includes("Candidatura realizada")) {
+                log("Candidatura confirmada.");
+            }
         } else {
-            log("Botão de Candidatura não identificado.");
+            // Might be already applied
+            log("Botão de Candidatura não identificado ou vaga já aplicada.");
         }
+
+        // Signal completion (optional, background closes anyway)
     }
 }

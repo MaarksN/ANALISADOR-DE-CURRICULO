@@ -16,19 +16,24 @@ export async function runInfojobsBot() {
         applyBtn.click();
         await sleep(2000);
 
-        // Sometimes a secondary confirmation or login modal appears
-        // Example: "#ctl00_phMasterPage_cContent_ucApplyVacancy_lbtnApply"
-        // Selectors vary by Infojobs page version.
+        // Try the specific selector provided in the snippet
+        const confirmBtnSnippet = document.querySelector('#ctl00_phMasterPage_cContent_ucApplyVacancy_lbtnApply');
+        // Also fallback to generic selector just in case
+        const confirmBtnGeneric = document.querySelector('a[id*="lbtnApply"]');
 
-        const confirmBtn = document.querySelector('a[id*="lbtnApply"]');
+        const confirmBtn = confirmBtnSnippet || confirmBtnGeneric;
+
         if (confirmBtn) {
             log("Confirmando candidatura...");
             confirmBtn.click();
             await sleep(2000);
+            log("Candidatura enviada no Infojobs!");
         } else {
             // Check for login requirement
             if (document.querySelector('.login-form')) {
                 log("Necessário login. O bot não preenche senhas por segurança.");
+            } else {
+                log("Botão de confirmação não encontrado.");
             }
         }
     } else {
