@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Marcelo AutoApply - Multi",
+  "version": "2.1",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "*://*.linkedin.com/*",
+    "*://*.infojobs.com.br/*",
+    "*://*.vagas.com.br/*"
+  ],
+  "action": { "default_popup": "popup.html" },
+  "web_accessible_resources": [
+    {
+        "resources": ["content_router.js", "linkedin_bot.js", "infojobs_bot.js", "vagas_bot.js", "utils.js", "user_profile.js"],
+        "matches": ["<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.linkedin.com/*",
+        "*://*.infojobs.com.br/*",
+        "*://*.vagas.com.br/*"
+      ],
+      "js": ["loader.js"]
+    }
+  ]
+}
