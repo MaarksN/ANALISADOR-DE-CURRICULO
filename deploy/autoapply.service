@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/opt/autoapply
-ExecStart=/opt/autoapply/.venv/bin/python -m core.runner
+ExecStart=/opt/autoapply/.venv/bin/python -m src.core.runner
 Restart=always
 RestartSec=120
 Environment=RUN_MODE=ec2

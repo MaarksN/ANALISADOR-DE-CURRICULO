@@ -56,6 +56,10 @@ playwright install chromium
 python -m src.core.runner
 ```
 
+### Página do Projeto (GitHub Pages)
+Acesse a página de apresentação do projeto, documentação e downloads em:
+**[https://marcelinmark.github.io/birth-hub-360/](https://marcelinmark.github.io/birth-hub-360/)**
+
 ### Documentação Completa
 Todo o código fonte concatenado para referência rápida está disponível em:
 - [docs/CODIGO_CONSOLIDADO.md](docs/CODIGO_CONSOLIDADO.md)

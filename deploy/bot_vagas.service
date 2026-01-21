@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/BotVagas
-ExecStart=/home/ubuntu/BotVagas/venv/bin/python3 /home/ubuntu/BotVagas/src/modules/selenium_bot/runner.py
+ExecStart=/home/ubuntu/BotVagas/venv/bin/python3 -m src.modules.selenium_bot.runner
 Restart=always
 RestartSec=300
 
