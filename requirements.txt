@@ -1,3 +1,5 @@
 pydantic
 rich
 faker
+selenium
+webdriver-manager
