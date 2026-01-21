@@ -21,6 +21,8 @@ from src.modules.networking import NetworkAgent
 from src.modules.reporting import ReportGenerator
 from src.modules.interview_simulator.simulator import InterviewSimulator
 from src.modules.email_helper.generator import EmailGenerator
+from src.modules.resume_improver.improver import ResumeImprover
+from src.modules.market_trends.analyzer import MarketAnalyzer
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -40,6 +42,8 @@ class BirthHub360:
         self.reporter = ReportGenerator()
         self.simulator = InterviewSimulator()
         self.email_gen = EmailGenerator()
+        self.resume_improver = ResumeImprover()
+        self.market_analyzer = MarketAnalyzer()
 
         self.profile = None
         self.metrics = {
@@ -85,6 +89,8 @@ class BirthHub360:
         console.print("1. Iniciar Ciclo Automático (Dashboard)")
         console.print("2. Simulador de Entrevista (Interativo)")
         console.print("3. Gerador de E-mail (Ferramenta)")
+        console.print("4. Analisador de Currículo (IA)")
+        console.print("5. Tendências de Mercado")
         choice = console.input("\n[bold]Escolha uma opção:[/bold] ")
 
         if choice == "2":
@@ -92,6 +98,13 @@ class BirthHub360:
             sys.exit(0)
         elif choice == "3":
             self.run_email_tool()
+            sys.exit(0)
+        elif choice == "4":
+            text = console.input("Cole o texto do seu currículo aqui: ")
+            self.resume_improver.analyze_resume(text)
+            sys.exit(0)
+        elif choice == "5":
+            self.market_analyzer.show_trends()
             sys.exit(0)
 
         # Default to Dashboard Loop

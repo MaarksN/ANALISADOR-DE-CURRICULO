@@ -1,6 +1,6 @@
-# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (V3)
+# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (V4)
 
-## .env
+## .env.example
 ```
 RUN_MODE=local
 HEADLESS=0
@@ -1187,292 +1187,9 @@ interactive_login_and_save_state(platform="gupy", login_url="https://login.gupy.
 
 ```
 
-## src/__pycache__/__init__.cpython-312.pyc
-```
-\xcb
-    mepi    \xe3                    \xf3   \x97 y )N\xa9 r   \xf3    \xfa/app/src/__init__.py\xda<module>r      s   \xf1r   
-```
-
-## src/__pycache__/main.cpython-312.pyc
-```
-\xcb
-    \x85jpiN$  \xe3                   \xf3P  \x97 d dl Z d dlZd dlZd dlmZ d dlmZ d dlmZ d dl	m
-Z
- d dlmZ d dlmZ d dlmZ d d	lmZ d d
-lmZ d dlmZ d dlmZ d dlmZ d dlmZ d dlmZ d dlm Z  d dl!m"Z" d dl#m$Z$ d dl%m&Z&  e\xab       Z' G d\x84 d\xab      Z(e)dk(  r e(\xab       Z*e*jW                  \xab        yy)\xe9    N)\xdaConsole)\xdaLayout)\xdaPanel)\xdaLive)\xdaTable)\xdaText)\xdaMarkdown)\xdaOnboardingAgent)\xda
-JobScanner)\xdaProfileOptimizer)\xdaResumeGenerator)\xdaApplicationBot)\xdaInterviewCoach)\xdaStrategyEngine)\xdaFollowUpAgent)\xdaNetworkAgent)\xdaReportGenerator)\xdaPersistenceManagerc                   \xf30   \x97 e Zd Zd\x84 Zd\x84 Zd\x84 Zd\x84 Zdefd\x84Zy)\xdaBirthHub360c                 \xf3\x94  \x97 t        \xab       | _        t        \xab       | _        t	        \xab       | _        t        \xab       | _        t        \xab       | _	        t        \xab       | _        t        \xab       | _        t        \xab       | _        t!        \xab       | _        t%        \xab       | _        t)        \xab       | _        d | _        ddddddd\x9c| _        d| _        d| _        y )Nr   )\xdascanned\xdamatched\xdaapplied\xda
-interviews\xda	followups\xda
-networkingzInicializando...zNenhuma entrevista agendada.)r   \xdapersistencer
-   \xda
-onboardingr   \xdascannerr   \xda	optimizerr   \xda
-resume_genr   \xdaapplierr   \xdacoachr   \xdastrategy_enginer   \xda
-monitoringr   \xda	networkerr   \xdareporter\xdaprofile\xdametrics\xdalast_strategy_update\xdainterview_prep_status\xa9\xdaselfs    \xfa/app/src/main.py\xda__init__zBirthHub360.__init__   s\xa3   \x80 \xdc-\xd3/\x88\xd4\xdc)\xd3+\x88\x8c\xdc!\x93|\x88\x8c\xdc)\xd3+\x88\x8c\xdc)\xd3+\x88\x8c\xdc%\xd3'\x88\x8c\xdc#\xd3%\x88\x8c
-\xdc-\xd3/\x88\xd4\xdc'\x9b/\x88\x8c\xdc%\x9b\x88\x8c\xdc'\xd3)\x88\x8c\xe0\x88\x8c\xe0\xd8\xd8\xd8\xd8\xd8\xf1
-\x88\x8c\xf0 %7\x88\xd4!\xd8%C\x88\xd5"\xf3    c                 \xf3\x94  \x97 | j                   j                  \xab       \  }}}|r|| _        t        j	                  d\xab       n4| j
-                  j                  \xab       | _        t        j	                  d\xab       |rA|| _        d| j                  vrd| j                  d<   d| j                  vrd| j                  d<   |r|| j                  _	        yy)z#Loads state from disk if available.z)[green]Perfil carregado do disco.[/green]u*   [yellow]Perfil padrão carregado.[/yellow]r   r   r   N)
-r   \xda	load_datar)   \xdaconsole\xdaprintr   \xdaload_default_profiler*   r#   \xdaapplication_history)r.   \xdap\xdam\xdaappss       r/   \xda
-load_statezBirthHub360.load_state4   s\xa4   \x80 \xe0\xd7%\xd1%\xd7/\xd1/\xd31\x89
-\x88\x881\x88d\xd9\xd8\x88D\x8cL\xdc\x8fM\x89M\xd0E\xd5F\xe0\x9f?\x99?\xd7?\xd1?\xd3A\x88D\x8cL\xdc\x8fM\x89M\xd0F\xd4G\xe1\xd8\x88D\x8cL\xe0\xa04\xa7<\xa1<\xd1/\xc8a\xb0\xb7\xb1\xb8l\xd11K\xd8\xa0$\xa7,\xa1,\xd1.\xc8A\xb0\xb7\xb1\xb8[\xd10I\xe1\xd8/3\x88D\x8fL\x89L\xd5,\xf0 r1   c                 \xf3\x8e   \x97 | j                   j                  | j                  | j                  | j                  j
-                  \xab       y)zSaves current state.N)r   \xda	save_datar)   r*   r#   r7   r-   s    r/   \xda
-save_statezBirthHub360.save_stateG   s,   \x80 \xe0\xd7\xd1\xd7"\xd1"\xa04\xa7<\xa1<\xb0\xb7\xb1\xb8t\xbf|\xb9|\xd7?_\xd1?_\xd5`r1   c                 \xf3z  \x97 | j                  \xab        | j                  \xab       }	 t        |dd\xac\xab      5  	 |d   j                  t	        t        ddd\xac\xab      \xab      \xab       | j                  j                  | j                  g \xab      }|| _	        |d	   j                  t	        t        d
-d\xac\xab      \xab      \xab       t        j                  d\xab       | j                  j                  D \x8fcg c]  }|j                  \x91\x8c }}| j                  j!                  |\xab      }| j                  dxx   t#        |\xab      z  cc<   g }|D ]F  }| j                  j%                  | j                  |\xab      }|dkD  s\x8c/|j'                  |\xab       ||_        \x8cH | j                  dxx   t#        |\xab      z  cc<   t+        d\xac\xab      }	|	j-                  dd\xac\xab       |	j-                  dd\xac\xab       |	j-                  dd\xac\xab       |dd  D ]7  }|	j/                  |j0                  |j2                  |j(                  d\x9bd\x9d\xab       \x8c9 |d	   j                  t	        |	\xab      \xab       t        j                  d\xab       |D \x90]1  }| j4                  j7                  | j                  |\xab      }
-| j8                  j;                  |
-|\xab      }| j<                  j?                  |
-||\xab      }| j                  dxx   dz  cc<   | j@                  jC                  |j0                  \xab      }|rL| j                  dxx   dz  cc<   |d   j                  t	        d |\x9b \x9d\xab      \xab       t        j                  d\xab       |d   j                  t	        d!|j0                  \x9b d"|j2                  \x9b d#|jD                  \x9b \x9d\xab      \xab       tG        jF                  \xab       d$k  r\xc5| j                  d%xx   dz  cc<   | jH                  jK                  |\xab      }d&jM                  |D \x8fcg c]  }d'|\x9b \x9d\x91\x8c	 c}\xab      }d(|j0                  \x9b d)|\x9b d*| jH                  jO                  \xab       \x9b \x9d| _(        |d	   j                  t	        | jP                  d+d,\xac-\xab      \xab       t        j                  d.\xab       t        j                  d/\xab       | jS                  \xab        \x90\x8c4 | jT                  jW                  | j<                  jX                  \xab      }|r\| j                  d0xx   t#        |\xab      z  cc<   |D ]7  }|d   j                  t	        d1|\x9b \x9d\xab      \xab       t        j                  d\xab       \x8c9 d2| j                  d   \x9b d3| j                  d   \x9b d4| j                  d   \x9b d5| j                  d%   \x9b d6| j                  d0   \x9b d7| j                  d   \x9b d8| j                  j[                  \xab       \x9b d9| j                  \x9b d:|r|d;   j2                  nd<\x9b d=\x9d}|d>   j                  t	        |\xab      \xab       t        j                  d?\xab       \x90\x8c\xb5c c}w c c}w # 1 sw Y   y xY w# t\        $ r\xb4 t^        ja                  d@\xab       | jb                  je                  | j                  | j                  | j<                  jX                  | j                  j[                  \xab       \xab      }| jS                  \xab        t^        ja                  dA|\x9b dB\x9d\xab       tg        jh                  dC\xab       Y y w xY w)DN\xe9   T)\xdarefresh_per_second\xdascreen\xdaheaderu$   BIRTH HUB 360 AUTOMÁTICO - OPERANDOz
-bold green\xdacenter)\xdastyle\xdajustify\xdamainzEscaneando oportunidades...\xdayellow)rE   \xe9   r   \xe92   r   zOportunidades Recentes)\xdatitle\xdaEmpresa\xdacyan\xdaCargo\xdamagentazMatch %\xdaright)rF   \xe9\xfb\xff\xff\xffz.1f\xda%r   r   \xdafooterz#[bold cyan]NETWORKING:[/bold cyan] zCandidatura enviada para z - z | Status: g\x9a\x99\x99\x99\x99\x99\xb9?r   \xda
-z- u   [bold]Preparação para z	:[/bold]
-z
-
-[italic]Feedback IA:[/italic] u   MÓDULO DE ENTREVISTAS ATIVOzbold white on blue)rK   rE   \xe9   g      \xe0?r   z*[bold yellow]MONITORAMENTO:[/bold yellow] un   
-                    [bold]MÉTRICAS OPERACIONAIS[/bold]
-
-                    Escaneados: u#   
-                    Compatíveis: z#
-                    Candidaturas: z"
-                    Entrevistas: z!
-                    Follow-ups: z!
-                    Networking: u^   
-
-                    [bold]Estratégia Ativa:[/bold]
-                    z
-                    [italic]u\x86   [/italic]
-
-                    [bold]Última Ação de IA:[/bold]
-                    Otimização de perfil para \xe9\xff\xff\xff\xffzN/Az
-                    \xdaside\xe9   u>   [bold red]Sistema Encerrando... Gerando Relatório.[/bold red]u!   [bold green]Relatório salvo em: z[/bold green]r   )5r;   \xdamake_layoutr   \xdaupdater   r   r%   \xdaanalyze_performancer*   r+   \xdatime\xdasleepr)   \xdaskills\xdanamer    \xdascan_opportunities\xdalen\xdacalculate_match_score\xdaappend\xdamatch_scorer   \xda
-add_column\xdaadd_row\xdacompanyrK   r!   \xdaoptimize_for_jobr"   \xdagenerate_resumer#   \xdaapplyr'   \xdaattempt_connection\xdastatus\xdarandomr$   \xdagenerate_questions\xdajoin\xdasimulate_feedbackr,   r>   r&   \xdacheck_for_follow_upr7   \xdaget_current_strategy\xdaKeyboardInterruptr4   r5   r(   \xdagenerate_daily_report\xdasys\xdaexit)r.   \xdalayout\xdastrategy_msg\xdas\xdakeywords\xdajobs\xdahigh_match_jobs\xdajob\xdascore\xda	job_table\xdaopt_profile\xdaresume\xdaapp\xda
-net_action\xda	questions\xdaq\xdaq_text\xda
-follow_ups\xdaaction\xda
-stats_text\xdareport_files                        r/   \xdastartzBirthHub360.startK   sI  \x80 \xd8\x8f\x89\xd4\xe0\xd7!\xd1!\xd3#\x88\xf0p	\xdc\x90f\xb0\xb84\xd6@\xd8\xe0\x988\xd1$\xd7+\xd1+\xacE\xb4$\xd07]\xd0eq\xf0  |D\xf4  3E\xf3  -F\xf4  G\xf0 $(\xd7#7\xd1#7\xd7#K\xd1#K\xc8D\xcfL\xc9L\xd0Z\\xd3#]\x90L\xd80<\x90D\xd4-\xf0 \x986\x91N\xd7)\xd1)\xac%\xb4\xd05R\xd0Zb\xd40c\xd3*d\xd4e\xdc\x97J\x91J\x98q\x94M\xe004\xb7\xb1\xd70C\xd20C\xd3D\xd10C\xa81\xa0\xa7\xa3\xd00C\x90H\xd0D\xd8\x9f<\x99<\xd7:\xd1:\xb88\xd3D\x90D\xd8\x97L\x91L\xa0\xd3+\xacs\xb04\xaby\xd18\xd3+\xf0 ')\x90O\xdb#\x98\xd8 $\xa7\xa1\xd7 B\xd1 B\xc04\xc7<\xc1<\xd0QT\xd3 U\x98\xd8 \xa02\x9b:\xd8+\xd72\xd12\xb03\xd47\xd8.3\x98C\x9dO\xf0	  $\xf0 \x97L\x91L\xa0\xd3+\xacs\xb0?\xd3/C\xd1C\xd3+\xf4 !&\xd0,D\xd4 E\x90I\xd8\xd7(\xd1(\xa8\xb8&\xd0(\xd4A\xd8\xd7(\xd1(\xa8\xb8	\xd0(\xd4B\xd8\xd7(\xd1(\xa8\xb8G\xd0(\xd4D\xe0.\xa8r\xa8s\xd33\x98\xd8!\xd7)\xd1)\xa8#\xaf+\xa9+\xb0s\xb7y\xb1y\xc0S\xc7_\xc1_\xd0UX\xd0DY\xd0YZ\xd0B[\xd5\\xf0  4\xf0 \x986\x91N\xd7)\xd1)\xac%\xb0	\xd3*:\xd4;\xdc\x97J\x91J\x98q\x94M\xf4  /\x98\xe0&*\xa7n\xa1n\xd7&E\xd1&E\xc0d\xc7l\xc1l\xd0TW\xd3&X\x98\xe0!%\xa7\xa1\xd7!@\xd1!@\xc0\xc8c\xd3!R\x98\xe0"\x9fl\x99l\xd70\xd10\xb0\xb8c\xc06\xd3J\x98\xd8\x9f\x99\xa0Y\xd3/\xb01\xd14\xd3/\xf0 &*\xa7^\xa1^\xd7%F\xd1%F\xc0s\xc7{\xc1{\xd3%S\x98
-\xd9%\xd8 \x9fL\x99L\xa8\xd36\xb8!\xd1;\xd36\xd8"\xa08\xd1,\xd73\xd13\xb4E\xd0<_\xd0`j\xd0_k\xd0:l\xd34m\xd4n\xdc \x9fJ\x99J\xa0q\x9cM\xf0 \x98x\xd1(\xd7/\xd1/\xb4\xd08Q\xd0RU\xd7R]\xd1R]\xd0Q^\xd0^a\xd0be\xd7bk\xd1bk\xd0al\xd0lw\xd0x{\xf7  yC\xf1  yC\xf0  xD\xf0  7E\xf3  1F\xf4  G\xf4 "\x9f=\x99=\x9b?\xa8S\xd20\xd8 \x9fL\x99L\xa8\xd36\xb8!\xd1;\xd36\xd8(,\xaf
-\xa9
-\xd7(E\xd1(E\xc0c\xd3(J\x98I\xd8%)\xa7Y\xa1Y\xc1)\xd3/L\xc1)\xb8Q\xb0"\xb0Q\xb0C\xb2\xc0)\xd1/L\xd3%M\x98F\xd8;S\xd0TW\xd7T_\xd1T_\xd0S`\xd0`j\xd0kq\xd0jr\xf0  sU\xf0  VZ\xf7  V`\xf1  V`\xf7  Vr\xf1  Vr\xf3  Vt\xf0  Uu\xf0  :v\x98D\xd46\xf0 #\xa06\x99N\xd71\xd11\xb4%\xb8\xd78R\xd18R\xd0Zx\xf0  AU\xf4  3V\xf4  W\xdc \x9fJ\x99J\xa0q\x9cM\xe4\x9f
-\x99
-\xa03\x9c\xd8\x9f\x99\xd6)\xf0?  /\xf0D "&\xa7\xa1\xd7!D\xd1!D\xc0T\xc7\\xc1\\xd7Ee\xd1Ee\xd3!f\x90J\xd9!\xd8\x9f\x99\xa0[\xd31\xb4S\xb8\xb3_\xd1D\xd31\xdb&0\x98F\xd8#\xa0H\xd1-\xd74\xd14\xb4U\xd0=g\xd0hn\xd0go\xd0;p\xd35q\xd4r\xdc!\x9fZ\x99Z\xa8\x9d]\xf0 '1\xf0
-&!\xf0 "&\xa7\xa1\xa8i\xd1!8\xd0 9\xf0 :#\xd8#'\xa7<\xa1<\xb0	\xd1#:\xd0";\xf0 <#\xd8#'\xa7<\xa1<\xb0	\xd1#:\xd0";\xf0 <"\xd8"&\xa7,\xa1,\xa8|\xd1"<\xd0!=\xf0 >!\xd8!%\xa7\xa1\xa8k\xd1!:\xd0 ;\xf0 <!\xd8!%\xa7\xa1\xa8l\xd1!;\xd0 <\xf0 =\xf0 \xd7)\xd1)\xd7>\xd1>\xd3@\xd0A\xf0 B\xd8!\xd76\xd16\xd07\xf0 81\xf1 O^\xb0\xc0\xd11D\xd71J\xd21J\xd0ch\xd00i\xf0 j\xf0"\x90J\xf0" \x986\x91N\xd7)\xd1)\xac%\xb0
-\xd3*;\xd4<\xf4 \x97J\x91J\x98q\x94M\xf1K \xf9\xf2  E\xf9\xf2d 0M\xf7 A\xd0@\xfb\xf4P !\xf2 	\xdc\x8fM\x89M\xd0Z\xd4[\xd8\x9f-\x99-\xd7=\xd1=\xd8\x97\x91\x98d\x9fl\x99l\xa8D\xafL\xa9L\xd7,L\xd1,L\xc8d\xd7Nb\xd1Nb\xd7Nw\xd1Nw\xd3Ny\xf3\x88K\xf0 \x8fO\x89O\xd4\xdc\x8fM\x89M\xd0=\xb8k\xb8]\xc8-\xd0X\xd4Y\xdc\x8fH\x89H\x90Q\x8eK\xf0	\xfasK   \xa2W= \xb0B-W1\xc3W'\xc30A/W1\xc5 I;W1\xcfW,\xcf'H
-W1\xd71W:\xd76W= \xd7:W= \xd7=B:Z:\xda9Z:\xdareturnc                 \xf3\xd8   \x97 t        \xab       }|j                  t        dd\xac\xab      t        dd\xac\xab      t        dd\xac\xab      \xab       |d   j                  t        dd\xac\xab      t        d	d\xac\xab      \xab       |S )
-NrC   rU   )r_   \xdasize\xdabodyrI   )r_   \xdaratiorS   rW   rG   )r   \xdasplit\xda	split_row)r.   rw   s     r/   rY   zBirthHub360.make_layout\xc2   sb   \x80 \xdc\x93\x88\xd8\x8f\x89\xdc\x98\xa0q\xd4)\xdc\x98\xa0a\xd4(\xdc\x98\xa0q\xd4)\xf4
-\xf0
- 	\x88v\x89\xd7 \xd1 \xdc\x98\xa0a\xd4(\xdc\x98\xa0a\xd4(\xf4
-\xf0 \x88r1   N)	\xda__name__\xda
-__module__\xda__qualname__r0   r;   r>   r\x8b   r   rY   \xa9 r1   r/   r   r      s&   \x84 \xf2D\xf224\xf2&a\xf2u\xf0n\x98V\xf4 r1   r   \xda__main__),r\   rm   ru   \xdarich.consoler   \xdarich.layoutr   \xda
-rich.panelr   \xda	rich.liver   \xda
-rich.tabler   \xda	rich.textr   \xdarich.markdownr	   \xdasrc.modules.onboardingr
-   \xdasrc.modules.job_intelligencer   \xdasrc.modules.profile_optimizerr   \xdasrc.modules.resume_generatorr   \xdasrc.modules.applierr   \xdasrc.modules.interview_prepr   \xdasrc.modules.decision_enginer   \xdasrc.modules.monitoringr   \xdasrc.modules.networkingr   \xdasrc.modules.reportingr   \xdasrc.core.persistencer   r4   r   r\x93   \xdahubr\x8b   r\x96   r1   r/   \xda<module>r\xab      sw   \xf0\xdb \xdb \xdb 
-\xdd  \xdd \xdd \xdd \xdd \xdd \xdd "\xe5 2\xdd 3\xdd :\xdd 8\xdd .\xdd 5\xdd 6\xdd 0\xdd /\xdd 1\xdd 3\xe1
-\x8b)\x80\xf7s\xf1 s\xf0j \x88z\xd2\xd9
-\x8b-\x80C\xd8\x87I\x81I\x85K\xf0 r1   
-```
-
 ## src/core/__init__.py
 ```
 
-```
-
-## src/core/__pycache__/__init__.cpython-312.pyc
-```
-\xcb
-    mepi    \xe3                    \xf3   \x97 y )N\xa9 r   \xf3    \xfa/app/src/core/__init__.py\xda<module>r      s   \xf1r   
-```
-
-## src/core/__pycache__/browser.cpython-312.pyc
-```
-\xcb
-    Ԥpi\xc3  \xe3                   \xf38   \x97 d dl mZ d dlmZ d\x84 Zdededz  fd\x84Zy)\xe9    )\xdaPath)\xdasync_playwrightc                 \xf3v   \x97 | j                   j                  }|dv r| j                  \xab       S | j                  \xab       S )N)\xdaimage\xdafont\xda
-stylesheet\xdamedia)\xdarequest\xdaresource_type\xdaabort\xda	continue_)\xdaroute\xdarts     \xfa/app/src/core/browser.py\xda_route_block_heavyr      s3   \x80 \xd8	\x8f\x89\xd7	$\xd1	$\x80B\xd8	\xd05\xd15\xd8\x8f{\x89{\x8b}\xd0\xd8\x8f?\x89?\xd3\xd0\xf3    \xdaheadless\xdastorage_state_pathNc                 \xf3>  \x97 t        \xab       j                  \xab       }|j                  j                  | \xac\xab      }|r,|j	                  \xab       r|j                  t        |\xab      \xac\xab      }n|j                  \xab       }|j                  dt        \xab       |j                  \xab       }||||fS )N)r   )\xdastorage_statez**/*)
-r   \xdastart\xdachromium\xdalaunch\xdaexists\xdanew_context\xdastrr   r   \xdanew_page)r   r   \xdap\xdabrowser\xdacontext\xdapages         r   \xdaopen_contextr"   
-   s\x8c   \x80 \xdc\xd3\xd7\xd1\xd3!\x80A\xd8\x8fj\x89j\xd7\xd1\xa8\xd0\xd32\x80G\xd9\xd00\xd77\xd17\xd49\xd8\xd7%\xd1%\xb4C\xd08J\xd34K\xd0%\xd3L\x89\xe0\xd7%\xd1%\xd3'\x88\xd8\x87M\x81M\x90&\xd4,\xd4-\xd8\xd7\xd1\xd3\x80D\xd8\x88g\x90w\xa0\xd0$\xd0$r   )\xdapathlibr   \xdaplaywright.sync_apir   r   \xdaboolr"   \xa9 r   r   \xda<module>r'      s'   \xf0\xdd \xdd /\xf2\xf0	%\x984\xf0 	%\xb0T\xb8D\xb1[\xf4 	%r   
-```
-
-## src/core/__pycache__/db.cpython-312.pyc
-```
-\xcb
-    Ťpi\xaf  \xe3                   \xf3B   \x97 d dl Z d dlmZ  ed\xab      dz  Zd\x84 Zdd\x84Zd\x84 Zy)	\xe9    N)\xdaPath\xdadatazautoapply.dbc                  \xf3\xe4   \x97 t         j                  j                  dd\xac\xab       t        j                  t         \xab      5 } | j                  d\xab       | j                  \xab        d d d \xab       y # 1 sw Y   y xY w)NT)\xdaparents\xdaexist_oka\xfa  
-            CREATE TABLE IF NOT EXISTS jobs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                platform TEXT NOT NULL,
-                job_url TEXT NOT NULL,
-                title TEXT,
-                company TEXT,
-                location TEXT,
-                score INTEGER DEFAULT 0,
-                status TEXT NOT NULL,
-                reason TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE (platform, job_url)
-            );
-        )\xdaDB_PATH\xdaparent\xdamkdir\xdasqlite3\xdaconnect\xdaexecute\xdacommit)\xdacons    \xfa/app/src/core/db.py\xdainit_dbr      sO   \x80 \xdc\x87N\x81N\xd7\xd1\xa0\xb0\xd0\xd45\xdc	\x8f\x89\x9c\xd4	!\xa0S\xd8\x8f\x89\xf0 \xf4 	\xf0 	\x8f
-\x89
-\x8c\xf7! 
-"\xd7	!\xd1	!\xfas   \xbb"A&\xc1&A/c                 \xf3\xb4   \x97 t        j                  t        \xab      5 }|j                  d| |||||||f\xab       |j	                  \xab        d d d \xab       y # 1 sw Y   y xY w)Na\xc2  
-            INSERT INTO jobs (platform, job_url, title, company, location, score, status, reason)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(platform, job_url) DO UPDATE SET
-                title=excluded.title,
-                company=excluded.company,
-                location=excluded.location,
-                score=excluded.score,
-                status=excluded.status,
-                reason=excluded.reason;
-        )r   r   r   r   r   )	\xdaplatform\xdajob_url\xdastatus\xdatitle\xdacompany\xdalocation\xdascore\xdareasonr   s	            r   \xda
-upsert_jobr      sO   \x80 \xdc	\x8f\x89\x9c\xd4	!\xa0S\xd8\x8f\x89\xf0 
-\xf0 \x98\xa0\xa8\xb0\xb85\xc0&\xc8&\xd0Q\xf4
-	S\xf0 	\x8f
-\x89
-\x8c\xf7 
-"\xd7	!\xd1	!\xfas   \x9a+A\xc1Ac                 \xf3\xba   \x97 t        j                  t        \xab      5 }|j                  d| |f\xab      }|j	                  \xab       }|r|d   nd cd d d \xab       S # 1 sw Y   y xY w)Nz6SELECT status FROM jobs WHERE platform=? AND job_url=?r   )r   r   r   r   \xdafetchone)r   r   r   \xdacur\xdarows        r   \xdaseenr    )   sJ   \x80 \xdc	\x8f\x89\x9c\xd4	!\xa0S\xd8\x8fk\x89k\xd0R\xd0U]\xd0_f\xd0Tg\xd3h\x88\xd8\x8fl\x89l\x8bn\x88\xd9\x88s\x901\x8av\xa0$\xf7 
-"\xd7	!\xd2	!\xfas   \x9a-A\xc1A)NNNr   N)r   \xdapathlibr   r   r   r   r    \xa9 \xf3    r   \xda<module>r$      s(   \xf0\xdb \xdd \xe1
-\x88v\x8b,\x98\xd1
-'\x80\xf2\xf3(\xf3'r#   
-```
-
-## src/core/__pycache__/export.cpython-312.pyc
-```
-\xcb
-    \xe0\xa4pi\xfe  \xe3                   \xf3B   \x97 d dl Z d dlZd dlmZ d dlmZ dedefd\x84Zd\x84 Zy)\xe9    N)\xdaPath)\xdadatetime\xdadb_path\xdaout_pathc                 \xf3\x94  \x97 |j                   j                  dd\xac\xab       t        j                  | \xab      5 }|j	                  d\xab      j                  \xab       }d d d \xab       |j                  ddd\xac\xab      5 }t        j                  |\xab      }|j                  g d\xa2\xab       |j                  \xab       d d d \xab       y # 1 sw Y   \x8c`xY w# 1 sw Y   y xY w)	NT)\xdaparents\xdaexist_okz\xa6
-            SELECT platform, job_url, title, company, location, score, status, reason, created_at
-            FROM jobs
-            ORDER BY created_at DESC
-        \xdaw\xda zutf-8)\xdanewline\xdaencoding)	\xdaplatform\xdajob_url\xdatitle\xdacompany\xdalocation\xdascore\xdastatus\xdareason\xda
-created_at)\xdaparent\xdamkdir\xdasqlite3\xdaconnect\xdaexecute\xdafetchall\xdaopen\xdacsv\xdawriter\xdawriterow\xda	writerows)r   r   \xdacon\xdarows\xdafr
-   s         \xfa/app/src/core/export.py\xdaexport_dailyr&      s\xa1   \x80 \xd8\x87O\x81O\xd7\xd1\xa0$\xb0\xd0\xd46\xdc	\x8f\x89\x98\xd4	!\xa0S\xd8\x8f{\x89{\xf0 \xf3 \xf7 \x89X\x8bZ\xf0	 	\xf7 
-"\xf0 
-\x8f\x89\x90s\xa0B\xb0\x88\xd4	9\xb8Q\xdc\x8fJ\x89J\x90q\x8bM\x88\xd8	\x8f
-\x89
-\xd2u\xd4v\xd8	\x8f\x89\x90D\xd4\xf7 
-:\xd0	9\xf7 
-"\xd0	!\xfa\xf7 
-:\xd0	9\xfas   \xb3 B2\xc1/:B>\xc22B;\xc2>Cc                  \xf3H   \x97 t        j                  \xab       j                  d\xab      S )Nzout/daily_export_%Y-%m-%d.csv)r   \xdanow\xdastrftime\xa9 \xf3    r%   \xdadaily_filenamer,      s   \x80 \xdc\x8f<\x89<\x8b>\xd7"\xd1"\xd0#B\xd3C\xd0Cr+   )r   r   \xdapathlibr   r   r&   r,   r*   r+   r%   \xda<module>r.      s*   \xf0\xdb 
-\xdb \xdd \xdd \xf0\x98$\xf0 \xa8$\xf3 \xf3Dr+   
-```
-
-## src/core/__pycache__/models.cpython-312.pyc
-```
-\xcb
-    \xadepiQ  \xe3                   \xf3\xe2   \x97 d dl mZmZmZ d dlmZmZ d dlmZmZ d dl	m
-Z
-mZ  G d\x84 de\xab      Z G d\x84 de\xab      Z G d	\x84 d
-e\xab      Z G d\x84 de\xab      Z G d\x84 de\xab      Z G d\x84 de\xab      Z G d\x84 de\xab      Zy)\xe9    )\xdaList\xdaOptional\xdaDict)\xda	BaseModel\xdaField)\xdadatetime\xdadate)\xdauuid4\xdaUUIDc                   \xf3J   \x97 e Zd ZU eed<   eed<   eed<   dZee   ed<   eed<   y)\xda
-Experience\xdatitle\xdacompany\xda
-start_dateN\xdaend_date\xdadescription\xa9\xda__name__\xda
-__module__\xda__qualname__\xdastr\xda__annotations__r	   r   r   \xa9 \xf3    \xfa/app/src/core/models.pyr   r      s&   \x85 \xd8\x83J\xd8\x83L\xd8\xd3\xd8#\x80H\x88h\x90t\x89n\xd3#\xd8\xd4r   r   c                   \xf3J   \x97 e Zd ZU eed<   eed<   eed<   dZee   ed<   eed<   y)\xda	Education\xdainstitution\xdadegreer   Nr   \xdafield_of_studyr   r   r   r   r   r      s'   \x85 \xd8\xd3\xd8\x83K\xd8\xd3\xd8#\x80H\x88h\x90t\x89n\xd3#\xd8\xd4r   r   c                   \xf3"   \x97 e Zd ZU eed<   eed<   y)\xdaSkill\xdaname\xdalevelN)r   r   r   r   r   r   r   r   r"   r"      s   \x85 \xd8
-\x83I\xd8\x84Jr   r"   c                   \xf3\xb6   \x97 e Zd ZU  ee\xac\xab      Zeed<   eed<   eed<   eed<   eed<   g Z	e
-e   ed<   g Ze
-e   ed<   g Ze
-e   ed	<   d
-Zee   ed<   d
-Zee   ed<   y
-)\xdaCandidateProfile\xa9\xdadefault_factory\xdaidr#   \xdaemail\xdaphone\xdasummary\xdaexperiences\xda	education\xdaskillsN\xdalinkedin_url\xdaportfolio_url)r   r   r   r   r
-   r)   r   r   r   r-   r   r   r.   r   r/   r"   r0   r   r1   r   r   r   r&   r&      sl   \x85 \xd9\xa0U\xd4+\x80B\x88\xd3+\xd8
-\x83I\xd8\x83J\xd8\x83J\xd8\x83L\xd8$&\x80K\x90\x90j\xd1!\xd3&\xd8!#\x80I\x88t\x90I\x89\xd3#\xd8\x80F\x88D\x90\x89K\xd3\xd8"&\x80L\x90(\x983\x91-\xd3&\xd8#'\x80M\x908\x98C\x91=\xd4'r   r&   c                   \xf3h   \x97 e Zd ZU eed<   eed<   eed<   eed<   ee   ed<   eed<   eed<   dZeed	<   y
-)\xdaJobOpportunityr)   r   r   r   \xdarequirements\xdaurl\xdasourceg        \xdamatch_scoreN)r   r   r   r   r   r   r7   \xdafloatr   r   r   r3   r3   $   s5   \x85 \xd8\x83G\xd8\x83J\xd8\x83L\xd8\xd3\xd8\x90s\x91)\xd3\xd8	\x83H\xd8\x83K\xd8\x80K\x90\xd4r   r3   c                   \xf3\x82   \x97 e Zd ZU  ee\xac\xab      Zeed<   eed<   eed<   eed<    ee	j                  \xac\xab      Ze	ed<   eed<   y)	\xdaResumer'   r)   \xda
-profile_id\xdajob_id\xdacontent\xda
-created_at\xdaversion_tagN)r   r   r   r   r
-   r)   r   r   r   r   \xdanowr>   r   r   r   r:   r:   .   s:   \x85 \xd9\xa0U\xd4+\x80B\x88\xd3+\xd8\xd3\xd8\x83K\xd8\x83L\xd9 \xb0\xb7\xb1\xd4>\x80J\x90\xd3>\xd8\xd4r   r:   c                   \xf3\xa4   \x97 e Zd ZU  ee\xac\xab      Zeed<   eed<   eed<   eed<   dZ	eed<    ee
-j                  \xac\xab      Ze
-ed<   eed	<   d
-Zee   ed<   y
-)\xdaApplicationr'   r)   r<   r;   \xda	resume_id\xdaApplied\xdastatus\xda
-applied_at\xdaplatformN\xdanotes)r   r   r   r   r
-   r)   r   r   r   rE   r   r@   rF   rH   r   r   r   r   rB   rB   6   sQ   \x85 \xd9\xa0U\xd4+\x80B\x88\xd3+\xd8\x83K\xd8\xd3\xd8\x83O\xd8\x80F\x88C\xd3\xd9 \xb0\xb7\xb1\xd4>\x80J\x90\xd3>\xd8\x83M\xd8\x80E\x888\x90C\x89=\xd4r   rB   N)\xdatypingr   r   r   \xdapydanticr   r   r   r	   \xdauuidr
-   r   r   r   r"   r&   r3   r:   rB   r   r   r   \xda<module>rL      sh   \xf0\xdf '\xd1 '\xdf %\xdf #\xdf \xf4\x90\xf4 \xf4\x90	\xf4 \xf4\x88I\xf4 \xf4
-(\x90y\xf4 
-(\xf4\x90Y\xf4 \xf4\x88Y\xf4 \xf4 \x90)\xf5  r   
-```
-
-## src/core/__pycache__/persistence.cpython-312.pyc
-```
-\xcb
-    Kjpi\x81	  \xe3                   \xf3\xf8   \x97 d dl Z d dlZd dlmZmZmZ d dlmZmZ dZ	ej                  j                  e	d\xab      Zej                  j                  e	d\xab      Zej                  j                  e	d\xab      Z G d\x84 d	\xab      Zy)
-\xe9    N)\xdaDict\xdaList\xdaAny)\xdaCandidateProfile\xdaApplication\xdadatazprofile.jsonzmetrics.jsonzapplications.jsonc                   \xf3<   \x97 e Zd Zd\x84 Zdedeeef   dee	   fd\x84Z
-d\x84 Zy)\xdaPersistenceManagerc                 \xf3~   \x97 t         j                  j                  t        \xab      st        j                  t        \xab       y y )N)\xdaos\xdapath\xdaexists\xdaDATA_DIR\xdamakedirs)\xdaselfs    \xfa/app/src/core/persistence.py\xda__init__zPersistenceManager.__init__   s#   \x80 \xdc\x8fw\x89w\x8f~\x89~\x9ch\xd4'\xdc\x8fK\x89K\x9c\xd5!\xf0 (\xf3    \xdaprofile\xdametrics\xdaapplicationsc                 \xf3\xde  \x97 |r<t        t        dd\xac\xab      5 }|j                  |j                  d\xac\xab      \xab       ddd\xab       t        t        dd\xac\xab      5 }t        j                  ||d\xac\xab       ddd\xab       |D \x8fcg c]  }|j                  d\xac\xab      \x91\x8c }}t        t        dd\xac\xab      5 }t        j                  ||dd	\xac
-\xab       ddd\xab       y# 1 sw Y   \x8c\x90xY w# 1 sw Y   \x8cixY wc c}w # 1 sw Y   yxY w)z)Saves current system state to JSON files.\xdaw\xfautf-8\xa9\xdaencoding\xe9   )\xdaindentN\xdajson)\xdamodeF)r   \xdaensure_ascii)	\xdaopen\xdaPROFILE_FILE\xdawrite\xdamodel_dump_json\xdaMETRICS_FILEr   \xdadump\xda
-model_dump\xdaAPPLICATIONS_FILE)r   r   r   r   \xdaf\xdaapp\xdaapp_list_jsons          r   \xda	save_datazPersistenceManager.save_data   s\xc3   \x80 \xf1 \xdc\x94l\xa0C\xb0'\xd5:\xb8a\xd8\x97\x91\x98\xd7/\xd1/\xb0q\xd0/\xd39\xd4:\xf7 ;\xf4 \x94,\xa0\xa8g\xd56\xb8!\xdc\x8fI\x89I\x90g\x98q\xa8\xd5+\xf7 7\xf1 AM\xd3M\xc1\xb8\x98\x9f\x99\xa8V\x98\xd54\xc0\x88\xd0M\xdc\xd4#\xa0S\xb07\xd5;\xb8q\xdc\x8fI\x89I\x90m\xa0Q\xa8q\xb8u\xd5E\xf7 <\xd0;\xf7 ;\xd0:\xfa\xf7 7\xd06\xfc\xf2 N\xdf;\xd0;\xfas)   \x95"C\xc1C\xc16C\xc2#C#\xc3C\xc3C\xc3#C,c                 \xf3\xdc  \x97 d}d}g }t         j                  j                  t        \xab      r?t	        t        dd\xac\xab      5 }	 t        j                  |j                  \xab       \xab      }ddd\xab       t         j                  j                  t        \xab      r0t	        t        dd\xac\xab      5 }t        j                  |\xab      }ddd\xab       t         j                  j                  t        \xab      rSt	        t        dd\xac\xab      5 }	 t        j                  |\xab      }|D \x8fcg c]  }t        j                  |\xab      \x91\x8c }}ddd\xab       |||fS #  Y \x8c\xdaxY w# 1 sw Y   \x8c\xdexY w# 1 sw Y   \x8c\x97xY wc c}w #  Y \x8c5xY w# 1 sw Y   \x8c9xY w)z\x8e
-        Loads system state. Returns tuple (profile, metrics, applications).
-        Returns (None, None, None) if files don't exist.
-        N\xdarr   r   )r   r   r   r#   r"   r   \xdamodel_validate_json\xdareadr&   r   \xdaloadr)   r   \xdamodel_validate)r   r   r   r   r*   \xdaraw_appsr+   s          r   \xda	load_datazPersistenceManager.load_data#   s   \x80 \xf0
- \x88\xd8\x88\xd8\x88\xe4\x8f7\x897\x8f>\x89>\x9c,\xd4'\xdc\x94l\xa0C\xb0'\xd5:\xb8a\xf0\xdc.\xd7B\xd1B\xc01\xc76\xc16\xc38\xd3L\x90G\xf7 ;\xf4 \x8f7\x897\x8f>\x89>\x9c,\xd4'\xdc\x94l\xa0C\xb0'\xd5:\xb8a\xdc\x9f)\x99)\xa0A\x9b,\x90\xf7 ;\xf4 \x8f7\x897\x8f>\x89>\xd4+\xd4,\xdc\xd4'\xa8\xb0w\xd5?\xc01\xf0\xdc#\x9fy\x99y\xa8\x9b|\x90H\xd9OW\xd3#X\xc9x\xc8\xa4K\xd7$>\xd1$>\xb8s\xd5$C\xc8x\x90L\xd0#X\xf7 @\xf0 \x98\xa0\xd0-\xd0-\xf8\xf0\xd9\xfa\xf7	 ;\xd0:\xfa\xf7 ;\xd0:\xfc\xf2 $Y\xf8\xf0\xd9\xfa\xf7 @\xd0?\xfasX   \xbcD>\xbe#D7\xc2E
-\xc31E"\xc33E\xc4E\xc4(E\xc47D;\xc49D>\xc4>E\xc5
-E\xc5E\xc5E\xc5E"\xc5"E+N)\xda__name__\xda
-__module__\xda__qualname__r   r   r   \xdastr\xdaintr   r   r-   r5   \xa9 r   r   r
-   r
-      s:   \x84 \xf2"\xf0F\xd0!1\xf0 F\xb8D\xc0\xc0c\xc0\xb9N\xf0 F\xd0Z^\xd0_j\xd1Zk\xf3 F\xf3&.r   r
-   )r   r   \xdatypingr   r   r   \xdasrc.core.modelsr   r   r   r   \xdajoinr#   r&   r)   r
-   r;   r   r   \xda<module>r?      sa   \xf0\xdb \xdb 	\xdf "\xd1 "\xdf 9\xe0\x80\xd8\x8fw\x89w\x8f|\x89|\x98H\xa0n\xd35\x80\xd8\x8fw\x89w\x8f|\x89|\x98H\xa0n\xd35\x80\xd8\x97G\x91G\x97L\x91L\xa0\xd0+>\xd3?\xd0 \xf74.\xf2 4.r   
-```
-
-## src/core/__pycache__/runner.cpython-312.pyc
-```
-\xcb
-    \xee\xa4pi\xc3  \xe3                   \xf36  \x97 d dl Z d dlZd dlZd dlZd dlZd dlmZ d dlmZmZ d dl	m
-Z
-mZmZmZ d dlmZmZ d dlmZ d dlmZmZ d dlmZ d dlmZ  ed	\xab      Z ed
-\xab      dz  Z ed
-\xab      dz  dz  Z ed
-\xab      dz  dz  Zd\x84 Zd\x84 Z dd\x84Z!d\x84 Z"e#dk(  r e"\xab        yy)\xe9    N)\xdaPath)\xdadatetime\xdadate)\xdainit_db\xdaseen\xda
-upsert_job\xdaDB_PATH)\xdaexport_daily\xdadaily_filename)\xdaopen_context)\xdaenqueue\xdaextract_gupy_links)\xdaprocess_jobzprofile_br.json\xdadatazqueue.jsonl\xdasessionszlinkedin_state.jsonzgupy_state.jsonc                  \xf3T   \x97 t        j                  t        j                  d\xac\xab      \xab      S \xa9Nzutf-8)\xdaencoding)\xdajson\xdaloads\xdaPROFILE_PATH\xda	read_text\xa9 \xf3    \xfa/app/src/core/runner.py\xdaload_profiler      s   \x80 \x9c4\x9f:\x99:\xa4l\xd7&<\xd1&<\xc0g\xd0&<\xd3&N\xd3O\xd0Or   c                  \xf3\xf6   \x97 dd l } t        j                  \xab       j                  \xab       }| j	                  t
-        \xab      5 }|j                  d|f\xab      j                  \xab       }d d d \xab       r|d   S dS # 1 sw Y   \x8cxY w)Nr   zPSELECT COUNT(*) FROM jobs WHERE status='applied' AND substr(created_at, 1, 10)=?)\xdasqlite3r   \xdatoday\xda	isoformat\xdaconnectr	   \xdaexecute\xdafetchone)r   r   \xdacon\xdarows       r   \xdacount_applied_todayr&      sm   \x80 \xdb\xdc\x8fJ\x89J\x8bL\xd7"\xd1"\xd3$\x80E\xd8	\x8f\x89\x9c\xd4	!\xa0S\xd8\x8fk\x89k\xd0l\xd0ot\xd0nv\xd3w\xf7  A\xf1  A\xf3  C\x88\xf7 
-"\xe1\x883\x88q\x896\xd0\x98a\xd0\xf7 
-"\xd0	!\xfas   \xbc"A/\xc1/A8c                 \xf3\xe8   \x97 t         j                  \xab       sg S t         j                  d\xac\xab      j                  \xab       }g }|d |  D ]&  }|j	                  t        j                  |\xab      \xab       \x8c( |S #  Y \x8c/xY wr   )\xda
-QUEUE_PATH\xdaexistsr   \xda
-splitlines\xdaappendr   r   )\xdalimit\xdalines\xdaitems\xdalns       r   \xda
-read_queuer0      sg   \x80 \xdc\xd7\xd1\xd4\xa0r\xa0	\xdc\xd7 \xd1 \xa8'\xd0 \xd32\xd7=\xd1=\xd3?\x80E\xd8\x80E\xd8\x90F\x90U\x8bm\x88\xd8\x8f\\x89\\x9c$\x9f*\x99*\xa0R\x9b.\xd5)\xf0 \xf0 \x80L\xf8\xf0 	\x91\xfas   \xc1$A-\xc1-A1c            	      \xf3  \x97 t        \xab        t        \xab       } t        j                  j	                  dd\xab      dk(  }| j	                  di \xab      j	                  dg \xab      D ]  }t        d|\xab       \x8c | j	                  di \xab      j	                  dg \xab      D ]  }t        d|\xab       \x8c t        | d   d	   \xab      }t        \xab       }t        d
-||z
-  \xab      }|d
-k(  r"t        t        t        t        \xab       \xab      \xab       y d}t        t        d||z  \xab      d\xab      }t        |t        \xac\xab      \  }}	}
-}t        |t         \xac\xab      \  }}}}	 t#        |\xab      D \x90]\xb9  }t        \xab       |k\  r \x90n\xa9t%        d\xac\xab      }t'        j(                  |\xab       d
-}|D \x90]R  }||k\  r \x90nJ|j	                  d\xab      }|j	                  d\xab      }|s\x8c1t+        |dv r|nd|\xab      r\x8cD|dk(  rc|j-                  |d\xac\xab       |j/                  d\xab       t1        t3        j4                  d|j7                  \xab       \xab      \xab      D ]  }t        d|\xab       \x8c \x8c\xac|dk(  rR|j-                  |d\xac\xab       |j/                  d\xab       t9        |j7                  \xab       \xab      }|D ]  }t        d|\xab       \x8c \x90\x8c|dk(  r#t;        ||| \xab       t+        d|\xab      dk(  r|dz  }\x90\x8c+|dk(  s\x90\x8c2t=        ||| \xab       t+        d|\xab      dk(  r|dz  }\x90\x8cU t'        j>                  dd\xab      }tA        jB                  |\xab       \x90\x8c\xbc t        t        t        t        \xab       \xab      \xab       |
-jE                  \xab        |	jE                  \xab        |jG                  \xab        |jE                  \xab        |jE                  \xab        |jG                  \xab        y # t        t        t        t        \xab       \xab      \xab       |
-jE                  \xab        |	jE                  \xab        |jG                  \xab        |jE                  \xab        |jE                  \xab        |jG                  \xab        w xY w)N\xdaHEADLESS\xda1\xdaseeds\xdalinkedin_search_pages\xdalinkedin_search\xdagupy_search_pages\xdaweb_discovery\xdapreferencias\xdameta_candidaturas_diar   \xe9
-   \xe9   \xe9   )\xdaheadless\xdastorage_state_pathi\x90  )r,   \xdaplatform\xdaurl)\xdalinkedin\xdagupy\xdasource\xdadomcontentloaded)\xda
-wait_untili\xb0  z(https://www\.linkedin\.com/jobs/view/\d+rB   rC   \xdaappliedi  i   )$r   r   \xdaos\xdaenviron\xdagetr   \xdaintr&   \xdamaxr
-   r	   r   r   \xdaminr   \xdaSTATE_LI\xda
-STATE_GUPY\xdaranger0   \xdarandom\xdashuffler   \xdagoto\xdawait_for_timeout\xdaset\xdare\xdafindall\xdacontentr   \xda
-li_process\xdagupy_process\xdarandint\xdatime\xdasleep\xdaclose\xdastop)\xdaprofiler>   rA   \xda
-meta_daily\xdaapplied_today\xda	remaining\xdawindows\xda
-per_window\xdap1\xdab1\xdac1\xdapage_li\xdap2\xdab2\xdac2\xda	page_gupy\xdaw\xdaqueue\xdaapplied_in_window\xdaitemr@   \xdam\xdalinks\xdalk\xdasleep_ss                            r   \xdamainrv   &   sX  \x80 \xdc\x84I\xdc\x8bn\x80G\xdc\x8fz\x89z\x8f~\x89~\x98j\xa8#\xd3.\xb0#\xd15\x80H\xe0\x8f{\x89{\x987\xa0B\xd3'\xd7+\xd1+\xd0,C\xc0R\xd6H\x88\xdc\xd0!\xa03\xd5'\xf0 I\xe0\x8f{\x89{\x987\xa0B\xd3'\xd7+\xd1+\xd0,?\xc0\xd6D\x88\xdc\x90\xa0\xd5%\xf0 E\xf4 \x90W\x98^\xd1,\xd0-D\xd1E\xd3F\x80J\xdc'\xd3)\x80M\xdc\x90A\x90z\xa0M\xd11\xd32\x80I\xe0\x90A\x82~\xdc\x94W\x9cd\xa4>\xd3#3\xd34\xd45\xd8\xe0\x80G\xdc\x94S\x98\x98I\xa8\xd10\xd31\xb01\xd35\x80J\xe4&\xb0\xccX\xd4V\xd1\x80B\x88\x88B\x90\xdc(\xb0(\xccz\xd4Z\xd1\x80B\x88\x88B\x90	\xf0)*\xdc\x90w\x97\x88A\xdc"\xd3$\xa8
-\xd22\xb2E\xdc\xa0S\xd4)\x88E\xdc\x8fN\x89N\x985\xd4!\xd8 !\xd0\xdc\x90\xd8$\xa8
-\xd22\xb2E\xd8\x9f8\x998\xa0J\xd3/\x90\xd8\x97h\x91h\x98u\x93o\x90\xd9\x98H\xdc\xa0H\xd00D\xd1$D\x99\xc8(\xd0TW\xd4X\xd0Zb\xe0\xd00\xd20\xd8\x97L\x91L\xa0\xd01C\x90L\xd4D\xd8\xd7,\xd1,\xa8T\xd42\xdc \xa4\xa7\xa1\xd0,W\xd0Y`\xd7Yh\xd1Yh\xd3Yj\xd3!k\xd6l\x98\xdc\xa0
-\xa8A\xd5.\xf0 m\xe0\xe0\x98\xd2.\xd8\x97N\x91N\xa03\xd03E\x90N\xd4F\xd8\xd7.\xd1.\xa8t\xd44\xdc.\xa8y\xd7/@\xd1/@\xd3/B\xd3C\x90E\xdb#\x98\xa4W\xa8V\xb0R\xd5%8\x98e\xd9\xe0\x98z\xd2)\xdc\x98w\xa8\xa8W\xd45\xdc\x98J\xa8\xd3,\xb0	\xd29\xd0;L\xd0PQ\xd1;Q\xd0;L\xd9\xe0\x98v\xd4%\xdc \xa0\xa8C\xb0\xd49\xdc\x98F\xa0C\xd3(\xa8I\xd25\xd07H\xc8A\xd17M\xd07H\xd9\xf0; \xf4< \x97n\x91n\xa0T\xa84\xd30\x88G\xdc\x8fJ\x89J\x90w\xd6\xf0I  \xf4L 	\x94W\x9cd\xa4>\xd3#3\xd34\xd45\xd8
-\x8f\x89\x8c
-\x90B\x97H\x91H\x94J\xa0\xa7\xa1\xa4	\xd8
-\x8f\x89\x8c
-\x90B\x97H\x91H\x94J\xa0\xa7\xa1\xa5	\xf8\xf4 	\x94W\x9cd\xa4>\xd3#3\xd34\xd45\xd8
-\x8f\x89\x8c
-\x90B\x97H\x91H\x94J\xa0\xa7\xa1\xa4	\xd8
-\x8f\x89\x8c
-\x90B\x97H\x91H\x94J\xa0\xa7\xa1\xa5	\xfas   \xc47E4N \xca-AN \xceBP\xda__main__)\xe9\xc8   )$r   rH   rQ   r\   rV   \xdapathlibr   r   r   \xdasrc.core.dbr   r   r   r	   \xdasrc.core.exportr
-   r   \xdasrc.core.browserr   \xdasrc.core.sourcesr   r   \xdasrc.drivers.linkedin_easy_applyr   rY   \xdasrc.drivers.gupy_fast_applyrZ   r   r(   rN   rO   r   r&   r0   rv   \xda__name__r   r   r   \xda<module>r\x81      s\x98   \xf0\xdb \xdb 	\xdb \xdb \xdb 	\xdd \xdf #\xdf :\xd3 :\xdf 8\xdd )\xdf 8\xdd E\xdd C\xe1\xd0%\xd3&\x80\xd9\x90&\x8b\\x98M\xd1)\x80
-\xd9\x90\x8b<\x98*\xd1$\xd0'<\xd1<\x80\xd9\x90&\x8b\\x98J\xd1&\xd0):\xd1:\x80
-\xe2 O\xf2 \xf3\xf2A*\xf0F \x88z\xd2\xd9\x85F\xf0 r   
-```
-
-## src/core/__pycache__/scoring.cpython-312.pyc
-```
-\xcb
-    Τpi  \xe3                   \xf3.   \x97 d e dee    defd\x84Zdede fd\x84Zy)\xdatext\xdakeywords\xdareturnc                 \xf3T   \x87\x97 | xs dj                  \xab       \x8at        \x88fd\x84|D \xab       \xab      S )N\xda c              3   \xf3H   \x95K  \x97 | ]  }|j                  \xab       \x89v s\x8cd \x96\x97 \x8c y\xadw)\xe9   N)\xdalower)\xda.0\xdak\xdats     \x80\xfa/app/src/core/scoring.py\xda	<genexpr>zscore_text.<locals>.<genexpr>   s   \xf8\xe8 \xf8\x80 \xd05\x99(\x90Q\xa0a\xa7g\xa1g\xa3i\xb01\xa2n\x8cq\x99(\xf9s   \x83"\x9b")r	   \xdasum)r   r   r   s     @r   \xda
-score_textr      s&   \xf8\x80 \xd8	\x8a\x90\xd7\xd1\xd3\x80A\xdc\xd35\x99(\xd35\xd35\xd05\xf3    \xdascorec                 \xf3   \x97 | dk\  ry| dk\  ryy)N\xe9   \xdaapply\xe9   \xdaneeds_manual\xdaskip\xa9 )r   s    r   \xdadecider      s   \x80 \xd8\x90\x82z\x98'\xd8\x90\x82z\x98.\xd8r   N)\xdastr\xdalist\xdaintr   r   r   r   r   \xda<module>r      s6   \xf0\xf06\x90S\xf0 6\xa0D\xa8\xa1I\xf0 6\xb0#\xf3 6\xf0\x90#\xf0 \x98#\xf4 r   
-```
-
-## src/core/__pycache__/sources.cpython-312.pyc
-```
-\xcb
-    ڤpiC  \xe3                   \xf3   \x97 d dl Z d dlZd dlmZ d dlmZ  ed\xab      dz  Zej                  j                  dd\xac\xab       dde	d	e	d
-e
-dz  fd\x84Zddee	   de	fd\x84Z ej                  dej                  \xab      Zde	dee	   fd\x84Zy)\xe9    N)\xdaPath)\xdaquote\xdadatazqueue.jsonlT)\xdaparents\xdaexist_ok\xdaplatform\xdaurl\xdametac           	      \xf3\xc2   \x97 |xs i }t         j                  dd\xac\xab      5 }|j                  t        j                  | ||d\x9cd\xac\xab      dz   \xab       d d d \xab       y # 1 sw Y   y xY w)N\xdaazutf-8)\xdaencoding)r   r	   r
-   F)\xdaensure_ascii\xda
-)\xda
-QUEUE_PATH\xdaopen\xdawrite\xdajson\xdadumps)r   r	   r
-   \xdafs       \xfa/app/src/core/sources.py\xdaenqueuer   	   sN   \x80 \xd8\x8a:\x902\x80D\xdc	\x8f\x89\x98\xa0w\x88\xd4	/\xb01\xd8	\x8f\x89\x94\x97
-\x91
-\xa8\xb8\xc0d\xd1K\xd0Z_\xd4`\xd0cg\xd1g\xd4h\xf7 
-0\xd7	/\xd1	/\xfas   \x9e.A\xc1A\xdaqueries\xdageoc                 \xf3X   \x97 g }| D ]"  }|j                  dt        |\xab      \x9b d|\x9b \x9d\xab       \x8c$ |S )Nz/https://www.linkedin.com/jobs/search/?keywords=z&locationId=)\xdaappendr   )r   r   \xdaurls\xdaqs       r   \xdalinkedin_search_urlsr      s6   \x80 \xd8\x80D\xdb\x88\xd8\x8f\x89\xd0E\xc4e\xc8A\xc3h\xc0Z\xc8|\xd0\_\xd0[`\xd0a\xd5b\xf0 \xe0\x80K\xf3    z*https?://[a-z0-9\-]+\.gupy\.io/[^\s\"'>)]+\xdatext\xdareturnc                 \xf3l   \x97 t        t        j                  t        j	                  | xs d\xab      \xab      \xab      S )N\xda )\xdalist\xdadict\xdafromkeys\xdaGUPY_RE\xdafindall)r    s    r   \xdaextract_gupy_linksr)      s#   \x80 \xdc\x94\x97\x91\x9cg\x9fo\x99o\xa8d\xaaj\xb0b\xd39\xd3:\xd3;\xd0;r   )N)\xda	106057199)r   \xdare\xdapathlibr   \xdaurllib.parser   r   \xdaparent\xdamkdir\xdastrr%   r   r$   r   \xdacompile\xda
-IGNORECASEr'   r)   \xa9 r   r   \xda<module>r4      s\xa1   \xf0\xdb \xdb 	\xdd \xdd \xe1\x90&\x8b\\x98M\xd1)\x80
-\xd8 
-\xd7 \xd1 \xd7 \xd1 \xa0\xa8t\xd0 \xd4 4\xf1i\x90c\xf0 i\xa0\xf0 i\xa84\xb0$\xa9;\xf3 i\xf1
-\xa0$\xa0s\xa1)\xf0 \xb0#\xf3 \xf0 \x88"\x8f*\x89*\xd0B\xc0B\xc7M\xc1M\xd3
-R\x80\xf0<\x98S\xf0 <\xa0T\xa8#\xa1Y\xf4 <r   
 ```
 
 ## src/core/auth.py
@@ -1884,37 +1601,6 @@ def extract_gupy_links(text: str) -> list[str]:
 
 ```
 
-## src/drivers/__pycache__/gupy_fast_apply.cpython-312.pyc
-```
-\xcb
-    \xa5pi\xb0  \xe3                   \xf3*   \x97 d dl mZ d dlmZmZ dZd\x84 Zy)\xe9    )\xda
-upsert_job)\xda
-score_text\xdadecide\xdagupyc                 \xf3\xb6  \x97 | j                  |d\xac\xab       | j                  d\xab      j                  \xab       r+| j                  d\xab      j                  j	                  d\xac\xab      nd}| j                  d\xab      j	                  d\xac\xab      }t        |xs ddz   |z   |d	   \xab      }t        |\xab      }|d
-k(  rt        t        |d||d\xac\xab       y | j                  d\xab      j                  \xab       st        t        |d||d\xac\xab       y |dk(  rt        t        |d||d\xac\xab       y | j                  d\xab      j                  }|j                  \xab       st        t        |d||d\xac\xab       y |j                  \xab        | j                  d\xab       | j                  d\xab      j                  \xab       s| j                  d\xab      j                  \xab       rt        t        |d||d\xac\xab       y t        t        |d||\xac\xab       y )N\xdadomcontentloaded)\xda
-wait_until\xdah1i\xb8  )\xdatimeout\xda \xdabody\xda \xdaskills\xdaskip\xdaskipped_low_score\xdascore_baixo)\xdatitle\xdascore\xdareasonu   text=Candidatura Rápida\xdaneeds_manual\xda
-nao_rapida\xdascore_mediozbutton:has-text('Candidatar')\xdabotao_nao_achadoi\xdc  z
-text=Teste\xdatextarea\xdaperguntas_extras\xdaapplied)r   r   )\xdagoto\xdalocator\xdacount\xdafirst\xda
-inner_textr   r   r   \xdaPLATFORM\xdaclick\xdawait_for_timeout)\xdapage\xdajob_url\xdaprofiler   r   r   \xdaaction\xdabtns           \xfa#/app/src/drivers/gupy_fast_apply.py\xdaprocess_jobr+      s\x93  \x80 \xd8\x87I\x81I\x88g\xd0"4\x80I\xd45\xd8AE\xc7\xc1\xc8d\xd3AS\xd7AY\xd1AY\xd4A[\x88D\x8fL\x89L\x98\xd3\xd7$\xd1$\xd7/\xd1/\xb8\xd0/\xd4=\xd0ac\x80E\xd8\x8f<\x89<\x98\xd3\xd7*\xd1*\xb04\xd0*\xd38\x80D\xdc\x98\x9a\xa0\xa0s\xd1*\xa8T\xd11\xb07\xb88\xd13D\xd3E\x80E\xdc\x90E\x8b]\x80F\xe0\x90\xd2\xdc\x948\x98W\xd0&9\xc0\xc8e\xd0\i\xd5j\xd8\xd8\x8f<\x89<\xd02\xd33\xd79\xd19\xd4;\xdc\x948\x98W\xa0n\xb8E\xc8\xd0Wc\xd5d\xd8\xd8\x90\xd2\xdc\x948\x98W\xa0n\xb8E\xc8\xd0Wd\xd5e\xd8\xe0
-\x8f,\x89,\xd06\xd3
-7\xd7
-=\xd1
-=\x80C\xd8\x8f9\x899\x8c;\xdc\x948\x98W\xa0n\xb8E\xc8\xd0Wi\xd5j\xd8\xe0\x87I\x81I\x84K\xd8\xd7\xd1\x98$\xd4\xd8\x87|\x81|\x90L\xd3!\xd7'\xd1'\xd4)\xa8T\xaf\\xa9\\xb8*\xd3-E\xd7-K\xd1-K\xd4-M\xdc\x948\x98W\xa0n\xb8E\xc8\xd0Wi\xd5j\xd8\xdc\x8cx\x98\xa0)\xb05\xc0\xd6F\xf3    N)\xdasrc.core.dbr   \xdasrc.core.scoringr   r   r"   r+   \xa9 r,   r*   \xda<module>r0      s   \xf0\xdd "\xdf /\xd8\x80\xf3Gr,   
-```
-
-## src/drivers/__pycache__/linkedin_easy_apply.cpython-312.pyc
-```
-\xcb
-    \xa5pi\x8a  \xe3                   \xf3*   \x97 d dl mZ d dlmZmZ dZd\x84 Zy)\xe9    )\xda
-upsert_job)\xda
-score_text\xdadecide\xdalinkedinc           	      \xf3`  \x97 | j                  |d\xac\xab       | j                  d\xab      j                  \xab       r+| j                  d\xab      j                  j	                  d\xac\xab      nd}| j                  d\xab      j                  \xab       r+| j                  d\xab      j                  j	                  d\xac\xab      nd}t        |xs ddz   |z   |d	   \xab      }t        |\xab      }|d
-k(  rt        t        |d||d\xac\xab       y | j                  d\xab      j                  }|j                  \xab       st        t        |d||d\xac\xab       y |dk(  rt        t        |d||d\xac\xab       y |j                  \xab        | j                  d\xab       t        d\xab      D ]\xb9  }| j                  d\xab      j                  \xab       r5| j                  d\xab      j                  \xab        t        t        |d||\xac\xab        y | j                  d\xab      j                  }	|	j                  \xab       r"|	j                  \xab        | j                  d\xab       \x8c\xa4t        t        |d||d\xac\xab        y  y )N\xdadomcontentloaded)\xda
-wait_until\xdah1i\xb8  )\xdatimeout\xda zdiv.jobs-description\xda \xdaskills\xdaskip\xdaskipped_low_score\xdascore_baixo)\xdatitle\xdascore\xdareasonz+button:has-text('Candidatura simplificada')\xdaskipped_external_apply\xdaexterno\xdaneeds_manual\xdascore_medioi\xb0  \xe9
-   z%button:has-text('Enviar candidatura')\xdaapplied)r   r   u   button:has-text('Avançar')i\x84  \xdaloop_ou_erro_modal)\xdagoto\xdalocator\xdacount\xdafirst\xda
-inner_textr   r   r   \xdaPLATFORM\xdaclick\xdawait_for_timeout\xdarange)
-\xdapage\xdajob_url\xdaprofiler   \xdadescr   \xdaaction\xdaeasy\xda_\xdanxts
-             \xfa'/app/src/drivers/linkedin_easy_apply.py\xdaprocess_jobr.      s\xda  \x80 \xd8\x87I\x81I\x88g\xd0"4\x80I\xd45\xd8AE\xc7\xc1\xc8d\xd3AS\xd7AY\xd1AY\xd4A[\x88D\x8fL\x89L\x98\xd3\xd7$\xd1$\xd7/\xd1/\xb8\xd0/\xd4=\xd0ac\x80E\xd8RV\xd7R^\xd1R^\xd0_u\xd3Rv\xd7R|\xd1R|\xd4R~\x884\x8f<\x89<\xd0.\xd3/\xd75\xd15\xd7@\xd1@\xc8\xd0@\xd4N\xf0  EG\x80D\xdc\x98\x9a\xa0\xa0s\xd1*\xa8T\xd11\xb07\xb88\xd13D\xd3E\x80E\xdc\x90E\x8b]\x80F\xe0\x90\xd2\xdc\x948\x98W\xd0&9\xc0\xc8e\xd0\i\xd5j\xd8\xe0\x8f<\x89<\xd0E\xd3F\xd7L\xd1L\x80D\xd8\x8f:\x89:\x8c<\xdc\x948\x98W\xd0&>\xc0e\xd0SX\xd0aj\xd5k\xd8\xe0\x90\xd2\xdc\x948\x98W\xa0n\xb8E\xc8\xd0Wd\xd5e\xd8\xe0\x87J\x81J\x84L\xd8\xd7\xd1\x98$\xd4\xdc\x902\x8eY\x88\xd8\x8f<\x89<\xd0?\xd3@\xd7F\xd1F\xd4H\xd8\x8fL\x89L\xd0@\xd3A\xd7G\xd1G\xd4I\xdc\x94x\xa0\xa8)\xb85\xc8\xd5N\xd9\xd8\x8fl\x89l\xd08\xd39\xd7?\xd1?\x88\xd8\x8f9\x899\x8c;\xd8\x8fI\x89I\x8cK\xd8\xd7!\xd1!\xa0#\xd4&\xd8\xdc\x948\x98W\xa0n\xb8E\xc8\xd0Wk\xd5l\xd9\xf1 \xf3    N)\xdasrc.core.dbr   \xdasrc.core.scoringr   r   r!   r.   \xa9 r/   r-   \xda<module>r3      s   \xf0\xdd "\xdf /\xd8\x80\xf3!r/   
-```
-
 ## src/drivers/gupy_fast_apply.py
 ```
 from src.core.db import upsert_job
@@ -2020,6 +1706,8 @@ from src.modules.networking import NetworkAgent
 from src.modules.reporting import ReportGenerator
 from src.modules.interview_simulator.simulator import InterviewSimulator
 from src.modules.email_helper.generator import EmailGenerator
+from src.modules.resume_improver.improver import ResumeImprover
+from src.modules.market_trends.analyzer import MarketAnalyzer
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -2039,6 +1727,8 @@ class BirthHub360:
         self.reporter = ReportGenerator()
         self.simulator = InterviewSimulator()
         self.email_gen = EmailGenerator()
+        self.resume_improver = ResumeImprover()
+        self.market_analyzer = MarketAnalyzer()
 
         self.profile = None
         self.metrics = {
@@ -2084,6 +1774,8 @@ class BirthHub360:
         console.print("1. Iniciar Ciclo Automático (Dashboard)")
         console.print("2. Simulador de Entrevista (Interativo)")
         console.print("3. Gerador de E-mail (Ferramenta)")
+        console.print("4. Analisador de Currículo (IA)")
+        console.print("5. Tendências de Mercado")
         choice = console.input("\n[bold]Escolha uma opção:[/bold] ")
 
         if choice == "2":
@@ -2091,6 +1783,13 @@ class BirthHub360:
             sys.exit(0)
         elif choice == "3":
             self.run_email_tool()
+            sys.exit(0)
+        elif choice == "4":
+            text = console.input("Cole o texto do seu currículo aqui: ")
+            self.resume_improver.analyze_resume(text)
+            sys.exit(0)
+        elif choice == "5":
+            self.market_analyzer.show_trends()
             sys.exit(0)
 
         # Default to Dashboard Loop
@@ -2240,224 +1939,6 @@ if __name__ == "__main__":
 ## src/modules/__init__.py
 ```
 
-```
-
-## src/modules/__pycache__/__init__.cpython-312.pyc
-```
-\xcb
-    mepi    \xe3                    \xf3   \x97 y )N\xa9 r   \xf3    \xfa/app/src/modules/__init__.py\xda<module>r      s   \xf1r   
-```
-
-## src/modules/__pycache__/applier.cpython-312.pyc
-```
-\xcb
-    ipi\xf0  \xe3                   \xf3D   \x97 d dl mZmZmZmZ d dlmZ d dlZ G d\x84 d\xab      Zy)\xe9    )\xdaApplication\xdaJobOpportunity\xdaResume\xdaCandidateProfile)\xdadatetimeNc                   \xf3*   \x97 e Zd Zd\x84 Zdedededefd\x84Zy)\xdaApplicationBotc                 \xf3   \x97 g | _         y )N)\xdaapplication_history)\xdaselfs    \xfa/app/src/modules/applier.py\xda__init__zApplicationBot.__init__   s
-   \x80 \xd8#%\x88\xd5 \xf3    \xdaprofile\xdajob\xdaresume\xdareturnc           	      \xf3\xfe   \x97 d}t        j                   \xab       dk  rd}t        |j                  |j                  |j                  ||j                  d|j                  \x9b \x9d\xac\xab      }| j
-                  j                  |\xab       |S )z4
-        Simulates the application process.
-        \xdaAplicadog\x9a\x99\x99\x99\x99\x99\xa9?\xdaFalhau#   Aplicado com versão de currículo )\xdajob_id\xda
-profile_id\xda	resume_id\xdastatus\xdaplatform\xdanotes)\xdarandomr   \xdaid\xdasource\xdaversion_tagr   \xdaappend)r   r   r   r   r   \xdaapps         r   \xdaapplyzApplicationBot.apply	   sq   \x80 \xf0 \x88\xdc\x8f=\x89=\x8b?\x98T\xd2!\xd8\x88V\xe4\xd8\x976\x916\xd8\x97z\x91z\xd8\x97i\x91i\xd8\xd8\x97Z\x91Z\xd87\xb8\xd78J\xd18J\xd07K\xd0L\xf4
-\x88\xf0 	\xd7 \xd1 \xd7'\xd1'\xa8\xd4,\xd8\x88
-r   N)	\xda__name__\xda
-__module__\xda__qualname__r   r   r   r   r   r#   \xa9 r   r   r	   r	      s*   \x84 \xf2&\xf0\xd0-\xf0 \xb0N\xf0 \xc8F\xf0 \xd0Wb\xf4 r   r	   )\xdasrc.core.modelsr   r   r   r   r   r   r	   r'   r   r   \xda<module>r)      s   \xf0\xdf Q\xd3 Q\xdd \xdb \xf7\xf2 r   
-```
-
-## src/modules/__pycache__/decision_engine.cpython-312.pyc
-```
-\xcb
-    ipi\xd5  \xe3                   \xf3(   \x97 d dl mZmZ  G d\x84 d\xab      Zy)\xe9    )\xdaDict\xdaListc                   \xf3B   \x97 e Zd Zd\x84 Zdeeef   dee   defd\x84Zdefd\x84Z	y)\xdaStrategyEnginec                 \xf3"   \x97 d| _         dg| _        y )Nu   Aplicação Agressiva\xdaGeral)\xdacurrent_strategy\xdafocus_areas\xa9\xdaselfs    \xfa#/app/src/modules/decision_engine.py\xda__init__zStrategyEngine.__init__   s   \x80 \xd8 7\x88\xd4\xd8#\x989\x88\xd5\xf3    \xdametrics\xdarecent_applications\xdareturnc                 \xf3\x96   \x97 d}|d   dkD  r|d   |d   z  }|dk  r|d   dkD  rd| _         y|d   d	kD  r|d   dk  rd
-| _         yd| _         y)zI
-        Analyzes metrics and returns a strategy update message.
-        r   \xdaapplied\xda
-interviewsg\x9a\x99\x99\x99\x99\x99\xb9?\xe9
-   zQualidade sobre QuantidadeuJ   Taxa de conversão baixa detectada. Mudando para foco em alta relevância.\xdamatched\xe92   zSprint de Alto VolumeuA   Muitos matches encontrados. Aumentando velocidade de aplicação.zAbordagem Equilibradau<   Desempenho dentro dos parâmetros normais. Mantendo o curso.\xa9r	   )r   r   r   \xdaconversion_rates       r   \xdaanalyze_performancez"StrategyEngine.analyze_performance   s|   \x80 \xf0 \x88\xd8\x909\xd1\xa0\xd2!\xd8%\xa0l\xd13\xb0g\xb8i\xd16H\xd1H\x88O\xf0 \x98S\xd2 \xa0W\xa8Y\xd1%7\xb8"\xd2%<\xd8$@\x88D\xd4!\xd8_\xe0\x90Y\xd1\xa0"\xd2$\xa8\xb0\xd1);\xb8b\xd2)@\xd8%<\x88T\xd4"\xd8W\xf0 %<\x88D\xd4!\xd8Qr   c                 \xf3   \x97 | j                   S )Nr   r   s    r   \xdaget_current_strategyz#StrategyEngine.get_current_strategy   s   \x80 \xd8\xd7$\xd1$\xd0$r   N)
-\xda__name__\xda
-__module__\xda__qualname__r   r   \xdastr\xdaintr   r   r   \xa9 r   r   r   r      sA   \x84 \xf2%\xf0R\xa84\xb0\xb0S\xb0\xa9>\xf0 R\xd0PT\xd0UX\xd1PY\xf0 R\xd0^a\xf3 R\xf0*%\xa0c\xf4 %r   r   N)\xdatypingr   r   r   r#   r   r   \xda<module>r%      s   \xf0\xdf \xf7%\xf2 %r   
-```
-
-## src/modules/__pycache__/interview_prep.cpython-312.pyc
-```
-\xcb
-    ipi  \xe3                   \xf30   \x97 d dl mZmZ d dlZ G d\x84 d\xab      Zy)\xe9    )\xdaJobOpportunity\xdaCandidateProfileNc                   \xf34   \x97 e Zd Zd\x84 Zdedee   fd\x84Zdefd\x84Zy)\xdaInterviewCoachc                 \xf3(   \x97 g d\xa2| _         g d\xa2| _        y )N)u   Fale um pouco sobre você.u*   Por que você quer trabalhar na {company}?u    Qual é o seu maior ponto forte?u8   Descreva uma situação desafiadora que você enfrentou.)uB   Explique como você projetaria um sistema escalável para {topic}.u%   Como você lida com dívida técnica?u'   Qual é a sua experiência com {skill}?u7   Descreva uma vez que você otimizou uma consulta lenta.)\xdacommon_questions\xdatech_questions_pool)\xdaselfs    \xfa"/app/src/modules/interview_prep.py\xda__init__zInterviewCoach.__init__   s   \x80 \xf2!
-\x88\xd4\xf2$
-\x88\xd5 \xf3    \xdajob\xdareturnc                 \xf3  \x97 g }|j                  t        j                  | j                  \xab      j	                  |j
-                  \xac\xab      \xab       |j                  dd D ]  }|j                  d|\x9b d\x9d\xab       \x8c |j                  r|j                  j                  \xab       d   nd}|j                  t        j                  | j                  \xab      j	                  ||j                  rt        j                  |j                  \xab      nd\xac	\xab      \xab       |S )
-zN
-        Generates a list of interview questions tailored to the job.
-        )\xdacompanyN\xe9   u   Como você utilizou u    em um ambiente de produção?\xe9\xff\xff\xff\xff\xdasoftware\xdaPython)\xdatopic\xdaskill)
-\xdaappend\xdarandom\xdachoicer   \xdaformatr   \xdarequirements\xdatitle\xdasplitr	   )r
-   r   \xda	questions\xdareqr   s        r   \xdagenerate_questionsz!InterviewCoach.generate_questions   s\xf3   \x80 \xf0 \x88	\xf0 	\xd7\xd1\x9c\x9f\x99\xa0t\xd7'<\xd1'<\xd3=\xd7D\xd1D\xc8S\xcf[\xc9[\xd0D\xd3Y\xd4Z\xf0 \xd7#\xd1#\xa0B\xa0Q\xd3'\x88C\xd8\xd7\xd1\xd03\xb0C\xb05\xd08V\xd0W\xd5X\xf0 (\xf0 *-\xaf\xaa\x90\x97	\x91	\x97\x91\xd3!\xa0"\xd2%\xb8
-\x88\xd8\xd7\xd1\x9c\x9f\x99\xa0t\xd7'?\xd1'?\xd3@\xd7G\xd1G\xc8e\xf0  B\xf7  O\xf2  O\xd4[a\xd7[h\xd1[h\xd0il\xd7iy\xd1iy\xd4[z\xf0  U]\xd0G\xf3  ^\xf4  	_\xe0\xd0r   c                 \xf34   \x97 g d\xa2}t        j                  |\xab      S )z<
-        Simulates feedback after a mock interview.
-        )u7   Boa comunicação. Elabore mais nos detalhes técnicos.u2   Boa profundidade técnica. Tente ser mais conciso.z6Excelente fit cultural. Pronto para a entrevista real.u@   Precisa de mais preparação em conceitos de design de sistemas.)r   r   )r
-   \xda	feedbackss     r   \xdasimulate_feedbackz InterviewCoach.simulate_feedback&   s   \x80 \xf2
-\x88	\xf4 \x8f}\x89}\x98Y\xd3'\xd0'r   N)	\xda__name__\xda
-__module__\xda__qualname__r   r   \xdalist\xdastrr!   r$   \xa9 r   r   r   r      s*   \x84 \xf2
-\xf0\xa0n\xf0 \xb8\xb8c\xb9\xf3 \xf0&
-(\xa03\xf4 
-(r   r   )\xdasrc.core.modelsr   r   r   r   r*   r   r   \xda<module>r,      s   \xf0\xdf <\xdb \xf7,(\xf2 ,(r   
-```
-
-## src/modules/__pycache__/job_intelligence.cpython-312.pyc
-```
-\xcb
-    \xf6hpi\x99  \xe3                   \xf3T   \x97 d dl mZ d dlmZ d dlmZ d dlZ ed\xab      Z G d\x84 d\xab      Zy)\xe9    )\xdaList)\xdaJobOpportunity)\xdaFakerN\xdapt_BRc                   \xf3>   \x97 e Zd Zd\x84 Zdee   dee   fd\x84Zdedefd\x84Z	y)\xda
-JobScannerc                  \xf3   \x97 y )N\xa9 )\xdaselfs    \xfa$/app/src/modules/job_intelligence.py\xda__init__zJobScanner.__init__	   s   \x80 \xd8\xf3    \xdakeywords\xdareturnc                 \xf3\xba  \x97 g }t        t        j                  dd\xab      \xab      D \x90]0  }t        j	                  \xab       }t        j                  \xab       dkD  r|rt        j
-                  |\xab      \x9b d|\x9b \x9d}t        d\xab      D \x8fcg c]  }t        j                  \xab       \x91\x8c }}|r9|j                  t        j                  |t        dt        |\xab      \xab      \xac\xab      \xab       t        t        j                  \xab       |t        j                  \xab       t        j                  \xab       |t        j                  \xab       t        j
-                  g d\xa2\xab      d	\xac
-\xab      }|j!                  |\xab       \x90\x8c3 |S c c}w )z\x92
-        Simulates scanning job boards (LinkedIn, Indeed, etc.) for opportunities.
-        Returns a list of mock JobOpportunity objects.
-        \xe9   \xe9
-   g      \xe0?\xda \xe9   \xe9   )\xdak)\xdaLinkedIn\xdaIndeed\xda	Glassdoor\xdaGupy\xe7        )\xdaid\xdatitle\xdacompany\xdadescription\xdarequirements\xdaurl\xdasource\xdamatch_score)\xdarange\xdarandom\xdarandint\xdafake\xdajob\xdachoice\xdaword\xdaextend\xdasample\xdamin\xdalenr   \xdauuid4r   \xdacatch_phraser"   \xdaappend)r   r   \xdaopportunities\xda_\xda	job_titler!   r)   s          r   \xdascan_opportunitieszJobScanner.scan_opportunities   s  \x80 \xf0
- \x88\xe4\x94v\x97~\x91~\xa0a\xa8\xd3,\xd7-\x88A\xdc\x9f\x99\x9b
-\x88I\xe4\x8f}\x89}\x8b\xa0\xd2$\xa9\xdc%\x9f}\x99}\xa8X\xd36\xd07\xb0q\xb8\xb8\xd0D\x90	\xe416\xb0q\xb4\xd3:\xb1\xa8A\x9cD\x9fI\x99I\x9dK\xb0\x88L\xd0:\xe1\xd8\xd7$\xd1$\xa4V\xa7]\xa1]\xb08\xbcs\xc01\xc4c\xc8(\xc3m\xd3?T\xd4%U\xd4V\xe4 \xdc\x97:\x91:\x93<\xd8\xdc\x9f\x99\x9b\xdc \xd7-\xd1-\xd3/\xd8)\xdc\x97H\x91H\x93J\xdc\x97}\x91}\xd2%P\xd3Q\xd8\xf4	\x88C\xf0 \xd7 \xd1 \xa0\xd6%\xf0+ .\xf0. \xd0\xf9\xf2# ;s   \xc1:Er)   c                 \xf3\xe2  \x97 d}|j                   D ]\x83  }|j                  j                  \xab       |j                  j                  \xab       v r|dz  }|j                  j                  \xab       |j                  D \x8fcg c]  }|j                  \xab       \x91\x8c c}v s\x8c|dz  }\x8c\x85 |j
-                  D ]<  }|j                  j                  \xab       |j                  j                  \xab       v s\x8c8|dz  }\x8c> t        d|\xab      S c c}w )zK
-        Calculates a simple match score based on keyword overlap.
-        r   g      >@g      $@g      4@g      Y@)\xdaskills\xdaname\xdalowerr   r!   \xdaexperiencesr.   )r   \xdaprofiler)   \xdascore\xdaskill\xdareq\xdaexps          r   \xdacalculate_match_scorez JobScanner.calculate_match_score,   s\xc9   \x80 \xf0 \x88\xe0\x97^\x94^\x88E\xd8\x8fz\x89z\xd7\xd1\xd3!\xa0S\xa7Y\xa1Y\xa7_\xa1_\xd3%6\xd16\xd8\x98\x91\x90\xd8\x8fz\x89z\xd7\xd1\xd3!\xb8S\xd7=M\xd2=M\xd3%N\xd1=M\xb0c\xa0c\xa7i\xa1i\xa5k\xd0=M\xd1%N\xd2N\xd8\x98\x91\x91\xf0	 $\xf0 \xd7&\xd4&\x88C\xd8\x97	\x91	\x97\x91\xd3!\xa0S\xa7Y\xa1Y\xa7_\xa1_\xd3%6\xd26\xd8\x98$\x91\x91\xf0 '\xf4
- \x905\x98%\xd3 \xd0 \xf9\xf2 &Os   \xc12C,N)
-\xda__name__\xda
-__module__\xda__qualname__r   r   \xdastrr   r6   \xdafloatrA   r
-   r   r   r   r      s7   \x84 \xf2\xf0\xa84\xb0\xa99\xf0 \xb8\xb8n\xd19M\xf3 \xf0@!\xb0.\xf0 !\xc0U\xf4 !r   r   )	\xdatypingr   \xdasrc.core.modelsr   \xdafakerr   r&   r(   r   r
-   r   r   \xda<module>rJ      s$   \xf0\xdd \xdd *\xdd \xdb \xe1\x88W\x83~\x80\xf76!\xf2 6!r   
-```
-
-## src/modules/__pycache__/monitoring.cpython-312.pyc
-```
-\xcb
-    ipi9  \xe3                   \xf3<   \x97 d dl mZ d dlmZmZ d dlZ G d\x84 d\xab      Zy)\xe9    )\xdaApplication)\xdadatetime\xda	timedeltaNc                   \xf3.   \x97 e Zd Zd\x84 Zdee   dee   fd\x84Zy)\xdaFollowUpAgentc                  \xf3   \x97 y )N\xa9 )\xdaselfs    \xfa/app/src/modules/monitoring.py\xda__init__zFollowUpAgent.__init__   s   \x80 \xd8\xf3    \xdaapplications\xdareturnc                 \xf3\xea   \x97 g }|D ]k  }|j                   dk(  s\x8ct        j                  \xab       dk  s\x8c+|j                  d|j                  \x9b d|j                  \x9b d\x9d\xab       |xj
-                  dz  c_        \x8cm |S )z\x84
-        Checks applications that need a follow-up action.
-        Returns a list of messages describing the actions taken.
-        \xdaAplicadog\x9a\x99\x99\x99\x99\x99\xb9?zFollow-up enviado para a vaga z na plataforma \xda.z | Follow-up enviado.)\xdastatus\xdarandom\xdaappend\xdajob_id\xdaplatform\xdanotes)r
-   r   \xdaactions\xdaapps       r   \xdacheck_for_follow_upz!FollowUpAgent.check_for_follow_up	   sm   \x80 \xf0
- \x88\xdb\x88C\xf0 \x8fz\x89z\x98Z\xd3'\xacF\xafM\xa9M\xabO\xb8c\xd3,A\xe0\x97\x91\xd0!?\xc0\xc7
-\xc1
-\xb8|\xc8?\xd0[^\xd7[g\xd1[g\xd0Zh\xd0hi\xd0j\xd4k\xd8\x97	\x92	\xd04\xd14\x96	\xf0  \xf0 \x88r   N)\xda__name__\xda
-__module__\xda__qualname__r   \xdalistr   \xdastrr   r	   r   r   r   r      s#   \x84 \xf2\xf0\xb0\xb0[\xd10A\xf0 \xc0d\xc83\xc1i\xf4 r   r   )\xdasrc.core.modelsr   r   r   r   r   r	   r   r   \xda<module>r"      s   \xf0\xdd '\xdf (\xdb \xf7\xf2 r   
-```
-
-## src/modules/__pycache__/networking.cpython-312.pyc
-```
-\xcb
-    Xjpi\x89  \xe3                   \xf3<   \x97 d dl Z d dlmZ  ed\xab      Z G d\x84 d\xab      Zy)\xe9    N)\xdaFaker\xdapt_BRc                   \xf32   \x97 e Zd Zd\x84 Zdedefd\x84Zdedefd\x84Zy)\xdaNetworkAgentc                  \xf3   \x97 y )N\xa9 )\xdaselfs    \xfa/app/src/modules/networking.py\xda__init__zNetworkAgent.__init__   s   \x80 \xd8\xf3    \xdacompany_name\xdareturnc                 \xf3\xa0   \x97 t         j                  \xab       }t        j                  g d\xa2\xab      }t        j                  \xab       dk  rd|\x9b d|\x9b d|\x9b d\x9dS y)zg
-        Simulates finding a recruiter at the target company and sending a connection request.
-        )zTech RecruiterzTalent AcquisitionzGerente de RHzHead de Pessoasg333333\xd3?u   Conexão enviada para z (z) na \xda.N)\xdafake\xdaname\xdarandom\xdachoice)r	   r   \xdarecruiter_name\xdaroles       r
-   \xdaattempt_connectionzNetworkAgent.attempt_connection
-   sN   \x80 \xf4
- \x9f\x99\x9b\x88\xdc\x8f}\x89}\xd2i\xd3j\x88\xf4 \x8f=\x89=\x8b?\x98S\xd2 \xd8,\xa8^\xd0,<\xb8B\xb8t\xb8f\xc0E\xc8,\xc8\xd0WX\xd0Y\xd0Y\xe0r   r   c                 \xf3   \x97 d|\x9b d\x9dS )z'Simulates sending a networking message.u&   Mensagem de introdução enviada para r   r   )r	   r   s     r
-   \xdasend_messagezNetworkAgent.send_message   s   \x80 \xe07\xb8\xd07G\xc0q\xd0I\xd0Ir   N)\xda__name__\xda
-__module__\xda__qualname__r   \xdastrr   r   r   r   r
-   r   r      s0   \x84 \xf2\xf0\xa8s\xf0 \xb0s\xf3 \xf0J\xa83\xf0 J\xb03\xf4 Jr   r   )r   \xdafakerr   r   r   r   r   r
-   \xda<module>r      s    \xf0\xdb \xdd \xe1\x88W\x83~\x80\xf7J\xf2 Jr   
-```
-
-## src/modules/__pycache__/onboarding.cpython-312.pyc
-```
-\xcb
-    \xeehpi  \xe3                   \xf3`   \x97 d dl mZmZmZmZ d dlmZ d dlmZ d dl	Z	 ed\xab      Z
- G d\x84 d\xab      Zy)\xe9    )\xdaCandidateProfile\xda
-Experience\xda	Education\xdaSkill)\xdadate)\xdaFakerN\xdapt_BRc                   \xf3*   \x97 e Zd Zd\x84 Zdefd\x84Zdefd\x84Zy)\xdaOnboardingAgentc                 \xf3   \x97 d | _         y )N)\xdaprofile\xa9\xdaselfs    \xfa/app/src/modules/onboarding.py\xda__init__zOnboardingAgent.__init__	   s	   \x80 \xd8\x88\x8d\xf3    \xdareturnc                 \xf3X  \x97 t        ddddt        ddt        ddd	\xab      d
-\xac\xab      t        ddt        ddd\xab      t        ddd\xab      d\xac\xab      gt        dddt        ddd\xab      t        ddd\xab      \xac\xab      gt	        dd\xac\xab      t	        d d!\xac\xab      t	        d"d#\xac\xab      gd$\xac%\xab      | _        | j
-                  S )&z=Loads a hardcoded default profile for demonstration in PT-BR.zAlex Desenvolvedorzalex.dev@exemplo.com.brz+55 11 99999-9999u\   Engenheiro de Software Sênior com 8 anos de experiência em Python e Arquiteturas em Nuvem.u   Engenheiro Backend SêniorzTechCorp Brasili\xe4  \xe9   \xe9   uQ   Liderando migração de microsserviços e otimizando consultas de banco de dados.\xa9\xdatitle\xdacompany\xda
-start_date\xdadescriptionzDesenvolvedor de SoftwarezInova Startupi\xe0  \xe9   i\xe3  \xe9   \xe9   z1Desenvolvimento Full stack usando Django e React.)r   r   r   \xdaend_dater   u   Universidade Tecnológica\xdaBacharelado\xf5   Ciência da Computaçãoi\xdc  \xe9   \xe9   \xe9   \xa9\xdainstitution\xdadegree\xdafield_of_studyr   r   \xdaPython\xdaEspecialista\xa9\xdaname\xdalevel\xdaDocker\xf5   Intermediário\xdaAWSu	   Avançadozhttps://linkedin.com/in/alexdev)r,   \xdaemail\xdaphone\xdasummary\xdaexperiences\xda	education\xdaskills\xdalinkedin_url)r   r   r   r   r   r   r   s    r   \xdaload_default_profilez$OnboardingAgent.load_default_profile   s\xd0   \x80 \xe4'\xd8%\xd8+\xd8%\xd8r\xe4\xd86\xd8-\xdc#\xa0D\xa8!\xa8R\xd30\xd8 s\xf4	\xf4 \xd85\xd8+\xdc#\xa0D\xa8!\xa8Q\xd3/\xdc!\xa0$\xa8\xa8B\xd3/\xd8 S\xf4\xf0\xf4  \xd8 ;\xd8(\xd8#=\xdc#\xa0D\xa8!\xa8Q\xd3/\xdc!\xa0$\xa8\xa82\xd3.\xf4\xf0\xf4 \x988\xa8>\xd4:\xdc\x988\xd0+;\xd4<\xdc\x985\xa8\xd44\xf0\xf0
- ;\xf4E#
-\x88\x8c\xf0H \x8f|\x89|\xd0r   c                 \xf3\x92  \x97 t        t        j                  \xab       t        j                  \xab       t        j	                  \xab       t        j                  \xab       t        t        j                  \xab       t        j                  \xab       t        j                  dd\xac\xab      t        j                  \xab       \xac\xab      gt        t        j                  \xab       ddt        j                  dd\xac\xab      t        j                  dd\xac\xab      \xac	\xab      gt        d
-\xab      D \x8fcg c]!  }t        t        j                  \xab       d\xac\xab      \x91\x8c# c}\xac\xab      | _        | j                  S c c}w )z Generates a random fake profile.z-5yz-1y)r   r   r   r    r!   z-10yz-6yr%   \xe9   r/   r+   )r,   r1   r2   r3   r4   r5   r6   )r   \xdafaker,   r1   \xdaphone_number\xdatextr   \xdajobr   \xdadate_betweenr   \xdaranger   \xdawordr   )r   \xda_s     r   \xdacreate_fake_profilez#OnboardingAgent.create_fake_profile4   s\xef   \x80 \xe4'\xdc\x97\x91\x93\xdc\x97*\x91*\x93,\xdc\xd7#\xd1#\xd3%\xdc\x97I\x91I\x93K\xe4\xdc\x9f(\x99(\x9b*\xdc \x9fL\x99L\x9bN\xdc#\xd70\xd10\xb8E\xc8E\xd00\xd3R\xdc $\xa7	\xa1	\xa3\xf4	\xf0\xf4 \xdc $\xa7\xa1\xa3\xd8(\xd8#=\xdc#\xd70\xd10\xb8F\xc8U\xd00\xd3S\xdc!\xd7.\xd1.\xb8%\xc8%\xd0.\xd3P\xf4\xf0\xf4 NS\xd0ST\xccX\xd3V\xc9X\xc8\x94E\x9ct\x9fy\x99y\x9b{\xd02B\xd6C\xc8X\xd1V\xf4-
-\x88\x8c\xf00 \x8f|\x89|\xd0\xf9\xf2 Ws   \xc4&EN)\xda__name__\xda
-__module__\xda__qualname__r   r   r8   rC   \xa9 r   r   r   r      s"   \x84 \xf2\xf0&\xd0&6\xf3 &\xf0P\xd0%5\xf4 r   r   )\xdasrc.core.modelsr   r   r   r   \xdadatetimer   \xdafakerr   \xdarandomr;   r   rG   r   r   \xda<module>rL      s)   \xf0\xdf J\xd3 J\xdd \xdd \xdb \xe1\x88W\x83~\x80\xf7F\xf2 Fr   
-```
-
-## src/modules/__pycache__/profile_optimizer.cpython-312.pyc
-```
-\xcb
-    ipi\xcf  \xe3                   \xf3(   \x97 d dl mZmZ  G d\x84 d\xab      Zy)\xe9    )\xdaCandidateProfile\xdaJobOpportunityc                   \xf30   \x97 e Zd Zdededefd\x84Zdedefd\x84Zy)\xdaProfileOptimizer\xdaprofile\xdajob\xdareturnc                 \xf3  \x97 |j                  d\xac\xab      }|j                  }|D \x8fcg c]/  }|j                  \xab       |j                  j                  \xab       vs\x8c.|\x91\x8c1 }}|r(|xj                  ddj	                  |\xab      \x9b d\x9dz  c_        |S c c}w )z\xea
-        Optimizes the candidate profile for a specific job opportunity.
-        In a real scenario, this would use LLM to rewrite the summary and experiences.
-        Here, we will simulate it by appending relevant keywords.
-        T)\xdadeepu   
-
-Áreas de foco otimizadas: z, \xda.)\xda
-model_copy\xdarequirements\xdalower\xdasummary\xdajoin)\xdaselfr   r   \xdaoptimized_profile\xdakeywords\xdak\xdaadded_keywordss          \xfa%/app/src/modules/profile_optimizer.py\xdaoptimize_for_jobz!ProfileOptimizer.optimize_for_job   s\x8e   \x80 \xf0 $\xd7.\xd1.\xb0D\xd0.\xd39\xd0\xf0 \xd7#\xd1#\x88\xf1 &.\xd3d\xa1X\xa0\xb0\xb7\xb1\xb3\xd0BS\xd7B[\xd1B[\xd7Ba\xd1Ba\xd3Bc\xd21c\x9a!\xa0X\x88\xd0d\xe1\xd8\xd7%\xd2%\xd0+J\xc84\xcf9\xc99\xd0Uc\xd3Kd\xd0Je\xd0ef\xd0)g\xd1g\xd5%\xe0 \xd0 \xf9\xf2 es   \xa3/B\xc1Bc                 \xf3\xb4   \x97 |j                   dd D \x8fcg c]  }|j                  \x91\x8c }}|j                  d   j                  \x9b ddj	                  |\xab      \x9b d\x9dS c c}w )z2Generates a new LinkedIn headline based on skills.N\xe9   r   z | z | Aberto a oportunidades)\xdaskills\xdaname\xdaexperiences\xdatitler   )r   r   \xdas\xda
-top_skillss       r   \xdaupdate_linkedin_headlinez)ProfileOptimizer.update_linkedin_headline   s\   \x80 \xe0&-\xa7n\xa1n\xb0R\xb0a\xd1&8\xd39\xd1&8\xa0\x90a\x97f\x93f\xd0&8\x88
-\xd09\xd8\xd7%\xd1%\xa0a\xd1(\xd7.\xd1.\xd0/\xa8s\xb05\xb7:\xb1:\xb8j\xd33I\xd02J\xd0Jc\xd0d\xd0d\xf9\xf2 :s   \x92AN)\xda__name__\xda
-__module__\xda__qualname__r   r   r   \xdastrr!   \xa9 \xf3    r   r   r      s5   \x84 \xf0!\xd0(8\xf0 !\xb8~\xf0 !\xd0Rb\xf3 !\xf0&e\xd00@\xf0 e\xc0S\xf4 er'   r   N)\xdasrc.core.modelsr   r   r   r&   r'   r   \xda<module>r)      s   \xf0\xdf <\xf7e\xf2 er'   
-```
-
-## src/modules/__pycache__/reporting.cpython-312.pyc
-```
-\xcb
-    fjpi'  \xe3                   \xf3<   \x97 d dl Z d dlmZ d dlmZmZ  G d\x84 d\xab      Zy)\xe9    N)\xdadatetime)\xdaCandidateProfile\xdaApplicationc                   \xf30   \x97 e Zd Zd\x84 Zdededee   defd\x84Z	y)\xdaReportGeneratorc                  \xf3   \x97 y )N\xa9 )\xdaselfs    \xfa/app/src/modules/reporting.py\xda__init__zReportGenerator.__init__   s   \x80 \xd8\xf3    \xdaprofile\xdametrics\xdaapplications\xdastrategyc                 \xf3  \x97 dt        j                  \xab       j                  d\xab      \x9b d\x9d}t        |dd\xac\xab      5 }|j	                  dt        j                  \xab       j                  d\xab      \x9b d	\x9d\xab       |j	                  d
-\xab       |j	                  d|j
-                  \x9b d\x9d\xab       |j	                  d|\x9b d\x9d\xab       |j	                  d\xab       |j	                  d\xab       |j	                  d\xab       |j	                  d\xab       |j	                  d|j                  dd\xab      \x9b d\x9d\xab       |j	                  d|j                  dd\xab      \x9b d\x9d\xab       |j	                  d|j                  dd\xab      \x9b d\x9d\xab       |j	                  d|j                  dd\xab      \x9b d\x9d\xab       |j	                  d|j                  dd\xab      \x9b d\x9d\xab       |j	                  d\xab       |s|j	                  d \xab       n_|d!d" D ]W  }|j	                  d#|j                  j                  d$\xab      \x9b d%|j                  \x9b d&|j                  \x9b d'|j                  \x9b d\x9d	\xab       \x8cY |j	                  d(\xab       |j	                  d)\xab       |j	                  d*\xab       |j	                  d+\xab       d"d"d"\xab       |S # 1 sw Y   |S xY w),z6Generates a markdown report of the system's operation.\xdarelatorio_operacional_z%Y%m%dz.md\xdawzutf-8)\xdaencodingu)   # RELATÓRIO OPERACIONAL BIRTH HUB 360 - z%d/%m/%Yz
-
-z## 1. RESUMO EXECUTIVO
-z- **Perfil Ativo:** \xda
-u   - **Estratégia Atual:** z- **Status:** Operacional
-
-u   ## 2. MÉTRICAS DO CICLO
-u   | Métrica | Valor |
-z
-|---|---|
-z| Vagas Escaneadas | \xdascannedr   z |
-u   | Vagas Compatíveis | \xdamatchedz| Candidaturas Enviadas | \xdaappliedz| Entrevistas Agendadas | \xda
-interviewsu   | Ações de Networking | \xda
-networkingz |
-
-u-   ## 3. REGISTRO DE CANDIDATURAS (Últimas 10)
-z"_Nenhuma candidatura registrada._
-i\xf6\xff\xff\xffNz- **z%H:%Mz**: z via z - Status: u%   
-## 4. PRÓXIMOS PASSOS AUTOMÁTICOS
-z- Manter varredura de vagas.
-z%- Acompanhar retornos de networking.
-u6   - Otimizar currículo baseado em feedback (simulado).
-)r   \xdanow\xdastrftime\xdaopen\xdawrite\xdaname\xdaget\xda
-applied_at\xdajob_id\xdaplatform\xdastatus)r
-   r   r   r   r   \xdafilename\xdaf\xdaapps           r   \xdagenerate_daily_reportz%ReportGenerator.generate_daily_report	   sI  \x80 \xe0+\xacH\xafL\xa9L\xabN\xd7,C\xd1,C\xc0H\xd3,M\xd0+N\xc8c\xd0R\x88\xe4\x90(\x98C\xa8'\xd52\xb0a\xd8\x8fG\x89G\xd0?\xc4\xc7\xc1\xc3\xd7@W\xd1@W\xd0Xb\xd3@c\xd0?d\xd0dh\xd0i\xd4j\xe0\x8fG\x89G\xd0.\xd4/\xd8\x8fG\x89G\xd0*\xa87\xaf<\xa9<\xa8.\xb8\xd0;\xd4<\xd8\x8fG\x89G\xd0/\xb0\xa8z\xb8\xd0<\xd4=\xd8\x8fG\x89G\xd03\xd45\xe0\x8fG\x89G\xd00\xd41\xd8\x8fG\x89G\xd0,\xd4-\xd8\x8fG\x89G\x90M\xd4"\xd8\x8fG\x89G\xd0+\xa8G\xafK\xa9K\xb8	\xc01\xd3,E\xd0+F\xc0d\xd0K\xd4L\xd8\x8fG\x89G\xd0-\xa8g\xafk\xa9k\xb8)\xc0Q\xd3.G\xd0-H\xc8\xd0M\xd4N\xd8\x8fG\x89G\xd00\xb0\xb7\xb1\xb8Y\xc8\xd31J\xd00K\xc84\xd0P\xd4Q\xd8\x8fG\x89G\xd00\xb0\xb7\xb1\xb8\\xc81\xd31M\xd00N\xc8d\xd0S\xd4T\xd8\x8fG\x89G\xd00\xb0\xb7\xb1\xb8\\xc81\xd31M\xd00N\xc8f\xd0U\xd4V\xe0\x8fG\x89G\xd0D\xd4E\xd9\xd8\x97\x91\xd0=\xd5>\xe0'\xa8\xa8\xd3-\x90C\xd8\x97G\x91G\x98d\xa03\xa7>\xa1>\xd7#:\xd1#:\xb87\xd3#C\xd0"D\xc0D\xc8\xcf\xc9\xc8\xd0TY\xd0Z]\xd7Zf\xd1Zf\xd0Yg\xd0gr\xd0sv\xd7s}\xd1s}\xd0r~\xf0  A\xf0  B\xf5  C\xf0 .\xf0 \x8fG\x89G\xd0=\xd4>\xd8\x8fG\x89G\xd04\xd45\xd8\x8fG\x89G\xd0<\xd4=\xd8\x8fG\x89G\xd0M\xd4N\xf77 3\xf0: \x88\xf7; 3\xf0: \x88\xfas   \xb6IJ\xcaJN)
-\xda__name__\xda
-__module__\xda__qualname__r   r   \xdadict\xdalistr   \xdastrr)   r	   r   r   r   r      s1   \x84 \xf2\xf0!\xd0-=\xf0 !\xc8\xf0 !\xd0\`\xd0al\xd1\m\xf0 !\xd0y|\xf4 !r   r   )\xdaosr   \xdasrc.core.modelsr   r   r   r	   r   r   \xda<module>r2      s   \xf0\xdb 	\xdd \xdf 9\xf7%\xf2 %r   
-```
-
-## src/modules/__pycache__/resume_generator.cpython-312.pyc
-```
-\xcb
-    \xfchpi\xa5  \xe3                   \xf38   \x97 d dl mZmZmZ d dlmZ  G d\x84 d\xab      Zy)\xe9    )\xdaCandidateProfile\xdaJobOpportunity\xdaResume)\xdadatetimec                   \xf3    \x97 e Zd Zdededefd\x84Zy)\xdaResumeGenerator\xdaprofile\xdajob\xdareturnc                 \xf3d  \x97 d|j                   \x9b d\x9d}|d|j                  \x9b d|j                  \x9b d\x9dz  }|d|j                  \x9b d\x9dz  }|dz  }||j                  \x9b d\x9dz  }|d|j
-                  \x9b d	|j                  \x9b d
-\x9dz  }|dz  }|j                  D \x8fcg c]  }|j                   \x91\x8c }}g }|D ]a  }|j                  \xab       |j                  D \x8fcg c]  }|j                  \xab       \x91\x8c c}v r|j                  d|\x9b d\x9d\xab       \x8cQ|j                  |\xab       \x8cc |dj                  |\xab      dz   z  }|dz  }|j                  D ]\  }	||	j
-                  \x9b d	|	j                  \x9b d|	j                  \x9b d|	j                  r|	j                  nd\x9b d\x9dz  }|d|	j                  \x9b d\x9dz  }\x8c^ |dz  }|j                   D ].  }
-||
-j"                  \x9b d|
-j$                  \x9b d|
-j&                  \x9b d\x9dz  }\x8c0 t)        |j*                  |j*                  |d|j                  \x9b dt-        j.                  \xab       j1                  d\xab      \x9b \x9d\xac\xab      S c c}w c c}w )zA
-        Generates a tailored resume for a specific job.
-        u   CURRÍCULO: \xda
-z	Contato: z | z
-LinkedIn: z
-
-zRESUMO PROFISSIONAL
-zEntusiasta por vagas de z na z.
-
-zHABILIDADES
-\xda*z, u   EXPERIÊNCIA
-z (z - \xda
-Atualmentez)
-z- u   
-FORMAÇÃO ACADÊMICA
-z em zv1-\xda-z%Y%m%d)\xda
-profile_id\xdajob_id\xdacontent\xdaversion_tag)\xdaname\xdaemail\xdaphone\xdalinkedin_url\xdasummary\xdatitle\xdacompany\xdaskills\xdalower\xdarequirements\xdaappend\xdajoin\xdaexperiences\xda
-start_date\xdaend_date\xdadescription\xda	education\xdadegree\xdafield_of_study\xdainstitutionr   \xdaidr   \xdanow\xdastrftime)\xdaselfr	   r
-   r   \xdas\xdaskills_list\xdaformatted_skills\xdaskill\xdar\xdaexp\xdaedus              \xfa$/app/src/modules/resume_generator.py\xdagenerate_resumezResumeGenerator.generate_resume   sK  \x80 \xf0
- !\xa0\xa7\xa1\xa0\xa8b\xd01\x88\xd8\x90Y\x98w\x9f}\x99}\x98o\xa8S\xb0\xb7\xb1\xb0\xb8r\xd0B\xd1B\x88\xd8\x90Z\xa0\xd7 4\xd1 4\xd05\xb0T\xd0:\xd1:\x88\xf0 	\xd0*\xd1*\x88\xe0\x90g\x97o\x91o\xd0&\xa0b\xd0)\xd1)\x88\xd8\xd0-\xa8c\xafi\xa9i\xa8[\xb8\xb8S\xbf[\xb9[\xb8M\xc8\xd0O\xd1O\x88\xf0 	\x90?\xd1"\x88\xd8'.\xa7~\xa2~\xd36\xa1~\xa0!\x90q\x97v\x93v\xa0~\x88\xd06\xe0\xd0\xdb \x88E\xd8\x8f{\x89{\x8b}\xb0C\xd74D\xd24D\xd3 E\xd14D\xa8q\xa0\xa7\xa1\xa5\xd04D\xd1 E\xd1E\xd8 \xd7'\xd1'\xa8!\xa8E\xa87\xb0!\xa8\xd55\xe0 \xd7'\xd1'\xa8\xd5.\xf0	 !\xf0
- 	\x904\x979\x919\xd0-\xd3.\xb0\xd17\xd17\x88\xf0 	\xd0#\xd1#\x88\xd8\xd7&\xd4&\x88C\xd8\x98#\x9f)\x99)\x98\xa0D\xa8\xaf\xa9\xa8\xb0R\xb8\xbf\xb9\xd07G\xc0s\xd0[^\xd7[g\xd2[g\xc83\xcf<\xca<\xd0my\xd0Jz\xd0z}\xd0~\xd1~\x88G\xd8\x98\x98C\x9fO\x99O\xd0,\xa8B\xd0/\xd1/\x89G\xf0 '\xf0 	\xd0.\xd1.\x88\xd8\xd7$\xd4$\x88C\xd8\x98#\x9f*\x99*\x98\xa0T\xa8#\xd7*<\xd1*<\xd0)=\xb8R\xc0\xc7\xc1\xd0?P\xd0PR\xd0S\xd1S\x89G\xf0 %\xf4 \xd8\x97z\x91z\xd8\x976\x916\xd8\xd8\x98c\x9fk\x99k\x98]\xa8!\xacH\xafL\xa9L\xabN\xd7,C\xd1,C\xc0H\xd3,M\xd0+N\xd0O\xf4	
-\xf0 
-\xf9\xf2) 7\xf9\xf2 !Fs   \xc2H(\xc3H-N)\xda__name__\xda
-__module__\xda__qualname__r   r   r   r5   \xa9 \xf3    r4   r   r      s   \x84 \xf0*
-\xd0'7\xf0 *
-\xb8n\xf0 *
-\xd0QW\xf4 *
-r:   r   N)\xdasrc.core.modelsr   r   r   r   r   r9   r:   r4   \xda<module>r<      s   \xf0\xdf D\xd1 D\xdd \xf7+
-\xf2 +
-r:   
 ```
 
 ## src/modules/applier.py
@@ -2747,6 +2228,56 @@ class JobScanner:
 
 ```
 
+## src/modules/market_trends/analyzer.py
+```
+import random
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
+
+class MarketAnalyzer:
+    def __init__(self):
+        self.trending_skills = {
+            "IA Generativa": 98,
+            "Python": 95,
+            "Cloud Computing": 92,
+            "Data Engineering": 88,
+            "DevSecOps": 85
+        }
+        self.hot_roles = [
+            "Engenheiro de IA",
+            "Arquiteto de Soluções",
+            "Engenheiro de Dados Sênior",
+            "Desenvolvedor Full Stack (Python/React)"
+        ]
+
+    def show_trends(self):
+        """Displays simulated market trends."""
+        console.clear()
+        console.print("[bold cyan]Análise de Tendências de Mercado[/bold cyan]\n")
+
+        # Skills Table
+        table = Table(title="Habilidades em Alta (Últimos 30 dias)")
+        table.add_column("Habilidade", style="green")
+        table.add_column("Índice de Demanda", justify="right", style="magenta")
+
+        for skill, score in self.trending_skills.items():
+            # Simulate slight fluctuation
+            current_score = min(100, score + random.randint(-2, 2))
+            table.add_row(skill, f"{current_score}/100")
+
+        console.print(table)
+
+        # Roles
+        console.print("\n[bold yellow]Cargos com Maior Volume de Vagas:[/bold yellow]")
+        for role in self.hot_roles:
+            console.print(f"- {role}")
+
+        console.print("\n[italic]Dados baseados em análise simulada de agregadores de vagas.[/italic]")
+
+```
+
 ## src/modules/monitoring.py
 ```
 from src.core.models import Application
@@ -3022,78 +2553,56 @@ class ResumeGenerator:
 
 ```
 
-## src/modules/selenium_bot/__pycache__/config.cpython-312.pyc
+## src/modules/resume_improver/improver.py
 ```
-\xcb
-    H\x9dpi\xa2  \xe3            
-       \xf3p   \x97 d dl Z ddddd e j                  dd\xab       e j                  d	d\xab      g d
-\xa2ddgd\x9c	Zy)\xe9    NzMarcelo Nascimentozmarcelinmark@gmail.com\xda16999948479u   Ribeirão PretozAnalista de Revenue Operations\xdaINFOJOBS_PASSWORD\xdaSUA_SENHA_AQUI\xdaVAGAS_PASSWORD)zRevenue OperationszSales OperationszAnalista de Dados\xda
-Salesforce\xdaHubSpotzHome Office)	\xdanome_completo\xdaemail\xdatelefone\xdacidade\xdacargo_atual\xdasenha_infojobs\xdasenha_vagas\xdabuscas\xdalocais)\xdaos\xdagetenv\xdaPERFIL\xa9 \xf3    \xfa'/app/src/modules/selenium_bot/config.py\xda<module>r      sV   \xf0\xdb 	\xf0 *\xd8%\xd8\xd8\xd83\xe0\x90b\x97i\x91i\xd0 3\xd05E\xd3F\xd8\x902\x979\x919\xd0-\xd0/?\xd3@\xf2\xf0 	\xd8\xf0\xf1%
-\x81r   
-```
+from rich.console import Console
+from rich.panel import Panel
 
-## src/modules/selenium_bot/__pycache__/human_bot.cpython-312.pyc
-```
-\xcb
-    P\x9dpi&  \xe3                   \xf3X   \x97 d dl Z d dlZd dlmZ d dlmZ d dlmZ d dlm	Z	  G d\x84 d\xab      Z
-y)\xe9    N)\xda	webdriver)\xdaService)\xdaWebDriverWait)\xdaChromeDriverManagerc                   \xf3.   \x97 e Zd Zdd\x84Zd\x84 Zdd\x84Zd\x84 Zd\x84 Zy)	\xda	HumanoBotc                 \xf3.   \x97 d | _         || _        d | _        y )N)\xdadriver\xdaheadless\xdawait)\xdaselfr   s     \xfa*/app/src/modules/selenium_bot/human_bot.py\xda__init__zHumanoBot.__init__	   s   \x80 \xd8\x88\x8c\xd8 \x88\x8c\xd8\x88\x8d	\xf3    c                 \xf3\x9a  \x97 t        j                  \xab       }| j                  rU|j                  d\xab       |j                  d\xab       |j                  d\xab       |j                  d\xab       |j                  d\xab       t        j                  t        t        \xab       j                  \xab       \xab      |\xac\xab      | _        t        | j                  d\xab      | _
-        y )Nz--headless=newz--no-sandboxz--disable-dev-shm-usagez--disable-gpuz--window-size=1920,1080)\xdaservice\xdaoptions\xe9   )r   \xdaChromeOptionsr   \xdaadd_argument\xdaChromer   r   \xdainstallr
-   r   r   )r   r   s     r   \xdainiciar_driverzHumanoBot.iniciar_driver   s\x99   \x80 \xdc\xd7)\xd1)\xd3+\x88\xd8\x8f=\x8a=\xd8\xd7 \xd1 \xd0!1\xd42\xd8\xd7 \xd1 \xa0\xd40\xd8\xd7 \xd1 \xd0!:\xd4;\xd8\xd7 \xd1 \xa0\xd41\xd8\xd7 \xd1 \xd0!:\xd4;\xe4\xd7&\xd1&\xacw\xd47J\xd37L\xd77T\xd17T\xd37V\xd3/W\xd0ah\xd4i\x88\x8c\xdc!\xa0$\xa7+\xa1+\xa8r\xd32\x88\x8d	r   c                 \xf3Z   \x97 t        j                  ||\xab      }t        j                  |\xab       y)uL   Pausa a execução por um tempo variável para imitar 'tempo de pensamento'.N)\xdarandom\xdauniform\xdatime\xdasleep)r   \xdamin_seg\xdamax_seg\xdatempos       r   \xdadormir_aleatoriozHumanoBot.dormir_aleatorio   s   \x80 \xe4\x97\x91\x98w\xa8\xd30\x88\xdc\x8f
-\x89
-\x905\xd5r   c                 \xf3\x86   \x97 |D ]<  }|j                  |\xab       t        j                  t        j                  dd\xab      \xab       \x8c> y)zDDigita caractere por caractere com pausas variadas, como uma pessoa.g\x9a\x99\x99\x99\x99\x99\xa9?g\x9a\x99\x99\x99\x99\x99\xc9?N)\xda	send_keysr   r   r   r   )r   \xdaelemento\xdatexto\xdaletras       r   \xdadigitar_humanizadozHumanoBot.digitar_humanizado   s1   \x80 \xe3\x88E\xd8\xd7\xd1\x98u\xd4%\xdc\x8fJ\x89J\x94v\x97~\x91~\xa0d\xa8C\xd30\xd51\xf1 r   c                 \xf3v   \x97 | j                   r-t        d\xab       | j                   j                  \xab        d | _         y y )Nu   >> 🏁 Sessão finalizada.)r
-   \xdaprint\xdaquit)r   s    r   \xdaencerrarzHumanoBot.encerrar%   s.   \x80 \xd8\x8f;\x8a;\xdc\xd0/\xd40\xd8\x8fK\x89K\xd7\xd1\xd4\xd8\x88D\x8dK\xf0 r   N)F)\xe9   \xe9   )\xda__name__\xda
-__module__\xda__qualname__r   r   r"   r(   r,   \xa9 r   r   r   r      s   \x84 \xf3\xf2
+console = Console()
 
-3\xf3\xf2
-2\xf3r   r   )r   r   \xdaseleniumr   \xda!selenium.webdriver.chrome.servicer   \xdaselenium.webdriver.support.uir   \xdawebdriver_manager.chromer   r   r2   r   r   \xda<module>r7      s!   \xf0\xdb \xdb \xdd \xdd 5\xdd 7\xdd 8\xf7!\xf2 !r   
-```
+class ResumeImprover:
+    def __init__(self):
+        self.keywords = ["Python", "SQL", "Cloud", "AWS", "Docker", "Kubernetes", "API", "REST", "Git", "CI/CD"]
 
-## src/modules/selenium_bot/__pycache__/infojobs.cpython-312.pyc
-```
-\xcb
-    ]\x9dpi  \xe3                   \xf3^   \x97 d dl Z d dlmZ d dlmZ d dlmZ d dlm	Z	 d dl
-mZ  G d\x84 de	\xab      Zy)	\xe9    N)\xdaBy)\xdaKeys)\xdaexpected_conditions)\xda	HumanoBot)\xdaPERFILc                   \xf3   \x97 e Zd Zd\x84 Zd\x84 Zd\x84 Zy)\xdaInfojobsBotc                 \xf3h  \x97 t        d\xab       | j                  j                  d\xab       | j                  dd\xab       | j                  j                  t        j                  t        j                  df\xab      \xab      }| j                  |t        d   \xab       | j                  dd\xab       | j                  j                  t        j                  d	\xab      }| j                  |t        d
-   \xab       | j                  dd\xab       |j                  t        j                  \xab       t        d\xab       | j                  dd\xab       y )Nu*   >> 🔓 Iniciando Login Infojobs Humano...z&https://www.infojobs.com.br/login.aspx\xe9   \xe9   \xdaUsername\xdaemail\xe9   \xe9   \xdaPassword\xdasenha_infojobsu1   >> ✅ Login efetuado. Aguardando carregamento...\xe9   )\xdaprint\xdadriver\xdaget\xdadormir_aleatorio\xdawait\xdauntil\xdaEC\xdaelement_to_be_clickabler   \xdaID\xdadigitar_humanizador   \xdafind_element\xda	send_keysr   \xdaRETURN)\xdaself\xda
-user_field\xda	pwd_fields      \xfa)/app/src/modules/selenium_bot/infojobs.py\xdaloginzInfojobsBot.login	   s\xe7   \x80 \xdc\xd0:\xd4;\xd8\x8f\x89\x8f\x89\xd0@\xd4A\xd8\xd7\xd1\x98a\xa0\xd4#\xf0 \x97Y\x91Y\x97_\x91_\xa4R\xd7%?\xd1%?\xc4\xc7\xc1\xc8
-\xd0@S\xd3%T\xd3U\x88
-\xd8\xd7\xd1\xa0
-\xacF\xb07\xa9O\xd4<\xd8\xd7\xd1\x98a\xa0\xd4#\xf0 \x97K\x91K\xd7,\xd1,\xacR\xafU\xa9U\xb0J\xd3?\x88	\xd8\xd7\xd1\xa0	\xac6\xd02B\xd1+C\xd4D\xd8\xd7\xd1\x98a\xa0\xd4#\xf0 	\xd7\xd1\x9cD\x9fK\x99K\xd4(\xdc\xd0A\xd4B\xd8\xd7\xd1\x98a\xa0\xd5#\xf3    c           	      \xf32  \x97 t         d   D ]\x8b  }t         d   D ]}  }t        d|\x9b d|\x9b d\x9d\xab       |j                  dd\xab      }|j                  dd\xab      }d|\x9b d	|\x9b \x9d}| j                  j	                  |\xab       | j                  d
-d\xab       | j                  \xab        \x8c \x8c\x8d y )N\xdalocais\xdabuscasu   
->> 🔍 Buscando: 'z' em '\xda'\xda \xda+z2https://www.infojobs.com.br/empregos.aspx?Palabra=z&Campo=loc&Donde=\xe9   \xe9   )r   r   \xdareplacer   r   r   \xdaprocessar_lista_vagas)r!   \xdalocal\xdacargo\xda	termo_url\xda	local_url\xdaurls         r$   \xdaexecutar_buscazInfojobsBot.executar_busca   s\x9b   \x80 \xdc\x98H\xd4%\x88E\xdc\xa0\xd4)\x90\xdc\xd0-\xa8e\xa8W\xb0F\xb85\xb8'\xc0\xd0C\xd4D\xf0 "\x9fM\x99M\xa8#\xa8s\xd33\x90	\xd8!\x9fM\x99M\xa8#\xa8s\xd33\x90	\xd8J\xc89\xc8+\xd0Uf\xd0gp\xd0fq\xd0r\x90\xe0\x97\x91\x97\x91\xa0\xd4$\xd8\xd7%\xd1%\xa0a\xa8\xd4+\xe0\xd7*\xd1*\xd5,\xf1 *\xf1 &r&   c                 \xf3\xb0  \x97 | j                   j                  t        j                  d\xab      }|D \x8fcg c]%  }|j	                  d\xab      s\x8c|j	                  d\xab      \x91\x8c' }}t        j                  |\xab       t        dt        |\xab      \x9b d\x9d\xab       t        |\xab      D \x90]  \  }}|dk\  r y 	 | j                   j                  |\xab       | j                  dd\xab       | j                   j                  t        j                  d\xab      }|r\xa4|d	   j                  \xab       r\x91|d	   }|j                  j                  \xab       }d
-|v r_| j                   j!                  d|\xab       | j                  dd\xab       |j#                  \xab        t        d|\x9b \x9d\xab       | j                  dd\xab       nt        d|\x9b \x9d\xab       nt        d\xab       \x90\x8c y c c}w # t$        $ r}	t        d|	\x9b \x9d\xab       Y d }	~	\x90\x8c=d }	~	ww xY w)Nzdiv.vaga a.text-decoration-none\xdahrefu      📄 Encontrei z vagas. Analisando...r   r   \xe9   z//a[contains(@id, 'lbtnApply')]r   \xda
-CANDIDATARzCarguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});r   u      [✅ CANDIDATURA] r   r-   u      [ℹ️ JÁ INSCRITO] u      [❌ BOTÃO NÃO ENCONTRADO]u      [⚠️ ERRO] Pulei a vaga: )r   \xdafind_elementsr   \xdaCSS_SELECTOR\xdaget_attribute\xdarandom\xdashuffler   \xdalen\xda	enumerater   r   \xdaXPATH\xdais_displayed\xdatext\xdaupper\xdaexecute_script\xdaclick\xda	Exception)
-r!   \xdavagas\xdav\xdalinks\xdai\xdalink\xdabotoes\xdabtn\xda	texto_btn\xdaes
-             r$   r0   z!InfojobsBot.processar_lista_vagas,   s\x94  \x80 \xe0\x97\x91\xd7)\xd1)\xac"\xaf/\xa9/\xd0;\\xd3]\x88\xd927\xd3S\xb1%\xa8Q\xb81\xbf?\xb9?\xc86\xd5;R\x90\x97\x91\xa0\xd5(\xb0%\x88\xd0S\xf4 	\x8f\x89\x90u\xd4\xe4\xd0"\xa43\xa0u\xa3:\xa0,\xd0.C\xd0D\xd4E\xe4 \xa0\xd7'\x89G\x88A\x88t\xd8\x90A\x8av\x91u\xf0=\xd8\x97\x91\x97\x91\xa0\xd4%\xd8\xd7%\xd1%\xa0a\xa8\xd4+\xf0 \x9f\x99\xd72\xd12\xb42\xb78\xb18\xd0=^\xd3_\x90\xe1\x98f\xa0Q\x99i\xd74\xd14\xd46\xd8 \xa0\x99)\x90C\xd8 #\xa7\xa1\xa7\xa1\xd3 0\x90I\xe0#\xa0y\xd10\xe0\x9f\x99\xd72\xd12\xd8a\xd8\xf4\xf0 \xd7-\xd1-\xa8a\xb0\xd43\xe0\x9f	\x99	\x9c\xdc\xd0 5\xb0d\xb0V\xd0<\xd4=\xd8\xd7-\xd1-\xa8a\xb0\xd53\xe4\xd0 9\xb8$\xb8\xd0@\xd5A\xe4\xd0;\xd4<\xf9\xf19 (\xf9\xf2 T\xf8\xf4J \xf2 =\xdc\xd07\xb8\xb0s\xd0;\xd7<\xd2<\xfb\xf0=\xfas$   \xafF.\xc1F.\xc2"DF3\xc63	G\xc6<G\xc7GN)\xda__name__\xda
-__module__\xda__qualname__r%   r6   r0   \xa9 r&   r$   r	   r	      s   \x84 \xf2$\xf2(-\xf3)=r&   r	   )r>   \xdaselenium.webdriver.common.byr   \xdaselenium.webdriver.common.keysr   \xdaselenium.webdriver.supportr   r   \xda"src.modules.selenium_bot.human_botr   \xdasrc.modules.selenium_bot.configr   r	   rU   r&   r$   \xda<module>r[      s%   \xf0\xdb \xdd +\xdd /\xdd @\xdd 8\xdd 2\xf4M=\x90)\xf5 M=r&   
-```
+    def analyze_resume(self, text):
+        """Analyzes resume text and suggests improvements."""
+        console.clear()
+        console.print(Panel("[bold cyan]Analisador de Currículo com IA[/bold cyan]", expand=False))
 
-## src/modules/selenium_bot/__pycache__/runner.cpython-312.pyc
-```
-\xcb
-    v\x9dpi\xae  \xe3                   \xf3\xae   \x97 d dl Z d dlZd dlmZ d dlmZ d dlmZ  G d\x84 d\xab      Zedk(  r e\xab       Z		 e	j                  \xab        yy# e$ r  ed\xab       Y yw xY w)	\xe9    N)\xdadatetime)\xdaInfojobsBot)\xdaVagasBotc                   \xf3   \x97 e Zd Zd\x84 Zd\x84 Zy)\xdaBotRunner24hc                 \xf3   \x97 d | _         y )N)\xdabot)\xdaselfs    \xfa'/app/src/modules/selenium_bot/runner.py\xda__init__zBotRunner24h.__init__   s	   \x80 \xd8\x88\x8d\xf3    c                 \xf3\xe8  \x97 t        dt        j                  \xab       j                  d\xab      \x9b \x9d\xab       	 	 t        d\xab       t	        d\xac\xab      | _        | j
-                  j                  \xab        | j
-                  j                  \xab        | j
-                  j                  \xab        | j
-                  j                  \xab        d | _        d}t        j                  \xab       |z   }t        j                  dt        j                  |\xab      \xab      }t        d|\x9b \x9d\xab       t        j                  |\xab       \x8c\xf2# t        $ rE}t        d|\x9b \x9d\xab       | j
-                  r!| j
-                  j                  \xab        d | _        Y d }~\x8c\xafd }~ww xY w)	Nu"   >> 🌙 Vigília 24h iniciada em: z%H:%MTz
->> Iniciando Ciclo Infojobs...)\xdaheadlessu      [⚠️ ERRO NO CICLO] i  u*   >> 💤 Modo Standby. Próxima ronda às: )\xdaprintr   \xdanow\xdastrftimer   r	   \xdainiciar_driver\xdalogin\xdaexecutar_busca\xdaencerrar\xda	Exception\xdatime\xda	localtime\xdasleep)r
-   \xdae\xdatempo_espera\xdaproxima_ronda\xdahora_proximas        r   \xdarunzBotRunner24h.run   s  \x80 \xdc\xd02\xb48\xb7<\xb1<\xb3>\xd73J\xd13J\xc87\xd33S\xd02T\xd0U\xd4V\xe0\xf0$\xe4\xd08\xd49\xdc&\xb0\xd45\x90\x94\xd8\x97\x91\xd7'\xd1'\xd4)\xd8\x97\x91\x97\x91\xd4 \xd8\x97\x91\xd7'\xd1'\xd4)\xd8\x97\x91\xd7!\xd1!\xd4#\xd8\x90\x94\xf0   \x88L\xe4 \x9fI\x99I\x9bK\xa8,\xd16\x88M\xdc\x9f=\x99=\xa8\xb4$\xb7.\xb1.\xc0\xd32O\xd3P\x88L\xe4\xd0>\xb8|\xb8n\xd0M\xd4N\xdc\x8fJ\x89J\x90|\xd4$\xf0? \xf8\xf4 \xf2 $\xdc\xd02\xb01\xb0#\xd06\xd47\xd8\x978\x928\xd8\x97H\x91H\xd7%\xd1%\xd4'\xd8#\x90D\x94H\xff\xf8\xf0	$\xfas   \xb2BD# \xc4#	E1\xc4,;E,\xc5,E1N)\xda__name__\xda
-__module__\xda__qualname__r   r   \xa9 r   r   r   r      s   \x84 \xf2\xf3"%r   r   \xda__main__u!   >> 🛑 Parada manual solicitada.)r   \xdarandomr   \xda!src.modules.selenium_bot.infojobsr   \xdasrc.modules.selenium_bot.vagasr   r   r    \xdarunnerr   \xdaKeyboardInterruptr   r#   r   r   \xda<module>r*      s]   \xf0\xdb \xdb \xdd \xdd 9\xdd 3\xf7&%\xf1 &%\xf0P \x88z\xd2\xd9\x8b^\x80F\xf03\xd8\x8f
-\x89
-\x8d\xf0 \xf8\xf0 \xf2 3\xd9\xd01\xd62\xf03\xfas   \xb2A \xc1A\xc1A
-```
+        score = 0
+        missing = []
+        found = []
 
-## src/modules/selenium_bot/__pycache__/vagas.cpython-312.pyc
-```
-\xcb
-    m\x9dpi\xf4  \xe3                   \xf3>   \x97 d dl mZ d dlmZ d dlmZ  G d\x84 de\xab      Zy)\xe9    )\xdaBy)\xda	HumanoBot)\xdaPERFILc                   \xf3   \x97 e Zd Zd\x84 Zd\x84 Zy)\xdaVagasBotc                 \xf3|  \x97 t        d\xab       t        d   D ]\xfa  }d|j                  dd\xab      \x9b \x9d}t        d|\x9b \x9d\xab       | j                  j	                  |\xab       | j                  dd\xab       | j                  j                  t        j                  d	\xab      }g }|D ]C  }	 |j                  t        j                  d
-\xab      }|j                  |j                  d\xab      \xab       \x8cE t        dt        |\xab      \x9b d\x9d\xab       |d d D ]  }	 | j                  |\xab       \x8c \x8c\xfc y #  Y \x8c\x81xY w# t        $ r}t        d|\x9b \x9d\xab       Y d }~\x8c=d }~ww xY w)NuV   >> ⚠️ Nota: Para o Vagas.com, certifique-se de estar logado ou implemente o login.\xdabuscasz"https://www.vagas.com.br/vagas-de-\xda \xda-u    
->> 🔍 Buscando no Vagas.com: \xe9   \xe9   \xdavaga\xdaa\xdahrefz   Encontradas z vagas.z   Erro ao processar vaga: )\xdaprintr   \xdareplace\xdadriver\xdaget\xdadormir_aleatorio\xdafind_elementsr   \xda
-CLASS_NAME\xdafind_element\xdaTAG_NAME\xdaappend\xdaget_attribute\xdalen\xdaprocessar_vaga\xda	Exception)	\xdaself\xdacargo\xdaurl\xdavagas\xdalinksr   \xda	link_elem\xdalink\xdaes	            \xfa&/app/src/modules/selenium_bot/vagas.py\xdaexecutar_buscazVagasBot.executar_busca   s'  \x80 \xf4 	\xd0f\xd4g\xe4\x98H\xd4%\x88E\xd86\xb0u\xb7}\xb1}\xc0S\xc8#\xd37N\xd06O\xd0P\x88C\xdc\xd05\xb0e\xb0W\xd0=\xd4>\xe0\x8fK\x89K\x8fO\x89O\x98C\xd4 \xd8\xd7!\xd1!\xa0!\xa0Q\xd4'\xe0\x97K\x91K\xd7-\xd1-\xacb\xafm\xa9m\xb8V\xd3D\x88E\xd8\x88E\xe3\x90\xf0\xd8 $\xd7 1\xd1 1\xb4"\xb7+\xb1+\xb8s\xd3 C\x90I\xd8\x97L\x91L\xa0\xd7!8\xd1!8\xb8\xd3!@\xd5A\xf0 \xf4 \x90O\xa4C\xa8\xa3J\xa0<\xa8w\xd07\xd48\xe0\x98b\x98q\x9b	\x90\xf0=\xd8\xd7'\xd1'\xa8\xd5-\xf1 "\xf1' &\xf8\xf0\xd9\xfb\xf4 !\xf2 =\xdc\xd07\xb8\xb0s\xd0;\xd7<\xd1<\xfb\xf0=\xfas%   \xc2A D\xc3=D\xc4D\xc4	D;\xc4#D6\xc46D;c                 \xf3\x84  \x97 | j                   j                  |\xab       | j                  dd\xab       	 | j                   j                  t        j
-                  d\xab      }|r4|d   j                  \xab        t        d|\x9b \x9d\xab       | j                  dd\xab       y t        d|\x9b \x9d\xab       y # t        $ r}t        d|\x9b \x9d\xab       Y d }~y d }~ww xY w)	N\xe9   \xe9   zbt-candidaturar   z   [Tentativa de Candidatura] r   u      [Botão não encontrado] z
-   [Erro] )	r   r   r   r   r   r   \xdaclickr   r   )r   r%   \xdabtsr&   s       r'   r   zVagasBot.processar_vaga$   s\xa6   \x80 \xd8\x8f\x89\x8f\x89\x98\xd4\xd8\xd7\xd1\x98a\xa0\xd4#\xf0	$\xe0\x97+\x91+\xd7+\xd1+\xacB\xafM\xa9M\xd0;K\xd3L\x88C\xd9\xd8\x90A\x91\x97\x91\x94\xdc\xd06\xb0t\xb0f\xd0=\xd4>\xd8\xd7%\xd1%\xa0a\xa8\xd5+\xf4 \xd04\xb0T\xb0F\xd0;\xd5<\xf8\xdc\xf2 	$\xdc\x90J\x98q\x98c\xd0"\xd7#\xd1#\xfb\xf0	$\xfas   \xafAB \xc2B \xc2	B?\xc2'B:\xc2:B?N)\xda__name__\xda
-__module__\xda__qualname__r(   r   \xa9 \xf3    r'   r   r      s   \x84 \xf2=\xf3<$r2   r   N)\xdaselenium.webdriver.common.byr   \xda"src.modules.selenium_bot.human_botr   \xdasrc.modules.selenium_bot.configr   r   r1   r2   r'   \xda<module>r6      s   \xf0\xdd +\xdd 8\xdd 2\xf4.$\x88y\xf5 .$r2   
+        # Simple keyword matching simulation
+        for kw in self.keywords:
+            if kw.lower() in text.lower():
+                score += 10
+                found.append(kw)
+            else:
+                missing.append(kw)
+
+        # Display results
+        console.print(f"\n[bold]Pontuação Calculada:[/bold] {score}/100\n")
+
+        if found:
+            console.print(f"[green]Pontos Fortes Detectados:[/green] {', '.join(found)}")
+
+        if missing:
+            console.print(f"\n[yellow]Sugestões de Melhoria:[/yellow]")
+            console.print("Considere adicionar experiência ou projetos relacionados a:")
+            for m in missing:
+                console.print(f"- [bold]{m}[/bold]")
+
+        suggestion = ""
+        if score < 50:
+            suggestion = "Seu currículo precisa de mais palavras-chave técnicas para passar nos filtros ATS."
+        elif score < 80:
+            suggestion = "Bom currículo! Tente quantificar seus resultados (ex: 'melhorou performance em 20%')."
+        else:
+            suggestion = "Excelente! Seu perfil está muito competitivo."
+
+        console.print(Panel(suggestion, title="Feedback da IA", style="magenta"))
+
 ```
 
 ## src/modules/selenium_bot/config.py
