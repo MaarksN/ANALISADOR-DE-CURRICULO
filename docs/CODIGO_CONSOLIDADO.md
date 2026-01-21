@@ -1,4 +1,687 @@
-# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360
+# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (COMPLETO)
+
+## chrome_extension/background.js
+```
+let jobQueue = [];
+let isProcessing = false;
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "QUEUE_JOBS") {
+    const newJobs = request.urls;
+    console.log(`[Background] Received ${newJobs.length} jobs to queue.`);
+
+    // Add unique jobs
+    newJobs.forEach(url => {
+        if (!jobQueue.includes(url)) {
+            jobQueue.push(url);
+        }
+    });
+
+    sendResponse({status: "queued", count: jobQueue.length});
+
+    if (!isProcessing) {
+        processQueue();
+    }
+  } else if (request.action === "JOB_COMPLETE") {
+      // Content script tells us it finished applying on the current tab
+      console.log("[Background] Job Complete signal received.");
+      // We can close the tab?
+      if (sender.tab) {
+          chrome.tabs.remove(sender.tab.id);
+      }
+      // Continue processing is handled by the loop/recursion,
+      // but since we close the tab, we rely on the processQueue loop or re-trigger.
+      // Actually, since processQueue is async, it might need to wait.
+  }
+});
+
+async function processQueue() {
+    if (jobQueue.length === 0) {
+        isProcessing = false;
+        console.log("[Background] Queue empty.");
+        return;
+    }
+
+    isProcessing = true;
+    const url = jobQueue.shift();
+    console.log(`[Background] Processing: ${url}`);
+
+    try {
+        const tab = await chrome.tabs.create({ url: url, active: true });
+
+        // Wait for page load
+        await waitTabLoad(tab.id);
+
+        // Inject the start command
+        // Note: The content script (loader -> router) runs automatically on match.
+        // But we need to tell it "Auto Start" because it's an automated tab.
+        // We can do this by sending a message after load.
+
+        await sleep(3000); // Wait for DOM
+
+        chrome.tabs.sendMessage(tab.id, {action: "start"}, (response) => {
+            if (chrome.runtime.lastError) {
+                console.log("[Background] Error sending start command: ", chrome.runtime.lastError.message);
+            } else {
+                console.log("[Background] Start command sent to tab.");
+            }
+        });
+
+        // Wait for job completion?
+        // Realistically, we need a timeout or a message back.
+        // For this MVP, we give it X seconds then close.
+        await sleep(10000);
+
+        // Close tab
+        try {
+            await chrome.tabs.remove(tab.id);
+        } catch (e) { /* Tab might be closed by user */ }
+
+    } catch (err) {
+        console.error("[Background] Error processing job:", err);
+    }
+
+    // Process next
+    setTimeout(processQueue, 1000);
+}
+
+function waitTabLoad(tabId) {
+    return new Promise(resolve => {
+        chrome.tabs.onUpdated.addListener(function listener(tid, changeInfo) {
+            if (tid === tabId && changeInfo.status === 'complete') {
+                chrome.tabs.onUpdated.removeListener(listener);
+                resolve();
+            }
+        });
+    });
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+```
+
+## chrome_extension/content_router.js
+```
+import { runLinkedInBot } from './linkedin_bot.js';
+import { runInfojobsBot } from './infojobs_bot.js';
+import { runVagasBot } from './vagas_bot.js';
+import { log } from './utils.js';
+
+log("Extension Loaded. Waiting for start command...");
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "start") {
+        log("Command received: START");
+
+        const hostname = window.location.hostname;
+
+        if (hostname.includes('linkedin.com')) {
+            runLinkedInBot();
+        } else if (hostname.includes('infojobs.com.br')) {
+            runInfojobsBot();
+        } else if (hostname.includes('vagas.com.br')) {
+            runVagasBot();
+        } else {
+            alert("Site não suportado por este bot.");
+        }
+
+        sendResponse({status: "started"});
+    }
+});
+
+```
+
+## chrome_extension/infojobs_bot.js
+```
+import { sleep, log } from './utils.js';
+
+export async function runInfojobsBot() {
+    log("Iniciando Bot Infojobs...");
+
+    // Look for the main Apply button
+    const applyBtn = document.querySelector('.js_apply_vacancy');
+
+    if (applyBtn) {
+        if (applyBtn.classList.contains('disabled')) {
+            log("Botão de candidatura desabilitado ou vaga já aplicada.");
+            return;
+        }
+
+        log("Clicando em Candidatar-se...");
+        applyBtn.click();
+        await sleep(2000);
+
+        // Try the specific selector provided in the snippet
+        const confirmBtnSnippet = document.querySelector('#ctl00_phMasterPage_cContent_ucApplyVacancy_lbtnApply');
+        // Also fallback to generic selector just in case
+        const confirmBtnGeneric = document.querySelector('a[id*="lbtnApply"]');
+
+        const confirmBtn = confirmBtnSnippet || confirmBtnGeneric;
+
+        if (confirmBtn) {
+            log("Confirmando candidatura...");
+            confirmBtn.click();
+            await sleep(2000);
+            log("Candidatura enviada no Infojobs!");
+        } else {
+            // Check for login requirement
+            if (document.querySelector('.login-form')) {
+                log("Necessário login. O bot não preenche senhas por segurança.");
+            } else {
+                log("Botão de confirmação não encontrado.");
+            }
+        }
+    } else {
+        log("Botão de candidatura não encontrado nesta página.");
+    }
+}
+
+```
+
+## chrome_extension/linkedin_bot.js
+```
+import { userProfile } from './user_profile.js';
+import { sleep, log } from './utils.js';
+
+export async function runLinkedInBot() {
+    log("Iniciando Bot LinkedIn...");
+
+    // Find job cards in the left sidebar
+    const jobs = document.querySelectorAll('.job-card-container');
+    if (jobs.length === 0) {
+        log("Nenhuma vaga encontrada na lista lateral. Certifique-se de estar na página de busca de vagas.");
+        return;
+    }
+
+    for (let job of jobs) {
+        // Scroll to job to ensure it loads
+        job.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        job.click();
+        log("Vaga clicada, aguardando carregamento...");
+        await sleep(2000);
+
+        // Check for Easy Apply button
+        const applyBtn = document.querySelector('.jobs-apply-button--top-card');
+
+        if (applyBtn) {
+            log("Botão Candidatura Simplificada encontrado.");
+            applyBtn.click();
+            await sleep(1500);
+
+            // Handle Modal
+            await handleModal();
+        } else {
+            log("Botão de Candidatura Simplificada não encontrado ou vaga já aplicada.");
+        }
+
+        await sleep(1000);
+    }
+    log("Fim da lista de vagas visíveis.");
+}
+
+async function handleModal() {
+    let maxSteps = 20; // Prevent infinite loops
+    let step = 0;
+
+    while (document.querySelector('.jobs-easy-apply-modal') && step < maxSteps) {
+        step++;
+
+        // Buttons
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const nextBtn = buttons.find(b => b.innerText.includes('Avançar') || b.innerText.includes('Next'));
+        const reviewBtn = buttons.find(b => b.innerText.includes('Revisar') || b.innerText.includes('Review'));
+        const submitBtn = buttons.find(b => b.innerText.includes('Enviar candidatura') || b.innerText.includes('Submit application'));
+
+        // Fill Inputs
+        await fillInputs();
+
+        if (submitBtn) {
+            log("Enviando candidatura...");
+            // submitBtn.click(); // UNCOMMENT TO ACTUALLY APPLY
+            // await sleep(2000);
+
+            // Close modal after submit (usually "Done" button appears)
+            const closeBtn = document.querySelector('button[aria-label="Dismiss"]');
+            if(closeBtn) closeBtn.click();
+            return;
+        }
+        else if (reviewBtn) {
+            log("Revisando...");
+            reviewBtn.click();
+            await sleep(1500);
+        }
+        else if (nextBtn) {
+            log("Avançando...");
+            nextBtn.click();
+            await sleep(1500);
+
+            // Check for errors (did not advance)
+            if (document.querySelector('.artdeco-inline-feedback--error')) {
+                log("Erro no formulário detectado. Pulando vaga.");
+                const closeBtn = document.querySelector('button[aria-label="Dismiss"]');
+                if(closeBtn) closeBtn.click();
+                await sleep(500);
+                const confirmDiscard = buttons.find(b => b.innerText.includes('Descartar') || b.innerText.includes('Discard'));
+                if (confirmDiscard) confirmDiscard.click();
+                return;
+            }
+        } else {
+            // Unexpected state or just wait
+            // Sometimes it takes a moment for buttons to update
+            await sleep(1000);
+        }
+    }
+}
+
+async function fillInputs() {
+    // 1. Radio Buttons (Yes/No)
+    const radioGroups = document.querySelectorAll('.jobs-easy-apply-form-section__grouping');
+    for (const group of radioGroups) {
+        // Simple heuristic: always click the first radio (usually "Yes" or top option)
+        // A real AI would analyze the label text.
+        const radios = group.querySelectorAll('input[type="radio"]');
+        if (radios.length > 0) {
+            // Check if one is already checked
+            const checked = Array.from(radios).some(r => r.checked);
+            if (!checked) {
+                // Determine logic based on label text?
+                // For MVP, click the first one (often 'Sim' or 'Yes')
+                // But safer to check label.
+
+                // For now, Marcelo wants to automate, so let's default to positive/first.
+                radios[0].click();
+                await sleep(200);
+            }
+        }
+    }
+
+    // 2. Text Inputs (Phone, City, etc)
+    const textInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+    for (const input of textInputs) {
+        if (!input.value) {
+            const label = input.id ? document.querySelector(`label[for="${input.id}"]`)?.innerText.toLowerCase() : "";
+
+            if (label.includes("phone") || label.includes("telefone") || label.includes("celular")) {
+                fireInputEvent(input, userProfile.personal.phone);
+            } else if (label.includes("city") || label.includes("cidade")) {
+                fireInputEvent(input, userProfile.personal.city);
+            }
+            // Add more mappings as needed
+        }
+    }
+}
+
+function fireInputEvent(input, value) {
+    input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+```
+
+## chrome_extension/loader.js
+```
+(async () => {
+    const src = chrome.runtime.getURL('content_router.js');
+    const contentMain = await import(src);
+})();
+
+```
+
+## chrome_extension/manifest.json
+```
+{
+  "manifest_version": 3,
+  "name": "Marcelo AutoApply - Multi",
+  "version": "2.2",
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": [
+    "*://*.linkedin.com/*",
+    "*://*.infojobs.com.br/*",
+    "*://*.vagas.com.br/*"
+  ],
+  "action": { "default_popup": "popup.html" },
+  "background": { "service_worker": "background.js" },
+  "web_accessible_resources": [
+    {
+        "resources": ["content_router.js", "linkedin_bot.js", "infojobs_bot.js", "vagas_bot.js", "utils.js", "user_profile.js"],
+        "matches": ["<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.linkedin.com/*",
+        "*://*.infojobs.com.br/*",
+        "*://*.vagas.com.br/*"
+      ],
+      "js": ["loader.js"]
+    }
+  ]
+}
+
+```
+
+## chrome_extension/popup.html
+```
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { width: 250px; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f2ef; }
+    h3 { color: #0a66c2; text-align: center; margin-top: 0; }
+    .status { font-size: 12px; margin-bottom: 10px; color: #666; text-align: center; }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0a66c2;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    button:hover { background: #004182; }
+    .platform-tag {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #ddd;
+        font-size: 10px;
+        margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h3>AutoApply 2.0</h3>
+  <div class="status">
+    Plataformas:
+    <span class="platform-tag">LinkedIn</span>
+    <span class="platform-tag">Infojobs</span>
+    <span class="platform-tag">Vagas</span>
+  </div>
+  <button id="startBtn">Iniciar Automação</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+
+```
+
+## chrome_extension/popup.js
+```
+document.getElementById('startBtn').addEventListener('click', () => {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      // Send a message to the active tab's content script
+      chrome.tabs.sendMessage(tabs[0].id, {action: "start"}, (response) => {
+        if (chrome.runtime.lastError) {
+             // If content script isn't loaded yet (e.g. new tab), inject it first?
+             // Or just tell user to refresh.
+             alert("Erro: Recarregue a página e tente novamente.");
+        }
+      });
+    });
+  });
+
+```
+
+## chrome_extension/user_profile.js
+```
+export const userProfile = {
+    personal: {
+      firstName: "Marcelo",
+      lastName: "Nascimento",
+      fullName: "Marcelo Nascimento",
+      email: "marcelinmark@gmail.com",
+      phone: "16999948479",
+      linkedin: "www.linkedin.com/in/maarkss",
+      city: "Ribeirão Preto",
+      state: "SP",
+      summary: "Engenheiro de RevOps e Sales Operations com foco em automação, Python e IA. Transformo processos manuais em máquinas de receita escaláveis. +7 anos de experiência."
+    },
+    skills: [
+      "Revenue Operations", "Sales Operations", "Salesforce", "HubSpot",
+      "Python", "Automação", "SQL", "APIs", "CRM Implementation", "Data Science"
+    ],
+    education: [
+      {
+        institution: "UNINTER",
+        degree: "Tecnólogo em Ciência de Dados",
+        start: "2025",
+        end: "2028"
+      },
+      {
+        institution: "Universidade de Ribeirão Preto",
+        degree: "Educação Física",
+        start: "2013",
+        end: "2016"
+      }
+    ],
+    lastRole: {
+      title: "Analista de Revenue Operations",
+      company: "Auto Arremate",
+      description: "Automação de processos comerciais, integração de 14 plataformas e implementação de CRM HubSpot."
+    }
+  };
+
+```
+
+## chrome_extension/utils.js
+```
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function log(msg) {
+    console.log(`[AutoApply] ${msg}`);
+}
+
+```
+
+## chrome_extension/vagas_bot.js
+```
+import { sleep, log } from './utils.js';
+
+export async function runVagasBot() {
+    log("Iniciando Bot Vagas.com...");
+
+    // Check if we are on a search list
+    if (document.querySelector('.vaga')) {
+        log("Lista de vagas detectada.");
+        const cards = document.querySelectorAll('.vaga');
+        const urls = [];
+
+        cards.forEach(card => {
+            const link = card.querySelector('a.link-detalhes-vaga');
+            if (link) {
+                // Vagas.com often uses relative URLs or full URLs
+                urls.push(link.href);
+            }
+        });
+
+        if (urls.length > 0) {
+            log(`Coletados ${urls.length} links. Enviando para fila de processamento...`);
+            chrome.runtime.sendMessage({
+                action: "QUEUE_JOBS",
+                urls: urls
+            }, (response) => {
+                log(`Background respondeu: ${response?.status} (${response?.count} na fila)`);
+            });
+        } else {
+            log("Nenhum link encontrado.");
+        }
+
+    } else {
+        // Single Job Page
+        // Check for "Candidatar-se" button
+        const applyBtn = document.querySelector('button[name="btCandidatura"]');
+
+        if (applyBtn) {
+            log("Botão de candidatura encontrado.");
+            applyBtn.click();
+            await sleep(2000);
+
+            // If already applied or success
+            if (document.body.innerText.includes("Candidatura realizada")) {
+                log("Candidatura confirmada.");
+            }
+        } else {
+            // Might be already applied
+            log("Botão de Candidatura não identificado ou vaga já aplicada.");
+        }
+
+        // Signal completion (optional, background closes anyway)
+    }
+}
+
+```
+
+## src/__init__.py
+```
+
+```
+
+## src/core/__init__.py
+```
+
+```
+
+## src/core/models.py
+```
+from typing import List, Optional, Dict
+from pydantic import BaseModel, Field
+from datetime import datetime, date
+from uuid import uuid4, UUID
+
+class Experience(BaseModel):
+    title: str
+    company: str
+    start_date: date
+    end_date: Optional[date] = None
+    description: str
+
+class Education(BaseModel):
+    institution: str
+    degree: str
+    start_date: date
+    end_date: Optional[date] = None
+    field_of_study: str
+
+class Skill(BaseModel):
+    name: str
+    level: str  # e.g., Beginner, Intermediate, Expert
+
+class CandidateProfile(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    name: str
+    email: str
+    phone: str
+    summary: str
+    experiences: List[Experience] = []
+    education: List[Education] = []
+    skills: List[Skill] = []
+    linkedin_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
+
+class JobOpportunity(BaseModel):
+    id: str
+    title: str
+    company: str
+    description: str
+    requirements: List[str]
+    url: str
+    source: str # e.g., "LinkedIn", "Indeed"
+    match_score: float = 0.0
+
+class Resume(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    profile_id: UUID
+    job_id: str
+    content: str  # The actual text of the resume
+    created_at: datetime = Field(default_factory=datetime.now)
+    version_tag: str
+
+class Application(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    job_id: str
+    profile_id: UUID
+    resume_id: UUID
+    status: str = "Applied" # Applied, Interviewing, Rejected, Offer
+    applied_at: datetime = Field(default_factory=datetime.now)
+    platform: str
+    notes: Optional[str] = None
+
+```
+
+## src/core/persistence.py
+```
+import json
+import os
+from typing import Dict, List, Any
+from src.core.models import CandidateProfile, Application
+
+DATA_DIR = "data"
+PROFILE_FILE = os.path.join(DATA_DIR, "profile.json")
+METRICS_FILE = os.path.join(DATA_DIR, "metrics.json")
+APPLICATIONS_FILE = os.path.join(DATA_DIR, "applications.json")
+
+class PersistenceManager:
+    def __init__(self):
+        if not os.path.exists(DATA_DIR):
+            os.makedirs(DATA_DIR)
+
+    def save_data(self, profile: CandidateProfile, metrics: Dict[str, int], applications: List[Application]):
+        """Saves current system state to JSON files."""
+        # Save Profile
+        if profile:
+            with open(PROFILE_FILE, "w", encoding="utf-8") as f:
+                f.write(profile.model_dump_json(indent=2))
+
+        # Save Metrics
+        with open(METRICS_FILE, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+
+        # Save Applications
+        # Application contains UUIDs and Datetimes, need robust serialization
+        # Pydantic's model_dump_json works for individual models, but for a list we need to handle it.
+        # Simplest way for pydantic v2:
+        app_list_json = [app.model_dump(mode='json') for app in applications]
+        with open(APPLICATIONS_FILE, "w", encoding="utf-8") as f:
+            json.dump(app_list_json, f, indent=2, ensure_ascii=False)
+
+    def load_data(self):
+        """
+        Loads system state. Returns tuple (profile, metrics, applications).
+        Returns (None, None, None) if files don't exist.
+        """
+        profile = None
+        metrics = None
+        applications = []
+
+        if os.path.exists(PROFILE_FILE):
+            with open(PROFILE_FILE, "r", encoding="utf-8") as f:
+                try:
+                    profile = CandidateProfile.model_validate_json(f.read())
+                except:
+                    pass # Corrupt or old format
+
+        if os.path.exists(METRICS_FILE):
+            with open(METRICS_FILE, "r", encoding="utf-8") as f:
+                metrics = json.load(f)
+
+        if os.path.exists(APPLICATIONS_FILE):
+            with open(APPLICATIONS_FILE, "r", encoding="utf-8") as f:
+                try:
+                    raw_apps = json.load(f)
+                    applications = [Application.model_validate(app) for app in raw_apps]
+                except:
+                    pass
+
+        return profile, metrics, applications
+
+```
 
 ## src/main.py
 ```
@@ -211,6 +894,477 @@ class BirthHub360:
 if __name__ == "__main__":
     hub = BirthHub360()
     hub.start()
+
+```
+
+## src/modules/__init__.py
+```
+
+```
+
+## src/modules/applier.py
+```
+from src.core.models import Application, JobOpportunity, Resume, CandidateProfile
+from datetime import datetime
+import random
+
+class ApplicationBot:
+    def __init__(self):
+        self.application_history = []
+
+    def apply(self, profile: CandidateProfile, job: JobOpportunity, resume: Resume) -> Application:
+        """
+        Simulates the application process.
+        """
+        # Simulate network latency or processing time? Not needed for simple logic.
+
+        # Determine success probability (mocking captcha failures or form errors)
+        status = "Aplicado"
+        if random.random() < 0.05:
+             status = "Falha" # 5% failure rate
+
+        app = Application(
+            job_id=job.id,
+            profile_id=profile.id,
+            resume_id=resume.id,
+            status=status,
+            platform=job.source,
+            notes=f"Aplicado com versão de currículo {resume.version_tag}"
+        )
+
+        self.application_history.append(app)
+        return app
+
+```
+
+## src/modules/decision_engine.py
+```
+from typing import Dict, List
+
+class StrategyEngine:
+    def __init__(self):
+        self.current_strategy = "Aplicação Agressiva"
+        self.focus_areas = ["Geral"]
+
+    def analyze_performance(self, metrics: Dict[str, int], recent_applications: List[str]) -> str:
+        """
+        Analyzes metrics and returns a strategy update message.
+        """
+        conversion_rate = 0
+        if metrics["applied"] > 0:
+            conversion_rate = metrics["interviews"] / metrics["applied"]
+
+        # Simple logic to switch strategies
+        if conversion_rate < 0.1 and metrics["applied"] > 10:
+            self.current_strategy = "Qualidade sobre Quantidade"
+            return "Taxa de conversão baixa detectada. Mudando para foco em alta relevância."
+
+        elif metrics["matched"] > 50 and metrics["applied"] < 10:
+             self.current_strategy = "Sprint de Alto Volume"
+             return "Muitos matches encontrados. Aumentando velocidade de aplicação."
+
+        else:
+            self.current_strategy = "Abordagem Equilibrada"
+            return "Desempenho dentro dos parâmetros normais. Mantendo o curso."
+
+    def get_current_strategy(self) -> str:
+        return self.current_strategy
+
+```
+
+## src/modules/interview_prep.py
+```
+from src.core.models import JobOpportunity, CandidateProfile
+import random
+
+class InterviewCoach:
+    def __init__(self):
+        self.common_questions = [
+            "Fale um pouco sobre você.",
+            "Por que você quer trabalhar na {company}?",
+            "Qual é o seu maior ponto forte?",
+            "Descreva uma situação desafiadora que você enfrentou."
+        ]
+        self.tech_questions_pool = [
+            "Explique como você projetaria um sistema escalável para {topic}.",
+            "Como você lida com dívida técnica?",
+            "Qual é a sua experiência com {skill}?",
+            "Descreva uma vez que você otimizou uma consulta lenta."
+        ]
+
+    def generate_questions(self, job: JobOpportunity) -> list[str]:
+        """
+        Generates a list of interview questions tailored to the job.
+        """
+        questions = []
+
+        # Add a behavioral question customized to the company
+        questions.append(random.choice(self.common_questions).format(company=job.company))
+
+        # Add technical questions based on requirements
+        for req in job.requirements[:2]: # Take first 2 requirements
+            questions.append(f"Como você utilizou {req} em um ambiente de produção?")
+
+        # Add a random system design or general tech question
+        topic = job.title.split()[-1] if job.title else "software"
+        questions.append(random.choice(self.tech_questions_pool).format(topic=topic, skill=random.choice(job.requirements) if job.requirements else "Python"))
+
+        return questions
+
+    def simulate_feedback(self) -> str:
+        """
+        Simulates feedback after a mock interview.
+        """
+        feedbacks = [
+            "Boa comunicação. Elabore mais nos detalhes técnicos.",
+            "Boa profundidade técnica. Tente ser mais conciso.",
+            "Excelente fit cultural. Pronto para a entrevista real.",
+            "Precisa de mais preparação em conceitos de design de sistemas."
+        ]
+        return random.choice(feedbacks)
+
+```
+
+## src/modules/job_intelligence.py
+```
+from typing import List
+from src.core.models import JobOpportunity
+from faker import Faker
+import random
+
+fake = Faker('pt_BR')
+
+class JobScanner:
+    def __init__(self):
+        pass
+
+    def scan_opportunities(self, keywords: List[str]) -> List[JobOpportunity]:
+        """
+        Simulates scanning job boards (LinkedIn, Indeed, etc.) for opportunities.
+        Returns a list of mock JobOpportunity objects.
+        """
+        opportunities = []
+        # Generate some random jobs
+        for _ in range(random.randint(5, 10)):
+            job_title = fake.job()
+            # Ensure some jobs match the keywords for demo purposes
+            if random.random() > 0.5 and keywords:
+                job_title = f"{random.choice(keywords)} {job_title}"
+
+            requirements = [fake.word() for _ in range(4)]
+            # Add matching keywords to requirements occasionally
+            if keywords:
+                 requirements.extend(random.sample(keywords, k=min(2, len(keywords))))
+
+            job = JobOpportunity(
+                id=fake.uuid4(),
+                title=job_title,
+                company=fake.company(),
+                description=fake.catch_phrase(),
+                requirements=requirements,
+                url=fake.url(),
+                source=random.choice(["LinkedIn", "Indeed", "Glassdoor", "Gupy"]),
+                match_score=0.0 # To be calculated later
+            )
+            opportunities.append(job)
+
+        return opportunities
+
+    def calculate_match_score(self, profile, job: JobOpportunity) -> float:
+        """
+        Calculates a simple match score based on keyword overlap.
+        """
+        score = 0.0
+        # Check title relevance (simplified)
+        for skill in profile.skills:
+            if skill.name.lower() in job.title.lower():
+                score += 30.0
+            if skill.name.lower() in [req.lower() for req in job.requirements]:
+                score += 10.0
+
+        # Check experience title relevance
+        for exp in profile.experiences:
+             if exp.title.lower() in job.title.lower():
+                 score += 20.0
+
+        # Cap at 100
+        return min(100.0, score)
+
+```
+
+## src/modules/monitoring.py
+```
+from src.core.models import Application
+from datetime import datetime, timedelta
+import random
+
+class FollowUpAgent:
+    def __init__(self):
+        pass
+
+    def check_for_follow_up(self, applications: list[Application]) -> list[str]:
+        """
+        Checks applications that need a follow-up action.
+        Returns a list of messages describing the actions taken.
+        """
+        actions = []
+        for app in applications:
+            # Simulate "Applied" applications that are older than X (simulated) seconds
+            # In real life this would be days.
+            # We don't have a real time delta in this simulation loop, so we'll use random chance
+            # for demo purposes to simulate "time passing" or just trigger on a few.
+
+            if app.status == "Aplicado" and random.random() < 0.1:
+                # Simulate sending a follow-up email
+                actions.append(f"Follow-up enviado para a vaga {app.job_id} na plataforma {app.platform}.")
+                app.notes += " | Follow-up enviado."
+
+        return actions
+
+```
+
+## src/modules/networking.py
+```
+import random
+from faker import Faker
+
+fake = Faker('pt_BR')
+
+class NetworkAgent:
+    def __init__(self):
+        pass
+
+    def attempt_connection(self, company_name: str) -> str:
+        """
+        Simulates finding a recruiter at the target company and sending a connection request.
+        """
+        # Simulate finding a recruiter
+        recruiter_name = fake.name()
+        role = random.choice(["Tech Recruiter", "Talent Acquisition", "Gerente de RH", "Head de Pessoas"])
+
+        # Simulate action
+        if random.random() < 0.3: # 30% chance of "action" per cycle it's called
+             return f"Conexão enviada para {recruiter_name} ({role}) na {company_name}."
+
+        return None
+
+    def send_message(self, recruiter_name: str) -> str:
+        """Simulates sending a networking message."""
+        return f"Mensagem de introdução enviada para {recruiter_name}."
+
+```
+
+## src/modules/onboarding.py
+```
+from src.core.models import CandidateProfile, Experience, Education, Skill
+from datetime import date
+from faker import Faker
+import random
+
+fake = Faker('pt_BR')
+
+class OnboardingAgent:
+    def __init__(self):
+        self.profile = None
+
+    def load_default_profile(self) -> CandidateProfile:
+        """Loads a hardcoded default profile for demonstration in PT-BR."""
+        self.profile = CandidateProfile(
+            name="Alex Desenvolvedor",
+            email="alex.dev@exemplo.com.br",
+            phone="+55 11 99999-9999",
+            summary="Engenheiro de Software Sênior com 8 anos de experiência em Python e Arquiteturas em Nuvem.",
+            experiences=[
+                Experience(
+                    title="Engenheiro Backend Sênior",
+                    company="TechCorp Brasil",
+                    start_date=date(2020, 1, 15),
+                    description="Liderando migração de microsserviços e otimizando consultas de banco de dados."
+                ),
+                Experience(
+                    title="Desenvolvedor de Software",
+                    company="Inova Startup",
+                    start_date=date(2016, 6, 1),
+                    end_date=date(2019, 12, 31),
+                    description="Desenvolvimento Full stack usando Django e React."
+                )
+            ],
+            education=[
+                Education(
+                    institution="Universidade Tecnológica",
+                    degree="Bacharelado",
+                    field_of_study="Ciência da Computação",
+                    start_date=date(2012, 8, 1),
+                    end_date=date(2016, 5, 20)
+                )
+            ],
+            skills=[
+                Skill(name="Python", level="Especialista"),
+                Skill(name="Docker", level="Intermediário"),
+                Skill(name="AWS", level="Avançado")
+            ],
+            linkedin_url="https://linkedin.com/in/alexdev"
+        )
+        return self.profile
+
+    def create_fake_profile(self) -> CandidateProfile:
+        """Generates a random fake profile."""
+        self.profile = CandidateProfile(
+            name=fake.name(),
+            email=fake.email(),
+            phone=fake.phone_number(),
+            summary=fake.text(),
+            experiences=[
+                Experience(
+                    title=fake.job(),
+                    company=fake.company(),
+                    start_date=fake.date_between(start_date='-5y', end_date='-1y'),
+                    description=fake.text()
+                )
+            ],
+            education=[
+                Education(
+                    institution=fake.company(),
+                    degree="Bacharelado",
+                    field_of_study="Ciência da Computação",
+                    start_date=fake.date_between(start_date='-10y', end_date='-6y'),
+                    end_date=fake.date_between(start_date='-6y', end_date='-5y')
+                )
+            ],
+            skills=[Skill(name=fake.word(), level="Intermediário") for _ in range(3)]
+        )
+        return self.profile
+
+```
+
+## src/modules/profile_optimizer.py
+```
+from src.core.models import CandidateProfile, JobOpportunity
+
+class ProfileOptimizer:
+    def optimize_for_job(self, profile: CandidateProfile, job: JobOpportunity) -> CandidateProfile:
+        """
+        Optimizes the candidate profile for a specific job opportunity.
+        In a real scenario, this would use LLM to rewrite the summary and experiences.
+        Here, we will simulate it by appending relevant keywords.
+        """
+        optimized_profile = profile.model_copy(deep=True)
+
+        # Simulated optimization logic
+        keywords = job.requirements
+
+        # Append missing keywords to summary to "optimize"
+        added_keywords = [k for k in keywords if k.lower() not in optimized_profile.summary.lower()]
+
+        if added_keywords:
+            optimized_profile.summary += f"\n\nÁreas de foco otimizadas: {', '.join(added_keywords)}."
+
+        return optimized_profile
+
+    def update_linkedin_headline(self, profile: CandidateProfile) -> str:
+        """Generates a new LinkedIn headline based on skills."""
+        top_skills = [s.name for s in profile.skills[:3]]
+        return f"{profile.experiences[0].title} | {' | '.join(top_skills)} | Aberto a oportunidades"
+
+```
+
+## src/modules/reporting.py
+```
+import os
+from datetime import datetime
+from src.core.models import CandidateProfile, Application
+
+class ReportGenerator:
+    def __init__(self):
+        pass
+
+    def generate_daily_report(self, profile: CandidateProfile, metrics: dict, applications: list[Application], strategy: str):
+        """Generates a markdown report of the system's operation."""
+        filename = f"relatorio_operacional_{datetime.now().strftime('%Y%m%d')}.md"
+
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(f"# RELATÓRIO OPERACIONAL BIRTH HUB 360 - {datetime.now().strftime('%d/%m/%Y')}\n\n")
+
+            f.write("## 1. RESUMO EXECUTIVO\n")
+            f.write(f"- **Perfil Ativo:** {profile.name}\n")
+            f.write(f"- **Estratégia Atual:** {strategy}\n")
+            f.write(f"- **Status:** Operacional\n\n")
+
+            f.write("## 2. MÉTRICAS DO CICLO\n")
+            f.write("| Métrica | Valor |\n")
+            f.write("|---|---|\n")
+            f.write(f"| Vagas Escaneadas | {metrics.get('scanned', 0)} |\n")
+            f.write(f"| Vagas Compatíveis | {metrics.get('matched', 0)} |\n")
+            f.write(f"| Candidaturas Enviadas | {metrics.get('applied', 0)} |\n")
+            f.write(f"| Entrevistas Agendadas | {metrics.get('interviews', 0)} |\n")
+            f.write(f"| Ações de Networking | {metrics.get('networking', 0)} |\n\n")
+
+            f.write("## 3. REGISTRO DE CANDIDATURAS (Últimas 10)\n")
+            if not applications:
+                f.write("_Nenhuma candidatura registrada._\n")
+            else:
+                for app in applications[-10:]:
+                    f.write(f"- **{app.applied_at.strftime('%H:%M')}**: {app.job_id} via {app.platform} - Status: {app.status}\n")
+
+            f.write("\n## 4. PRÓXIMOS PASSOS AUTOMÁTICOS\n")
+            f.write("- Manter varredura de vagas.\n")
+            f.write("- Acompanhar retornos de networking.\n")
+            f.write("- Otimizar currículo baseado em feedback (simulado).\n")
+
+        return filename
+
+```
+
+## src/modules/resume_generator.py
+```
+from src.core.models import CandidateProfile, JobOpportunity, Resume
+from datetime import datetime
+
+class ResumeGenerator:
+    def generate_resume(self, profile: CandidateProfile, job: JobOpportunity) -> Resume:
+        """
+        Generates a tailored resume for a specific job.
+        """
+        # Create a header
+        content = f"CURRÍCULO: {profile.name}\n"
+        content += f"Contato: {profile.email} | {profile.phone}\n"
+        content += f"LinkedIn: {profile.linkedin_url}\n\n"
+
+        # Tailored Summary
+        content += "RESUMO PROFISSIONAL\n"
+        # In a real system, this would rewrite the summary based on job.description
+        content += f"{profile.summary}\n"
+        content += f"Entusiasta por vagas de {job.title} na {job.company}.\n\n"
+
+        # Skills (Highlighting matching ones)
+        content += "HABILIDADES\n"
+        skills_list = [s.name for s in profile.skills]
+        # Bolding/Highlighting matching skills (simulated with *)
+        formatted_skills = []
+        for skill in skills_list:
+            if skill.lower() in [r.lower() for r in job.requirements]:
+                formatted_skills.append(f"*{skill}*")
+            else:
+                formatted_skills.append(skill)
+        content += ", ".join(formatted_skills) + "\n\n"
+
+        # Experience
+        content += "EXPERIÊNCIA\n"
+        for exp in profile.experiences:
+            content += f"{exp.title} na {exp.company} ({exp.start_date} - {exp.end_date if exp.end_date else 'Atualmente'})\n"
+            content += f"- {exp.description}\n"
+
+        content += "\nFORMAÇÃO ACADÊMICA\n"
+        for edu in profile.education:
+            content += f"{edu.degree} em {edu.field_of_study}, {edu.institution}\n"
+
+        return Resume(
+            profile_id=profile.id,
+            job_id=job.id,
+            content=content,
+            version_tag=f"v1-{job.company}-{datetime.now().strftime('%Y%m%d')}"
+        )
+
 ```
 
 ## src/modules/selenium_bot/config.py
@@ -241,6 +1395,7 @@ PERFIL = {
         "Home Office"
     ]
 }
+
 ```
 
 ## src/modules/selenium_bot/human_bot.py
@@ -286,6 +1441,7 @@ class HumanoBot:
             print(">> 🏁 Sessão finalizada.")
             self.driver.quit()
             self.driver = None
+
 ```
 
 ## src/modules/selenium_bot/infojobs.py
@@ -375,61 +1531,7 @@ class InfojobsBot(HumanoBot):
 
             except Exception as e:
                 print(f"   [⚠️ ERRO] Pulei a vaga: {e}")
-```
 
-## src/modules/selenium_bot/vagas.py
-```
-from selenium.webdriver.common.by import By
-from src.modules.selenium_bot.human_bot import HumanoBot
-from src.modules.selenium_bot.config import PERFIL
-
-class VagasBot(HumanoBot):
-    def executar_busca(self):
-        # Nota: Vagas.com geralmente requer login manual prévio ou gestão de cookies complexa.
-        # Este script foca na iteração de busca conforme o snippet fornecido.
-        print(">> ⚠️ Nota: Para o Vagas.com, certifique-se de estar logado ou implemente o login.")
-
-        for cargo in PERFIL["buscas"]:
-            url = f"https://www.vagas.com.br/vagas-de-{cargo.replace(' ', '-')}"
-            print(f"\n>> 🔍 Buscando no Vagas.com: {cargo}")
-
-            self.driver.get(url)
-            self.dormir_aleatorio(3, 5)
-
-            vagas = self.driver.find_elements(By.CLASS_NAME, "vaga")
-            links = []
-
-            for vaga in vagas:
-                try:
-                    link_elem = vaga.find_element(By.TAG_NAME, "a")
-                    links.append(link_elem.get_attribute('href'))
-                except:
-                    continue
-
-            print(f"   Encontradas {len(links)} vagas.")
-
-            for link in links[:5]: # Limite
-                try:
-                    self.processar_vaga(link)
-                except Exception as e:
-                    print(f"   Erro ao processar vaga: {e}")
-
-    def processar_vaga(self, link):
-        self.driver.get(link)
-        self.dormir_aleatorio(2, 4)
-
-        try:
-            # Botão candidatar
-            bts = self.driver.find_elements(By.CLASS_NAME, "bt-candidatura")
-            if bts:
-                bts[0].click()
-                print(f"   [Tentativa de Candidatura] {link}")
-                self.dormir_aleatorio(2, 3)
-                # Aqui entraria lógica de confirmação específica do Vagas
-            else:
-                print(f"   [Botão não encontrado] {link}")
-        except Exception as e:
-            print(f"   [Erro] {e}")
 ```
 
 ## src/modules/selenium_bot/runner.py
@@ -486,275 +1588,61 @@ if __name__ == "__main__":
         runner.run()
     except KeyboardInterrupt:
         print(">> 🛑 Parada manual solicitada.")
+
 ```
 
-## chrome_extension/background.js
+## src/modules/selenium_bot/vagas.py
 ```
-let jobQueue = [];
-let isProcessing = false;
+from selenium.webdriver.common.by import By
+from src.modules.selenium_bot.human_bot import HumanoBot
+from src.modules.selenium_bot.config import PERFIL
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "QUEUE_JOBS") {
-    const newJobs = request.urls;
-    console.log(`[Background] Received ${newJobs.length} jobs to queue.`);
+class VagasBot(HumanoBot):
+    def executar_busca(self):
+        # Nota: Vagas.com geralmente requer login manual prévio ou gestão de cookies complexa.
+        # Este script foca na iteração de busca conforme o snippet fornecido.
+        print(">> ⚠️ Nota: Para o Vagas.com, certifique-se de estar logado ou implemente o login.")
 
-    // Add unique jobs
-    newJobs.forEach(url => {
-        if (!jobQueue.includes(url)) {
-            jobQueue.push(url);
-        }
-    });
+        for cargo in PERFIL["buscas"]:
+            url = f"https://www.vagas.com.br/vagas-de-{cargo.replace(' ', '-')}"
+            print(f"\n>> 🔍 Buscando no Vagas.com: {cargo}")
 
-    sendResponse({status: "queued", count: jobQueue.length});
+            self.driver.get(url)
+            self.dormir_aleatorio(3, 5)
 
-    if (!isProcessing) {
-        processQueue();
-    }
-  } else if (request.action === "JOB_COMPLETE") {
-      // Content script tells us it finished applying on the current tab
-      console.log("[Background] Job Complete signal received.");
-      // We can close the tab?
-      if (sender.tab) {
-          chrome.tabs.remove(sender.tab.id);
-      }
-      // Continue processing is handled by the loop/recursion,
-      // but since we close the tab, we rely on the processQueue loop or re-trigger.
-      // Actually, since processQueue is async, it might need to wait.
-  }
-});
+            vagas = self.driver.find_elements(By.CLASS_NAME, "vaga")
+            links = []
 
-async function processQueue() {
-    if (jobQueue.length === 0) {
-        isProcessing = false;
-        console.log("[Background] Queue empty.");
-        return;
-    }
+            for vaga in vagas:
+                try:
+                    link_elem = vaga.find_element(By.TAG_NAME, "a")
+                    links.append(link_elem.get_attribute('href'))
+                except:
+                    continue
 
-    isProcessing = true;
-    const url = jobQueue.shift();
-    console.log(`[Background] Processing: ${url}`);
+            print(f"   Encontradas {len(links)} vagas.")
 
-    try {
-        const tab = await chrome.tabs.create({ url: url, active: true });
+            for link in links[:5]: # Limite
+                try:
+                    self.processar_vaga(link)
+                except Exception as e:
+                    print(f"   Erro ao processar vaga: {e}")
 
-        // Wait for page load
-        await waitTabLoad(tab.id);
+    def processar_vaga(self, link):
+        self.driver.get(link)
+        self.dormir_aleatorio(2, 4)
 
-        // Inject the start command
-        // Note: The content script (loader -> router) runs automatically on match.
-        // But we need to tell it "Auto Start" because it's an automated tab.
-        // We can do this by sending a message after load.
+        try:
+            # Botão candidatar
+            bts = self.driver.find_elements(By.CLASS_NAME, "bt-candidatura")
+            if bts:
+                bts[0].click()
+                print(f"   [Tentativa de Candidatura] {link}")
+                self.dormir_aleatorio(2, 3)
+                # Aqui entraria lógica de confirmação específica do Vagas
+            else:
+                print(f"   [Botão não encontrado] {link}")
+        except Exception as e:
+            print(f"   [Erro] {e}")
 
-        await sleep(3000); // Wait for DOM
-
-        chrome.tabs.sendMessage(tab.id, {action: "start"}, (response) => {
-            if (chrome.runtime.lastError) {
-                console.log("[Background] Error sending start command: ", chrome.runtime.lastError.message);
-            } else {
-                console.log("[Background] Start command sent to tab.");
-            }
-        });
-
-        // Wait for job completion?
-        // Realistically, we need a timeout or a message back.
-        // For this MVP, we give it X seconds then close.
-        await sleep(10000);
-
-        // Close tab
-        try {
-            await chrome.tabs.remove(tab.id);
-        } catch (e) { /* Tab might be closed by user */ }
-
-    } catch (err) {
-        console.error("[Background] Error processing job:", err);
-    }
-
-    // Process next
-    setTimeout(processQueue, 1000);
-}
-
-function waitTabLoad(tabId) {
-    return new Promise(resolve => {
-        chrome.tabs.onUpdated.addListener(function listener(tid, changeInfo) {
-            if (tid === tabId && changeInfo.status === 'complete') {
-                chrome.tabs.onUpdated.removeListener(listener);
-                resolve();
-            }
-        });
-    });
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-```
-
-## chrome_extension/content_router.js
-```
-import { runLinkedInBot } from './linkedin_bot.js';
-import { runInfojobsBot } from './infojobs_bot.js';
-import { runVagasBot } from './vagas_bot.js';
-import { log } from './utils.js';
-
-log("Extension Loaded. Waiting for start command...");
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "start") {
-        log("Command received: START");
-
-        const hostname = window.location.hostname;
-
-        if (hostname.includes('linkedin.com')) {
-            runLinkedInBot();
-        } else if (hostname.includes('infojobs.com.br')) {
-            runInfojobsBot();
-        } else if (hostname.includes('vagas.com.br')) {
-            runVagasBot();
-        } else {
-            alert("Site não suportado por este bot.");
-        }
-
-        sendResponse({status: "started"});
-    }
-});
-```
-
-## chrome_extension/linkedin_bot.js
-```
-import { userProfile } from './user_profile.js';
-import { sleep, log } from './utils.js';
-
-export async function runLinkedInBot() {
-    log("Iniciando Bot LinkedIn...");
-
-    // Find job cards in the left sidebar
-    const jobs = document.querySelectorAll('.job-card-container');
-    if (jobs.length === 0) {
-        log("Nenhuma vaga encontrada na lista lateral. Certifique-se de estar na página de busca de vagas.");
-        return;
-    }
-
-    for (let job of jobs) {
-        // Scroll to job to ensure it loads
-        job.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        job.click();
-        log("Vaga clicada, aguardando carregamento...");
-        await sleep(2000);
-
-        // Check for Easy Apply button
-        const applyBtn = document.querySelector('.jobs-apply-button--top-card');
-
-        if (applyBtn) {
-            log("Botão Candidatura Simplificada encontrado.");
-            applyBtn.click();
-            await sleep(1500);
-
-            // Handle Modal
-            await handleModal();
-        } else {
-            log("Botão de Candidatura Simplificada não encontrado ou vaga já aplicada.");
-        }
-
-        await sleep(1000);
-    }
-    log("Fim da lista de vagas visíveis.");
-}
-
-async function handleModal() {
-    let maxSteps = 20; // Prevent infinite loops
-    let step = 0;
-
-    while (document.querySelector('.jobs-easy-apply-modal') && step < maxSteps) {
-        step++;
-
-        // Buttons
-        const buttons = Array.from(document.querySelectorAll('button'));
-        const nextBtn = buttons.find(b => b.innerText.includes('Avançar') || b.innerText.includes('Next'));
-        const reviewBtn = buttons.find(b => b.innerText.includes('Revisar') || b.innerText.includes('Review'));
-        const submitBtn = buttons.find(b => b.innerText.includes('Enviar candidatura') || b.innerText.includes('Submit application'));
-
-        // Fill Inputs
-        await fillInputs();
-
-        if (submitBtn) {
-            log("Enviando candidatura...");
-            // submitBtn.click(); // UNCOMMENT TO ACTUALLY APPLY
-            // await sleep(2000);
-
-            // Close modal after submit (usually "Done" button appears)
-            const closeBtn = document.querySelector('button[aria-label="Dismiss"]');
-            if(closeBtn) closeBtn.click();
-            return;
-        }
-        else if (reviewBtn) {
-            log("Revisando...");
-            reviewBtn.click();
-            await sleep(1500);
-        }
-        else if (nextBtn) {
-            log("Avançando...");
-            nextBtn.click();
-            await sleep(1500);
-
-            // Check for errors (did not advance)
-            if (document.querySelector('.artdeco-inline-feedback--error')) {
-                log("Erro no formulário detectado. Pulando vaga.");
-                const closeBtn = document.querySelector('button[aria-label="Dismiss"]');
-                if(closeBtn) closeBtn.click();
-                await sleep(500);
-                const confirmDiscard = buttons.find(b => b.innerText.includes('Descartar') || b.innerText.includes('Discard'));
-                if (confirmDiscard) confirmDiscard.click();
-                return;
-            }
-        } else {
-            // Unexpected state or just wait
-            // Sometimes it takes a moment for buttons to update
-            await sleep(1000);
-        }
-    }
-}
-
-async function fillInputs() {
-    // 1. Radio Buttons (Yes/No)
-    const radioGroups = document.querySelectorAll('.jobs-easy-apply-form-section__grouping');
-    for (const group of radioGroups) {
-        // Simple heuristic: always click the first radio (usually "Yes" or top option)
-        // A real AI would analyze the label text.
-        const radios = group.querySelectorAll('input[type="radio"]');
-        if (radios.length > 0) {
-            // Check if one is already checked
-            const checked = Array.from(radios).some(r => r.checked);
-            if (!checked) {
-                // Determine logic based on label text?
-                // For MVP, click the first one (often 'Sim' or 'Yes')
-                // But safer to check label.
-
-                // For now, Marcelo wants to automate, so let's default to positive/first.
-                radios[0].click();
-                await sleep(200);
-            }
-        }
-    }
-
-    // 2. Text Inputs (Phone, City, etc)
-    const textInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-    for (const input of textInputs) {
-        if (!input.value) {
-            const label = input.id ? document.querySelector(`label[for="${input.id}"]`)?.innerText.toLowerCase() : "";
-
-            if (label.includes("phone") || label.includes("telefone") || label.includes("celular")) {
-                fireInputEvent(input, userProfile.personal.phone);
-            } else if (label.includes("city") || label.includes("cidade")) {
-                fireInputEvent(input, userProfile.personal.city);
-            }
-            // Add more mappings as needed
-        }
-    }
-}
-
-function fireInputEvent(input, value) {
-    input.value = value;
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-}
 ```
