@@ -1,4 +1,78 @@
-# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (ATUALIZADO)
+# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (FINAL)
+
+## .env
+```
+RUN_MODE=local
+HEADLESS=0
+TIMEZONE=America/Sao_Paulo
+LINKEDIN_EMAIL=marcelinmark@gmail.com
+LINKEDIN_PASSWORD=SUA_SENHA_AQUI
+GUPY_EMAIL=marcelinmark@gmail.com
+GUPY_PASSWORD=SUA_SENHA_AQUI
+
+```
+
+## requirements.txt
+```
+playwright==1.41.0
+pydantic==2.5.3
+python-dotenv==1.0.1
+rich
+faker
+selenium
+webdriver-manager
+
+```
+
+## profile_br.json
+```
+{
+  "pessoal": {
+    "nome_completo": "Marcelo Nascimento",
+    "email": "marcelinmark@gmail.com",
+    "telefone": "16999948479",
+    "linkedin": "https://www.linkedin.com/in/maarkss",
+    "cidade": "Ribeirão Preto",
+    "estado": "SP",
+    "pais": "Brasil"
+  },
+  "preferencias": {
+    "idioma_ui": "pt-BR",
+    "modalidade": ["Remoto", "Hibrido", "Presencial"],
+    "localizacoes_alvo": ["Brasil", "Ribeirão Preto SP"],
+    "meta_candidaturas_dia": 50,
+    "cv_nome_arquivo": "CV_Marcelo_Nascimento.pdf"
+  },
+  "skills": [
+    "Revenue Operations", "Sales Operations", "RevOps", "Sales Enablement", "CRM",
+    "Salesforce", "HubSpot", "RD Station", "Pipedrive",
+    "Python", "SQL", "REST APIs", "Webhooks", "Dashboards", "Lead Scoring",
+    "Power BI", "Excel", "OKRs", "Forecast", "Pipeline", "Go-to-Market",
+    "SDR", "BDR", "Inside Sales", "Pré-vendas", "Outbound", "Prospecção",
+    "Cold calling", "Cold email", "Cadência", "Sequência", "Qualificação",
+    "Sales Navigator", "MQL", "SQL (Sales Qualified Lead)", "Follow-up", "Discovery call",
+    "SPIN", "AIDA"
+  ],
+  "documentos": {
+    "cv_pdf_path": "./docs/CV_Marcelo_Nascimento.pdf"
+  },
+  "seeds": {
+    "linkedin_search_pages": [
+      "https://br.linkedin.com/jobs/revenue-operations-vagas",
+      "https://br.linkedin.com/jobs/sales-operations-vagas",
+      "https://br.linkedin.com/jobs/sales-operations-analyst-vagas",
+      "https://br.linkedin.com/jobs/sales-development-representative-trabalho-remoto-vagas",
+      "https://br.linkedin.com/jobs/inside-sales-trabalho-remoto-vagas",
+      "https://br.linkedin.com/jobs/remote-sales-vagas"
+    ],
+    "gupy_search_pages": [
+      "https://portal.gupy.io/job-search/term=Sdr&workplaceTypes%5B%5D=remote",
+      "https://portal.gupy.io/job-search/term=sdr&workplaceTypes"
+    ]
+  }
+}
+
+```
 
 ## chrome_extension/background.js
 ```
@@ -535,6 +609,46 @@ export async function runVagasBot() {
         // Signal completion (optional, background closes anyway)
     }
 }
+
+```
+
+## deploy/autoapply.service
+```
+[Unit]
+Description=AutoApply (LinkedIn + Gupy)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/autoapply
+ExecStart=/opt/autoapply/.venv/bin/python -m core.runner
+Restart=always
+RestartSec=120
+Environment=RUN_MODE=ec2
+Environment=HEADLESS=1
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+## deploy/bot_vagas.service
+```
+[Unit]
+Description=AutoApply Bot (Selenium)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/BotVagas
+ExecStart=/home/ubuntu/BotVagas/venv/bin/python3 /home/ubuntu/BotVagas/src/modules/selenium_bot/runner.py
+Restart=always
+RestartSec=300
+
+[Install]
+WantedBy=multi-user.target
 
 ```
 

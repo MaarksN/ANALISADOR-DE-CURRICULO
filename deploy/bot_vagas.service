@@ -1,0 +1,14 @@
+[Unit]
+Description=AutoApply Bot (Selenium)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/BotVagas
+ExecStart=/home/ubuntu/BotVagas/venv/bin/python3 /home/ubuntu/BotVagas/src/modules/selenium_bot/runner.py
+Restart=always
+RestartSec=300
+
+[Install]
+WantedBy=multi-user.target
