@@ -1,4 +1,4 @@
-# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (FINAL)
+# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V5)
 
 ## .env.example
 ```
@@ -1081,7 +1081,7 @@ R\xb5\x82\xa7m\xf7\x8cr\xe7\x97dR\x9e\xa0r\xe5\xff\xa0\x8ceBM\x836w\xed`\
                     <li><a href="#projetos">Módulos</a></li>
                     <li><a href="#download">Download</a></li>
                     <li><a href="#docs">Documentação</a></li>
-                    <li><a href="https://github.com/marcelinmark/birth-hub-360" target="_blank" class="btn-github"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li><a href="https://github.com/marcelinmark/hub-de-vagas" target="_blank" class="btn-github"><i class="fab fa-github"></i> GitHub</a></li>
                 </ul>
             </nav>
         </div>
