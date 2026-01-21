@@ -1,4 +1,6 @@
-pydantic
+playwright==1.41.0
+pydantic==2.5.3
+python-dotenv==1.0.1
 rich
 faker
 selenium

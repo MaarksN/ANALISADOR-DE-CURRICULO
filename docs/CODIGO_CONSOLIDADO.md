@@ -1,4 +1,4 @@
-# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (COMPLETO)
+# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (ATUALIZADO)
 
 ## chrome_extension/background.js
 ```
@@ -538,6 +538,124 @@ export async function runVagasBot() {
 
 ```
 
+## docs/AWS_SETUP.md
+```
+# Configuração do Bot na AWS (EC2 / Ubuntu)
+
+Siga os passos abaixo para configurar o ambiente e rodar o bot em modo headless (sem interface gráfica) em um servidor Ubuntu.
+
+## 1. Atualizar o sistema
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+## 2. Instalar o Google Chrome (versão estável)
+```bash
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
+```
+
+## 3. Instalar dependências do Python
+```bash
+sudo apt install -y python3-pip python3-venv unzip
+```
+
+## 4. Configurar o Projeto
+
+Clone o repositório ou crie a pasta:
+
+```bash
+mkdir BirthHub360
+cd BirthHub360
+# (Aqui você faria o git clone ou upload dos arquivos)
+```
+
+## 5. Criar e ativar o ambiente virtual
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+## 6. Instalar bibliotecas
+```bash
+pip install -r requirements.txt
+```
+*Certifique-se de que `selenium` e `webdriver-manager` estão no requirements.txt.*
+
+## 7. Configurar Variáveis de Ambiente
+Para segurança, não salve senhas no código. Exporte-as antes de rodar:
+```bash
+export INFOJOBS_PASSWORD="sua_senha_real"
+export VAGAS_PASSWORD="sua_senha_real"
+```
+
+## 8. Executar o Bot 24h
+```bash
+python3 src/modules/selenium_bot/runner.py
+```
+*Para manter rodando mesmo ao fechar o terminal, use `nohup` ou `tmux`.*
+
+```bash
+nohup python3 src/modules/selenium_bot/runner.py > bot.log 2>&1 &
+```
+
+```
+
+## docs/SYSTEMD_SETUP.md
+```
+# Configuração do Systemd para AutoApply
+
+Para rodar o AutoApply como um serviço de fundo (daemon) no Ubuntu, siga estes passos:
+
+## 1. Criar o arquivo de serviço
+Crie o arquivo `/etc/systemd/system/autoapply.service` com o seguinte conteúdo:
+
+```ini
+[Unit]
+Description=AutoApply (LinkedIn + Gupy)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/BirthHub360
+# Ajuste o caminho do python conforme seu venv
+ExecStart=/home/ubuntu/BirthHub360/venv/bin/python -m src.core.runner
+Restart=always
+RestartSec=120
+Environment=RUN_MODE=ec2
+Environment=HEADLESS=1
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## 2. Ativar e Iniciar o Serviço
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable autoapply
+sudo systemctl start autoapply
+```
+
+## 3. Verificar Logs
+
+```bash
+sudo journalctl -u autoapply -f
+```
+
+```
+
+## scripts/login_seed.py
+```
+from pathlib import Path
+from src.core.auth import interactive_login_and_save_state
+
+interactive_login_and_save_state(platform="linkedin", login_url="https://www.linkedin.com/login/pt", state_path=Path("data/sessions/linkedin_state.json"))
+interactive_login_and_save_state(platform="gupy", login_url="https://login.gupy.io/", state_path=Path("data/sessions/gupy_state.json"))
+
+```
+
 ## src/__init__.py
 ```
 
@@ -545,6 +663,128 @@ export async function runVagasBot() {
 
 ## src/core/__init__.py
 ```
+
+```
+
+## src/core/auth.py
+```
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+
+AUTH_DIR = Path("data") / "sessions"
+AUTH_DIR.mkdir(parents=True, exist_ok=True)
+
+def interactive_login_and_save_state(platform: str, login_url: str, state_path: Path):
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(login_url, wait_until="domcontentloaded")
+        print(f" [LOGIN] Faça login manualmente em {platform} e depois volte aqui.")
+        input("Quando terminar, pressione ENTER para salvar o state...")
+        context.storage_state(path=str(state_path))
+        context.close()
+        browser.close()
+
+```
+
+## src/core/browser.py
+```
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+
+def _route_block_heavy(route):
+    rt = route.request.resource_type
+    if rt in ("image", "font", "stylesheet", "media"):
+        return route.abort()
+    return route.continue_()
+
+def open_context(headless: bool, storage_state_path: Path | None):
+    p = sync_playwright().start()
+    browser = p.chromium.launch(headless=headless)
+    if storage_state_path and storage_state_path.exists():
+        context = browser.new_context(storage_state=str(storage_state_path))
+    else:
+        context = browser.new_context()
+    context.route("**/*", _route_block_heavy)
+    page = context.new_page()
+    return p, browser, context, page
+
+```
+
+## src/core/db.py
+```
+import sqlite3
+from pathlib import Path
+
+DB_PATH = Path("data") / "autoapply.db"
+
+def init_db():
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(DB_PATH) as con:
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS jobs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                platform TEXT NOT NULL,
+                job_url TEXT NOT NULL,
+                title TEXT,
+                company TEXT,
+                location TEXT,
+                score INTEGER DEFAULT 0,
+                status TEXT NOT NULL,
+                reason TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (platform, job_url)
+            );
+        """)
+        con.commit()
+
+def upsert_job(platform, job_url, status, title=None, company=None, location=None, score=0, reason=None):
+    with sqlite3.connect(DB_PATH) as con:
+        con.execute("""
+            INSERT INTO jobs (platform, job_url, title, company, location, score, status, reason)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(platform, job_url) DO UPDATE SET
+                title=excluded.title,
+                company=excluded.company,
+                location=excluded.location,
+                score=excluded.score,
+                status=excluded.status,
+                reason=excluded.reason;
+        """, (platform, job_url, title, company, location, score, status, reason))
+        con.commit()
+
+def seen(platform, job_url):
+    with sqlite3.connect(DB_PATH) as con:
+        cur = con.execute("SELECT status FROM jobs WHERE platform=? AND job_url=?", (platform, job_url))
+        row = cur.fetchone()
+        return row[0] if row else None
+
+```
+
+## src/core/export.py
+```
+import csv
+import sqlite3
+from pathlib import Path
+from datetime import datetime
+
+def export_daily(db_path: Path, out_path: Path):
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(db_path) as con:
+        rows = con.execute("""
+            SELECT platform, job_url, title, company, location, score, status, reason, created_at
+            FROM jobs
+            ORDER BY created_at DESC
+        """).fetchall()
+    with out_path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["platform", "job_url", "title", "company", "location", "score", "status", "reason", "created_at"])
+        w.writerows(rows)
+
+def daily_filename():
+    return datetime.now().strftime("out/daily_export_%Y-%m-%d.csv")
 
 ```
 
@@ -680,6 +920,238 @@ class PersistenceManager:
                     pass
 
         return profile, metrics, applications
+
+```
+
+## src/core/runner.py
+```
+import json
+import os
+import random
+import time
+import re
+from pathlib import Path
+from datetime import datetime, date
+from src.core.db import init_db, seen, upsert_job, DB_PATH
+from src.core.export import export_daily, daily_filename
+from src.core.browser import open_context
+from src.core.sources import enqueue, extract_gupy_links
+from src.drivers.linkedin_easy_apply import process_job as li_process
+from src.drivers.gupy_fast_apply import process_job as gupy_process
+
+PROFILE_PATH = Path("profile_br.json")
+QUEUE_PATH = Path("data") / "queue.jsonl"
+STATE_LI = Path("data") / "sessions" / "linkedin_state.json"
+STATE_GUPY = Path("data") / "sessions" / "gupy_state.json"
+
+def load_profile(): return json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
+
+def count_applied_today():
+    import sqlite3
+    today = date.today().isoformat()
+    with sqlite3.connect(DB_PATH) as con:
+        row = con.execute("SELECT COUNT(*) FROM jobs WHERE status='applied' AND substr(created_at, 1, 10)=?", (today,)).fetchone()
+    return row[0] if row else 0
+
+def read_queue(limit=200):
+    if not QUEUE_PATH.exists(): return []
+    lines = QUEUE_PATH.read_text(encoding="utf-8").splitlines()
+    items = []
+    for ln in lines[:limit]:
+        try: items.append(json.loads(ln))
+        except: pass
+    return items
+
+def main():
+    init_db()
+    profile = load_profile()
+    headless = os.environ.get("HEADLESS", "1") == "1"
+
+    for url in profile.get("seeds", {}).get("linkedin_search_pages", []):
+        enqueue("linkedin_search", url)
+    for url in profile.get("seeds", {}).get("gupy_search_pages", []):
+        enqueue("web_discovery", url)
+
+    meta_daily = int(profile["preferencias"]["meta_candidaturas_dia"])
+    applied_today = count_applied_today()
+    remaining = max(0, meta_daily - applied_today)
+
+    if remaining == 0:
+        export_daily(DB_PATH, Path(daily_filename()))
+        return
+
+    windows = 10
+    per_window = min(max(1, remaining // windows), 6)
+
+    p1, b1, c1, page_li = open_context(headless=headless, storage_state_path=STATE_LI)
+    p2, b2, c2, page_gupy = open_context(headless=headless, storage_state_path=STATE_GUPY)
+
+    try:
+        for w in range(windows):
+            if count_applied_today() >= meta_daily: break
+            queue = read_queue(limit=400)
+            random.shuffle(queue)
+            applied_in_window = 0
+            for item in queue:
+                if applied_in_window >= per_window: break
+                platform = item.get("platform")
+                url = item.get("url")
+                if not url: continue
+                if seen(platform if platform in ("linkedin", "gupy") else "source", url): continue
+
+                if platform == "linkedin_search":
+                    page_li.goto(url, wait_until="domcontentloaded")
+                    page_li.wait_for_timeout(1200)
+                    for m in set(re.findall(r"https://www\.linkedin\.com/jobs/view/\d+", page_li.content())):
+                        enqueue("linkedin", m)
+                    continue
+
+                if platform == "web_discovery":
+                    page_gupy.goto(url, wait_until="domcontentloaded")
+                    page_gupy.wait_for_timeout(1200)
+                    links = extract_gupy_links(page_gupy.content())
+                    for lk in links: enqueue("gupy", lk)
+                    continue
+
+                if platform == "linkedin":
+                    li_process(page_li, url, profile)
+                    if seen("linkedin", url) == "applied": applied_in_window += 1
+                    continue
+
+                if platform == "gupy":
+                    gupy_process(page_gupy, url, profile)
+                    if seen("gupy", url) == "applied": applied_in_window += 1
+                    continue
+            sleep_s = random.randint(1800, 7200)
+            time.sleep(sleep_s)
+    finally:
+        export_daily(DB_PATH, Path(daily_filename()))
+        c1.close(); b1.close(); p1.stop()
+        c2.close(); b2.close(); p2.stop()
+
+if __name__ == "__main__":
+    main()
+
+```
+
+## src/core/scoring.py
+```
+def score_text(text: str, keywords: list[str]) -> int:
+    t = (text or "").lower()
+    return sum(1 for k in keywords if k.lower() in t)
+
+def decide(score: int) -> str:
+    if score >= 5: return "apply"
+    if score >= 3: return "needs_manual"
+    return "skip"
+
+```
+
+## src/core/sources.py
+```
+import json
+import re
+from pathlib import Path
+from urllib.parse import quote
+
+QUEUE_PATH = Path("data") / "queue.jsonl"
+QUEUE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+def enqueue(platform: str, url: str, meta: dict | None = None):
+    meta = meta or {}
+    with QUEUE_PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps({"platform": platform, "url": url, "meta": meta}, ensure_ascii=False) + "\n")
+
+def linkedin_search_urls(queries: list[str], geo: str = "106057199"):
+    urls = []
+    for q in queries:
+        urls.append(f"https://www.linkedin.com/jobs/search/?keywords={quote(q)}&locationId={geo}")
+    return urls
+
+GUPY_RE = re.compile(r"https?://[a-z0-9\-]+\.gupy\.io/[^\s\"'>)]+", re.IGNORECASE)
+
+def extract_gupy_links(text: str) -> list[str]:
+    return list(dict.fromkeys(GUPY_RE.findall(text or "")))
+
+```
+
+## src/drivers/gupy_fast_apply.py
+```
+from src.core.db import upsert_job
+from src.core.scoring import score_text, decide
+PLATFORM = "gupy"
+
+def process_job(page, job_url, profile):
+    page.goto(job_url, wait_until="domcontentloaded")
+    title = page.locator("h1").first.inner_text(timeout=3000) if page.locator("h1").count() else ""
+    body = page.locator("body").inner_text(timeout=3000)
+    score = score_text((title or "") + " " + body, profile["skills"])
+    action = decide(score)
+
+    if action == "skip":
+        upsert_job(PLATFORM, job_url, "skipped_low_score", title=title, score=score, reason="score_baixo")
+        return
+    if not page.locator("text=Candidatura Rápida").count():
+        upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="nao_rapida")
+        return
+    if action == "needs_manual":
+        upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="score_medio")
+        return
+
+    btn = page.locator("button:has-text('Candidatar')").first
+    if not btn.count():
+        upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="botao_nao_achado")
+        return
+
+    btn.click()
+    page.wait_for_timeout(1500)
+    if page.locator("text=Teste").count() or page.locator("textarea").count():
+        upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="perguntas_extras")
+        return
+    upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
+
+```
+
+## src/drivers/linkedin_easy_apply.py
+```
+from src.core.db import upsert_job
+from src.core.scoring import score_text, decide
+PLATFORM = "linkedin"
+
+def process_job(page, job_url, profile):
+    page.goto(job_url, wait_until="domcontentloaded")
+    title = page.locator("h1").first.inner_text(timeout=3000) if page.locator("h1").count() else ""
+    desc = page.locator("div.jobs-description").first.inner_text(timeout=3000) if page.locator("div.jobs-description").count() else ""
+    score = score_text((title or "") + " " + desc, profile["skills"])
+    action = decide(score)
+
+    if action == "skip":
+        upsert_job(PLATFORM, job_url, "skipped_low_score", title=title, score=score, reason="score_baixo")
+        return
+
+    easy = page.locator("button:has-text('Candidatura simplificada')").first
+    if not easy.count():
+        upsert_job(PLATFORM, job_url, "skipped_external_apply", title=title, score=score, reason="externo")
+        return
+
+    if action == "needs_manual":
+        upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="score_medio")
+        return
+
+    easy.click()
+    page.wait_for_timeout(1200)
+    for _ in range(10):
+        if page.locator("button:has-text('Enviar candidatura')").count():
+            page.locator("button:has-text('Enviar candidatura')").click()
+            upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
+            return
+        nxt = page.locator("button:has-text('Avançar')").first
+        if nxt.count():
+            nxt.click()
+            page.wait_for_timeout(900)
+            continue
+        upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="loop_ou_erro_modal")
+        return
 
 ```
 
