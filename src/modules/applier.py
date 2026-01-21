@@ -13,9 +13,9 @@ class ApplicationBot:
         # Simulate network latency or processing time? Not needed for simple logic.
 
         # Determine success probability (mocking captcha failures or form errors)
-        status = "Applied"
+        status = "Aplicado"
         if random.random() < 0.05:
-             status = "Failed" # 5% failure rate
+             status = "Falha" # 5% failure rate
 
         app = Application(
             job_id=job.id,
@@ -23,7 +23,7 @@ class ApplicationBot:
             resume_id=resume.id,
             status=status,
             platform=job.source,
-            notes=f"Applied with resume version {resume.version_tag}"
+            notes=f"Aplicado com versão de currículo {resume.version_tag}"
         )
 
         self.application_history.append(app)

@@ -15,6 +15,7 @@ from src.modules.resume_generator import ResumeGenerator
 from src.modules.applier import ApplicationBot
 from src.modules.interview_prep import InterviewCoach
 from src.modules.decision_engine import StrategyEngine
+from src.modules.monitoring import FollowUpAgent
 
 console = Console()
 
@@ -27,13 +28,15 @@ class BirthHub360:
         self.applier = ApplicationBot()
         self.coach = InterviewCoach()
         self.strategy_engine = StrategyEngine()
+        self.monitoring = FollowUpAgent()
 
         self.profile = None
         self.metrics = {
             "scanned": 0,
             "matched": 0,
             "applied": 0,
-            "interviews": 0
+            "interviews": 0,
+            "followups": 0
         }
         self.last_strategy_update = "Inicializando..."
         self.interview_prep_status = "Nenhuma entrevista agendada."
@@ -108,6 +111,14 @@ class BirthHub360:
 
                     time.sleep(0.5)
 
+                # 6. Monitoring & Follow-up
+                follow_ups = self.monitoring.check_for_follow_up(self.applier.application_history)
+                if follow_ups:
+                    self.metrics["followups"] += len(follow_ups)
+                    for action in follow_ups:
+                         layout["footer"].update(Panel(f"[bold yellow]MONITORAMENTO:[/bold yellow] {action}"))
+                         time.sleep(1)
+
                 # Update Side Panel with Strategy & Metrics
                 stats_text = f"""
                 [bold]MÉTRICAS OPERACIONAIS[/bold]
@@ -116,6 +127,7 @@ class BirthHub360:
                 Compatíveis: {self.metrics['matched']}
                 Candidaturas: {self.metrics['applied']}
                 Entrevistas: {self.metrics['interviews']}
+                Follow-ups: {self.metrics['followups']}
 
                 [bold]Estratégia Ativa:[/bold]
                 {self.strategy_engine.get_current_strategy()}

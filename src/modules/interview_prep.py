@@ -4,16 +4,16 @@ import random
 class InterviewCoach:
     def __init__(self):
         self.common_questions = [
-            "Tell me about yourself.",
-            "Why do you want to work at {company}?",
-            "What is your greatest strength?",
-            "Describe a challenging situation you handled."
+            "Fale um pouco sobre você.",
+            "Por que você quer trabalhar na {company}?",
+            "Qual é o seu maior ponto forte?",
+            "Descreva uma situação desafiadora que você enfrentou."
         ]
         self.tech_questions_pool = [
-            "Explain how you would design a scalable system for {topic}.",
-            "How do you handle technical debt?",
-            "What is your experience with {skill}?",
-            "Describe a time you optimized a slow query."
+            "Explique como você projetaria um sistema escalável para {topic}.",
+            "Como você lida com dívida técnica?",
+            "Qual é a sua experiência com {skill}?",
+            "Descreva uma vez que você otimizou uma consulta lenta."
         ]
 
     def generate_questions(self, job: JobOpportunity) -> list[str]:
@@ -27,7 +27,7 @@ class InterviewCoach:
 
         # Add technical questions based on requirements
         for req in job.requirements[:2]: # Take first 2 requirements
-            questions.append(f"How have you used {req} in a production environment?")
+            questions.append(f"Como você utilizou {req} em um ambiente de produção?")
 
         # Add a random system design or general tech question
         topic = job.title.split()[-1] if job.title else "software"
@@ -40,9 +40,9 @@ class InterviewCoach:
         Simulates feedback after a mock interview.
         """
         feedbacks = [
-            "Strong communication skills. Elaborate more on technical details.",
-            "Good technical depth. Work on being more concise.",
-            "Excellent cultural fit. Ready for the real interview.",
-            "Needs more preparation on system design concepts."
+            "Boa comunicação. Elabore mais nos detalhes técnicos.",
+            "Boa profundidade técnica. Tente ser mais conciso.",
+            "Excelente fit cultural. Pronto para a entrevista real.",
+            "Precisa de mais preparação em conceitos de design de sistemas."
         ]
         return random.choice(feedbacks)

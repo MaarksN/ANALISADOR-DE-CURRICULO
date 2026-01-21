@@ -3,7 +3,7 @@ from src.core.models import JobOpportunity
 from faker import Faker
 import random
 
-fake = Faker()
+fake = Faker('pt_BR')
 
 class JobScanner:
     def __init__(self):
