@@ -13,9 +13,9 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/BirthHub360
+WorkingDirectory=/home/ubuntu/HubDeVagas
 # Ajuste o caminho do python conforme seu venv
-ExecStart=/home/ubuntu/BirthHub360/venv/bin/python -m src.core.runner
+ExecStart=/home/ubuntu/HubDeVagas/venv/bin/python -m src.core.runner
 Restart=always
 RestartSec=120
 Environment=RUN_MODE=ec2

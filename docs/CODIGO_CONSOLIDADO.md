@@ -1,4 +1,4 @@
-# CÓDIGO FONTE CONSOLIDADO - BIRTH HUB 360 (V4)
+# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (FINAL)
 
 ## .env.example
 ```
@@ -679,8 +679,8 @@ sudo apt install -y python3-pip python3-venv unzip
 Clone o repositório ou crie a pasta:
 
 ```bash
-mkdir BirthHub360
-cd BirthHub360
+mkdir HubDeVagas
+cd HubDeVagas
 # (Aqui você faria o git clone ou upload dos arquivos)
 ```
 
@@ -732,9 +732,9 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/BirthHub360
+WorkingDirectory=/home/ubuntu/HubDeVagas
 # Ajuste o caminho do python conforme seu venv
-ExecStart=/home/ubuntu/BirthHub360/venv/bin/python -m src.core.runner
+ExecStart=/home/ubuntu/HubDeVagas/venv/bin/python -m src.core.runner
 Restart=always
 RestartSec=120
 Environment=RUN_MODE=ec2
@@ -1066,7 +1066,7 @@ R\xb5\x82\xa7m\xf7\x8cr\xe7\x97dR\x9e\xa0r\xe5\xff\xa0\x8ceBM\x836w\xed`\
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birth Hub 360 Automático</title>
+    <title>Hub de Vagas Automático</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -1074,7 +1074,7 @@ R\xb5\x82\xa7m\xf7\x8cr\xe7\x97dR\x9e\xa0r\xe5\xff\xa0\x8ceBM\x836w\xed`\
     <header>
         <div class="container">
             <div class="logo">
-                <i class="fas fa-rocket"></i> Birth Hub 360
+                <i class="fas fa-rocket"></i> Hub de Vagas
             </div>
             <nav>
                 <ul>
@@ -1164,7 +1164,7 @@ R\xb5\x82\xa7m\xf7\x8cr\xe7\x97dR\x9e\xa0r\xe5\xff\xa0\x8ceBM\x836w\xed`\
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Birth Hub 360 Automático. Desenvolvido por Marcelo Nascimento.</p>
+            <p>&copy; 2025 Hub de Vagas Automático. Desenvolvido por Marcelo Nascimento.</p>
         </div>
     </footer>
 </body>
@@ -1712,7 +1712,7 @@ from src.core.persistence import PersistenceManager
 
 console = Console()
 
-class BirthHub360:
+class HubDeVagas:
     def __init__(self):
         self.persistence = PersistenceManager()
         self.onboarding = OnboardingAgent()
@@ -1770,7 +1770,7 @@ class BirthHub360:
 
         # Simple menu for mode selection
         console.clear()
-        console.print(Panel("[bold cyan]Birth Hub 360 - Central de Comando[/bold cyan]"))
+        console.print(Panel("[bold cyan]Hub de Vagas - Central de Comando[/bold cyan]"))
         console.print("1. Iniciar Ciclo Automático (Dashboard)")
         console.print("2. Simulador de Entrevista (Interativo)")
         console.print("3. Gerador de E-mail (Ferramenta)")
@@ -1799,7 +1799,7 @@ class BirthHub360:
             with Live(layout, refresh_per_second=4, screen=True):
                 while True:
                     # 1. Update Header
-                    layout["header"].update(Panel(Text("BIRTH HUB 360 AUTOMÁTICO - OPERANDO", style="bold green", justify="center")))
+                    layout["header"].update(Panel(Text("HUB DE VAGAS AUTOMÁTICO - OPERANDO", style="bold green", justify="center")))
 
                     # 2. Decision Engine Analysis
                     strategy_msg = self.strategy_engine.analyze_performance(self.metrics, [])
@@ -1931,7 +1931,7 @@ class BirthHub360:
         return layout
 
 if __name__ == "__main__":
-    hub = BirthHub360()
+    hub = HubDeVagas()
     hub.start()
 
 ```
@@ -2128,7 +2128,7 @@ class InterviewSimulator:
     def run_session(self):
         """Runs an interactive interview session in the terminal."""
         console.clear()
-        console.print(Panel("[bold cyan]Simulador de Entrevista - Birth Hub 360[/bold cyan]", expand=False))
+        console.print(Panel("[bold cyan]Simulador de Entrevista - Hub de Vagas[/bold cyan]", expand=False))
         console.print("O sistema fará perguntas e avaliará suas respostas (Simulado).\n")
 
         questions = random.sample(self.questions_db, 3)
@@ -2469,7 +2469,7 @@ class ReportGenerator:
         filename = f"relatorio_operacional_{datetime.now().strftime('%Y%m%d')}.md"
 
         with open(filename, "w", encoding="utf-8") as f:
-            f.write(f"# RELATÓRIO OPERACIONAL BIRTH HUB 360 - {datetime.now().strftime('%d/%m/%Y')}\n\n")
+            f.write(f"# RELATÓRIO OPERACIONAL HUB DE VAGAS - {datetime.now().strftime('%d/%m/%Y')}\n\n")
 
             f.write("## 1. RESUMO EXECUTIVO\n")
             f.write(f"- **Perfil Ativo:** {profile.name}\n")

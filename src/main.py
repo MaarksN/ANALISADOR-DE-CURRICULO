@@ -27,7 +27,7 @@ from src.core.persistence import PersistenceManager
 
 console = Console()
 
-class BirthHub360:
+class HubDeVagas:
     def __init__(self):
         self.persistence = PersistenceManager()
         self.onboarding = OnboardingAgent()
@@ -85,7 +85,7 @@ class BirthHub360:
 
         # Simple menu for mode selection
         console.clear()
-        console.print(Panel("[bold cyan]Birth Hub 360 - Central de Comando[/bold cyan]"))
+        console.print(Panel("[bold cyan]Hub de Vagas - Central de Comando[/bold cyan]"))
         console.print("1. Iniciar Ciclo Automático (Dashboard)")
         console.print("2. Simulador de Entrevista (Interativo)")
         console.print("3. Gerador de E-mail (Ferramenta)")
@@ -114,7 +114,7 @@ class BirthHub360:
             with Live(layout, refresh_per_second=4, screen=True):
                 while True:
                     # 1. Update Header
-                    layout["header"].update(Panel(Text("BIRTH HUB 360 AUTOMÁTICO - OPERANDO", style="bold green", justify="center")))
+                    layout["header"].update(Panel(Text("HUB DE VAGAS AUTOMÁTICO - OPERANDO", style="bold green", justify="center")))
 
                     # 2. Decision Engine Analysis
                     strategy_msg = self.strategy_engine.analyze_performance(self.metrics, [])
@@ -246,5 +246,5 @@ class BirthHub360:
         return layout
 
 if __name__ == "__main__":
-    hub = BirthHub360()
+    hub = HubDeVagas()
     hub.start()

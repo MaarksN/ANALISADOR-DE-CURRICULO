@@ -1,6 +1,6 @@
-# Birth Hub 360 Automático
+# Hub de Vagas Automático
 
-Este repositório contém a implementação completa do sistema de empregabilidade autônomo "Birth Hub 360", consolidando os 4 projetos descritos no material de referência.
+Este repositório contém a implementação completa do sistema de empregabilidade autônomo "Hub de Vagas", consolidando os 4 projetos descritos no material de referência.
 
 ## Estrutura do Repositório
 

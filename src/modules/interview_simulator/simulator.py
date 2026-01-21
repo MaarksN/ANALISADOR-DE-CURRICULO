@@ -19,7 +19,7 @@ class InterviewSimulator:
     def run_session(self):
         """Runs an interactive interview session in the terminal."""
         console.clear()
-        console.print(Panel("[bold cyan]Simulador de Entrevista - Birth Hub 360[/bold cyan]", expand=False))
+        console.print(Panel("[bold cyan]Simulador de Entrevista - Hub de Vagas[/bold cyan]", expand=False))
         console.print("O sistema fará perguntas e avaliará suas respostas (Simulado).\n")
 
         questions = random.sample(self.questions_db, 3)

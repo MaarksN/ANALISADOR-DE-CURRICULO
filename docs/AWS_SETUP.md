@@ -23,8 +23,8 @@ sudo apt install -y python3-pip python3-venv unzip
 Clone o repositório ou crie a pasta:
 
 ```bash
-mkdir BirthHub360
-cd BirthHub360
+mkdir HubDeVagas
+cd HubDeVagas
 # (Aqui você faria o git clone ou upload dos arquivos)
 ```
 

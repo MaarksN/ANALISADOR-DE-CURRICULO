@@ -11,7 +11,7 @@ class ReportGenerator:
         filename = f"relatorio_operacional_{datetime.now().strftime('%Y%m%d')}.md"
 
         with open(filename, "w", encoding="utf-8") as f:
-            f.write(f"# RELATÓRIO OPERACIONAL BIRTH HUB 360 - {datetime.now().strftime('%d/%m/%Y')}\n\n")
+            f.write(f"# RELATÓRIO OPERACIONAL HUB DE VAGAS - {datetime.now().strftime('%d/%m/%Y')}\n\n")
 
             f.write("## 1. RESUMO EXECUTIVO\n")
             f.write(f"- **Perfil Ativo:** {profile.name}\n")
