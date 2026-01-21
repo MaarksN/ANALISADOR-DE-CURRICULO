@@ -19,6 +19,8 @@ from src.modules.decision_engine import StrategyEngine
 from src.modules.monitoring import FollowUpAgent
 from src.modules.networking import NetworkAgent
 from src.modules.reporting import ReportGenerator
+from src.modules.interview_simulator.simulator import InterviewSimulator
+from src.modules.email_helper.generator import EmailGenerator
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -36,6 +38,8 @@ class BirthHub360:
         self.monitoring = FollowUpAgent()
         self.networker = NetworkAgent()
         self.reporter = ReportGenerator()
+        self.simulator = InterviewSimulator()
+        self.email_gen = EmailGenerator()
 
         self.profile = None
         self.metrics = {
@@ -75,6 +79,22 @@ class BirthHub360:
     def start(self):
         self.load_state()
 
+        # Simple menu for mode selection
+        console.clear()
+        console.print(Panel("[bold cyan]Birth Hub 360 - Central de Comando[/bold cyan]"))
+        console.print("1. Iniciar Ciclo Automático (Dashboard)")
+        console.print("2. Simulador de Entrevista (Interativo)")
+        console.print("3. Gerador de E-mail (Ferramenta)")
+        choice = console.input("\n[bold]Escolha uma opção:[/bold] ")
+
+        if choice == "2":
+            self.simulator.run_session()
+            sys.exit(0)
+        elif choice == "3":
+            self.run_email_tool()
+            sys.exit(0)
+
+        # Default to Dashboard Loop
         layout = self.make_layout()
 
         try:
@@ -190,6 +210,14 @@ class BirthHub360:
             self.save_state()
             console.print(f"[bold green]Relatório salvo em: {report_file}[/bold green]")
             sys.exit(0)
+
+    def run_email_tool(self):
+        console.print("[bold]Gerador de E-mail para Networking[/bold]\n")
+        recruiter = console.input("Nome do Recrutador: ")
+        company = console.input("Empresa: ")
+        role = console.input("Cargo: ")
+        email = self.email_gen.generate_cold_email(recruiter, company, role)
+        console.print(Panel(email, title="Template Gerado", style="green"))
 
     def make_layout(self) -> Layout:
         layout = Layout()
