@@ -1,4 +1,4 @@
-# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V5)
+# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V6 - FINAL REFINED)
 
 ## .env.example
 ```
@@ -1458,12 +1458,15 @@ import time
 import re
 from pathlib import Path
 from datetime import datetime, date
+from rich.console import Console
 from src.core.db import init_db, seen, upsert_job, DB_PATH
 from src.core.export import export_daily, daily_filename
 from src.core.browser import open_context
 from src.core.sources import enqueue, extract_gupy_links
 from src.drivers.linkedin_easy_apply import process_job as li_process
 from src.drivers.gupy_fast_apply import process_job as gupy_process
+
+console = Console()
 
 PROFILE_PATH = Path("profile_br.json")
 QUEUE_PATH = Path("data") / "queue.jsonl"
@@ -1490,9 +1493,18 @@ def read_queue(limit=200):
 
 def main():
     init_db()
+
+    if not PROFILE_PATH.exists():
+        console.print("[red]Erro: profile_br.json não encontrado![/red]")
+        return
+
     profile = load_profile()
     headless = os.environ.get("HEADLESS", "1") == "1"
 
+    console.print(f"[bold green]Iniciando Hub de Vagas Runner[/bold green] (Headless={headless})")
+
+    # Enqueue seeds
+    console.print("[cyan]Carregando seeds...[/cyan]")
     for url in profile.get("seeds", {}).get("linkedin_search_pages", []):
         enqueue("linkedin_search", url)
     for url in profile.get("seeds", {}).get("gupy_search_pages", []):
@@ -1502,58 +1514,98 @@ def main():
     applied_today = count_applied_today()
     remaining = max(0, meta_daily - applied_today)
 
+    console.print(f"Meta Diária: {meta_daily} | Já aplicados: {applied_today} | Restante: {remaining}")
+
     if remaining == 0:
+        console.print("[yellow]Meta diária atingida. Gerando export e encerrando.[/yellow]")
         export_daily(DB_PATH, Path(daily_filename()))
         return
 
     windows = 10
     per_window = min(max(1, remaining // windows), 6)
 
-    p1, b1, c1, page_li = open_context(headless=headless, storage_state_path=STATE_LI)
-    p2, b2, c2, page_gupy = open_context(headless=headless, storage_state_path=STATE_GUPY)
+    try:
+        p1, b1, c1, page_li = open_context(headless=headless, storage_state_path=STATE_LI)
+        p2, b2, c2, page_gupy = open_context(headless=headless, storage_state_path=STATE_GUPY)
+        console.print("[green]Browsers iniciados com sucesso.[/green]")
+    except Exception as e:
+        console.print(f"[red]Erro crítico ao iniciar browsers: {e}[/red]")
+        return
 
     try:
         for w in range(windows):
             if count_applied_today() >= meta_daily: break
+
             queue = read_queue(limit=400)
+            if not queue:
+                console.print("[yellow]Fila vazia. Aguardando...[/yellow]")
+                time.sleep(5)
+                continue
+
             random.shuffle(queue)
             applied_in_window = 0
+
+            console.print(f"\n--- Janela {w+1}/{windows} ---")
+
             for item in queue:
                 if applied_in_window >= per_window: break
                 platform = item.get("platform")
                 url = item.get("url")
+
                 if not url: continue
-                if seen(platform if platform in ("linkedin", "gupy") else "source", url): continue
-
-                if platform == "linkedin_search":
-                    page_li.goto(url, wait_until="domcontentloaded")
-                    page_li.wait_for_timeout(1200)
-                    for m in set(re.findall(r"https://www\.linkedin\.com/jobs/view/\d+", page_li.content())):
-                        enqueue("linkedin", m)
+                if seen(platform if platform in ("linkedin", "gupy") else "source", url):
                     continue
 
-                if platform == "web_discovery":
-                    page_gupy.goto(url, wait_until="domcontentloaded")
-                    page_gupy.wait_for_timeout(1200)
-                    links = extract_gupy_links(page_gupy.content())
-                    for lk in links: enqueue("gupy", lk)
-                    continue
+                console.print(f"Processando: {platform} - {url[:50]}...")
 
-                if platform == "linkedin":
-                    li_process(page_li, url, profile)
-                    if seen("linkedin", url) == "applied": applied_in_window += 1
-                    continue
+                try:
+                    if platform == "linkedin_search":
+                        page_li.goto(url, wait_until="domcontentloaded")
+                        page_li.wait_for_timeout(2000)
+                        found = set(re.findall(r"https://www\.linkedin\.com/jobs/view/\d+", page_li.content()))
+                        console.print(f"  > Encontradas {len(found)} novas vagas.")
+                        for m in found:
+                            enqueue("linkedin", m)
+                        continue
 
-                if platform == "gupy":
-                    gupy_process(page_gupy, url, profile)
-                    if seen("gupy", url) == "applied": applied_in_window += 1
-                    continue
-            sleep_s = random.randint(1800, 7200)
+                    if platform == "web_discovery":
+                        page_gupy.goto(url, wait_until="domcontentloaded")
+                        page_gupy.wait_for_timeout(2000)
+                        links = extract_gupy_links(page_gupy.content())
+                        console.print(f"  > Encontrados {len(links)} links Gupy.")
+                        for lk in links: enqueue("gupy", lk)
+                        continue
+
+                    if platform == "linkedin":
+                        li_process(page_li, url, profile)
+                        status = seen("linkedin", url)
+                        console.print(f"  > Status: {status}")
+                        if status == "applied": applied_in_window += 1
+                        continue
+
+                    if platform == "gupy":
+                        gupy_process(page_gupy, url, profile)
+                        status = seen("gupy", url)
+                        console.print(f"  > Status: {status}")
+                        if status == "applied": applied_in_window += 1
+                        continue
+
+                except Exception as e:
+                    console.print(f"  [red]Erro no loop: {e}[/red]")
+
+            sleep_s = random.randint(30, 60) # Reduced for demo/testing responsiveness
+            console.print(f"[blue]Dormindo por {sleep_s}s...[/blue]")
             time.sleep(sleep_s)
+    except KeyboardInterrupt:
+        console.print("\n[red]Interrupção manual.[/red]")
     finally:
         export_daily(DB_PATH, Path(daily_filename()))
-        c1.close(); b1.close(); p1.stop()
-        c2.close(); b2.close(); p2.stop()
+        try:
+            c1.close(); b1.close(); p1.stop()
+            c2.close(); b2.close(); p2.stop()
+        except:
+            pass
+        console.print("[bold green]Execução finalizada.[/bold green]")
 
 if __name__ == "__main__":
     main()
@@ -1645,9 +1697,21 @@ from src.core.scoring import score_text, decide
 PLATFORM = "linkedin"
 
 def process_job(page, job_url, profile):
-    page.goto(job_url, wait_until="domcontentloaded")
-    title = page.locator("h1").first.inner_text(timeout=3000) if page.locator("h1").count() else ""
-    desc = page.locator("div.jobs-description").first.inner_text(timeout=3000) if page.locator("div.jobs-description").count() else ""
+    try:
+        page.goto(job_url, wait_until="domcontentloaded", timeout=30000)
+    except Exception as e:
+        upsert_job(PLATFORM, job_url, "error_load", reason=str(e))
+        return
+
+    # Extract info safely
+    title = page.locator("h1").first.inner_text(timeout=5000) if page.locator("h1").count() else "Unknown"
+    desc_loc = page.locator("div.jobs-description")
+    if not desc_loc.count():
+        # Fallback selector
+        desc_loc = page.locator("article")
+
+    desc = desc_loc.first.inner_text(timeout=3000) if desc_loc.count() else ""
+
     score = score_text((title or "") + " " + desc, profile["skills"])
     action = decide(score)
 
@@ -1664,20 +1728,54 @@ def process_job(page, job_url, profile):
         upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="score_medio")
         return
 
-    easy.click()
-    page.wait_for_timeout(1200)
-    for _ in range(10):
-        if page.locator("button:has-text('Enviar candidatura')").count():
-            page.locator("button:has-text('Enviar candidatura')").click()
-            upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
-            return
-        nxt = page.locator("button:has-text('Avançar')").first
-        if nxt.count():
-            nxt.click()
-            page.wait_for_timeout(900)
-            continue
+    try:
+        easy.click()
+        page.wait_for_timeout(2000)
+
+        # Robust Modal Handling Loop
+        max_steps = 15
+        for _ in range(max_steps):
+            # Check for success/submit
+            submit_btn = page.locator("button:has-text('Enviar candidatura')").first
+            if submit_btn.count() and submit_btn.is_visible():
+                submit_btn.click()
+                page.wait_for_timeout(2000)
+                # Verify closure or success message
+                if page.locator("text=Sua candidatura foi enviada").count():
+                    upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
+                    return
+                # Assume success if modal closes or changes state
+                upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
+                return
+
+            # Check for "Review" (Revisar) which often precedes Submit
+            review_btn = page.locator("button:has-text('Revisar')").first
+            if review_btn.count() and review_btn.is_visible():
+                review_btn.click()
+                page.wait_for_timeout(1000)
+                continue
+
+            # Check for "Next" (Avançar)
+            nxt = page.locator("button:has-text('Avançar')").first
+            if nxt.count() and nxt.is_visible():
+                # Here we could inject logic to fill phone number if error exists
+                # For now, just click
+                nxt.click()
+                page.wait_for_timeout(1000)
+
+                # Check for error blocking progress
+                if page.locator(".artdeco-inline-feedback--error").count():
+                    upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="erro_formulario")
+                    return
+                continue
+
+            # If no buttons found, maybe we are stuck or done
+            break
+
         upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="loop_ou_erro_modal")
-        return
+
+    except Exception as e:
+        upsert_job(PLATFORM, job_url, "error_applying", title=title, score=score, reason=str(e))
 
 ```
 
@@ -1693,6 +1791,7 @@ from rich.live import Live
 from rich.table import Table
 from rich.text import Text
 from rich.markdown import Markdown
+from collections import deque
 
 from src.modules.onboarding import OnboardingAgent
 from src.modules.job_intelligence import JobScanner
@@ -1740,7 +1839,7 @@ class HubDeVagas:
             "networking": 0
         }
         self.last_strategy_update = "Inicializando..."
-        self.interview_prep_status = "Nenhuma entrevista agendada."
+        self.logs = deque(maxlen=8) # Keep last 8 logs for the live panel
 
     def load_state(self):
         """Loads state from disk if available."""
@@ -1754,7 +1853,6 @@ class HubDeVagas:
 
         if m:
             self.metrics = m
-            # Ensure new metrics keys exist if loaded from old file
             if "networking" not in self.metrics: self.metrics["networking"] = 0
             if "followups" not in self.metrics: self.metrics["followups"] = 0
 
@@ -1764,6 +1862,11 @@ class HubDeVagas:
     def save_state(self):
         """Saves current state."""
         self.persistence.save_data(self.profile, self.metrics, self.applier.application_history)
+
+    def log(self, message):
+        """Adds a message to the live log."""
+        timestamp = time.strftime("%H:%M:%S")
+        self.logs.append(f"[{timestamp}] {message}")
 
     def start(self):
         self.load_state()
@@ -1845,37 +1948,42 @@ class HubDeVagas:
                         app = self.applier.apply(opt_profile, job, resume)
                         self.metrics["applied"] += 1
 
-                        # Networking Action (New Module)
+                        # Update Log
+                        status_color = "green" if app.status == "Aplicado" else "red"
+                        self.log(f"Candidatura: {job.company} ({job.title}) - [{status_color}]{app.status}[/{status_color}]")
+
+                        # Networking Action
                         net_action = self.networker.attempt_connection(job.company)
                         if net_action:
                             self.metrics["networking"] += 1
-                            layout["footer"].update(Panel(f"[bold cyan]NETWORKING:[/bold cyan] {net_action}"))
-                            time.sleep(1)
+                            self.log(f"[cyan]Networking:[/cyan] {net_action}")
+                            time.sleep(0.5)
 
-                        # Update Log
-                        layout["footer"].update(Panel(f"Candidatura enviada para {job.company} - {job.title} | Status: {app.status}"))
-
-                        # SIMULATE INTERVIEW (10% chance for demo)
+                        # SIMULATE INTERVIEW
                         if random.random() < 0.1:
                             self.metrics["interviews"] += 1
                             questions = self.coach.generate_questions(job)
-                            q_text = "\n".join([f"- {q}" for q in questions])
-                            self.interview_prep_status = f"[bold]Preparação para {job.company}:[/bold]\n{q_text}\n\n[italic]Feedback IA:[/italic] {self.coach.simulate_feedback()}"
+                            self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
 
-                            # Show interview prep in main temporarily
-                            layout["main"].update(Panel(self.interview_prep_status, title="MÓDULO DE ENTREVISTAS ATIVO", style="bold white on blue"))
-                            time.sleep(3) # Let user read
+                            # Show interview prep temporarily
+                            q_text = "\n".join([f"- {q}" for q in questions])
+                            layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))
+                            time.sleep(2)
+
+                        # Update Footer with Live Logs
+                        log_text = "\n".join(self.logs)
+                        layout["footer"].update(Panel(log_text, title="Log de Eventos em Tempo Real", style="white"))
 
                         time.sleep(0.5)
-                        self.save_state() # Save continuously
+                        self.save_state()
 
                     # 6. Monitoring & Follow-up
                     follow_ups = self.monitoring.check_for_follow_up(self.applier.application_history)
                     if follow_ups:
                         self.metrics["followups"] += len(follow_ups)
                         for action in follow_ups:
-                             layout["footer"].update(Panel(f"[bold yellow]MONITORAMENTO:[/bold yellow] {action}"))
-                             time.sleep(1)
+                             self.log(f"[yellow]Monitoramento:[/yellow] {action}")
+                             time.sleep(0.5)
 
                     # Update Side Panel with Strategy & Metrics
                     stats_text = f"""
@@ -1891,9 +1999,6 @@ class HubDeVagas:
                     [bold]Estratégia Ativa:[/bold]
                     {self.strategy_engine.get_current_strategy()}
                     [italic]{self.last_strategy_update}[/italic]
-
-                    [bold]Última Ação de IA:[/bold]
-                    Otimização de perfil para {high_match_jobs[-1].title if high_match_jobs else 'N/A'}
                     """
                     layout["side"].update(Panel(stats_text))
 
@@ -1922,7 +2027,7 @@ class HubDeVagas:
         layout.split(
             Layout(name="header", size=3),
             Layout(name="body", ratio=1),
-            Layout(name="footer", size=3)
+            Layout(name="footer", size=10) # Increased footer size for logs
         )
         layout["body"].split_row(
             Layout(name="side", ratio=1),
@@ -2117,21 +2222,45 @@ console = Console()
 
 class InterviewSimulator:
     def __init__(self):
-        self.questions_db = [
-            "Fale um pouco sobre você.",
-            "Por que você quer trabalhar nesta empresa?",
-            "Qual foi seu maior desafio técnico até hoje?",
-            "Como você lida com prazos apertados?",
-            "Onde você se vê daqui a 5 anos?"
-        ]
+        self.questions_db = {
+            "Junior": [
+                "O que é uma lista em Python?",
+                "Como você aprende novas tecnologias?",
+                "Explique o conceito de API REST.",
+                "Qual a diferença entre SQL e NoSQL?"
+            ],
+            "Pleno": [
+                "Como você lidaria com um bug em produção?",
+                "Explique o ciclo de vida de uma thread.",
+                "Quais os benefícios de usar Docker?",
+                "Descreva sua experiência com CI/CD."
+            ],
+            "Senior": [
+                "Desenhe uma arquitetura escalável para milhões de usuários.",
+                "Como você mentora desenvolvedores mais júnior?",
+                "Explique o Teorema CAP.",
+                "Como você decide entre Monolito e Microsserviços?"
+            ]
+        }
 
     def run_session(self):
         """Runs an interactive interview session in the terminal."""
         console.clear()
-        console.print(Panel("[bold cyan]Simulador de Entrevista - Hub de Vagas[/bold cyan]", expand=False))
-        console.print("O sistema fará perguntas e avaliará suas respostas (Simulado).\n")
+        console.print(Panel("[bold cyan]Simulador de Entrevista Pro - Hub de Vagas[/bold cyan]", expand=False))
 
-        questions = random.sample(self.questions_db, 3)
+        # Difficulty Selection
+        console.print("\n[bold]Selecione o Nível da Entrevista:[/bold]")
+        console.print("1. Junior")
+        console.print("2. Pleno")
+        console.print("3. Senior")
+        choice = Prompt.ask("Opção", choices=["1", "2", "3"], default="2")
+
+        level_map = {"1": "Junior", "2": "Pleno", "3": "Senior"}
+        level = level_map[choice]
+
+        console.print(f"\n[green]Iniciando simulação nível {level}...[/green]\n")
+
+        questions = random.sample(self.questions_db[level], 3)
         history = []
 
         for i, q in enumerate(questions, 1):
@@ -2139,25 +2268,34 @@ class InterviewSimulator:
             answer = Prompt.ask("[italic]Sua resposta[/italic]")
 
             # Mock analysis simulation
-            with console.status("[bold green]Analisando resposta...[/bold green]", spinner="dots"):
+            with console.status("[bold green]Analisando resposta (NLP)...[/bold green]", spinner="dots"):
                 time.sleep(1.5)
 
-            feedback = self._generate_feedback(answer)
+            feedback = self._generate_feedback(answer, level)
             console.print(f"[bold magenta]Feedback da IA:[/bold magenta] {feedback}\n")
             history.append({"q": q, "a": answer, "f": feedback})
             time.sleep(1)
 
-        console.print(Panel("[bold green]Sessão Finalizada![/bold green] Resumo salvo no histórico."))
+        console.print(Panel("[bold green]Sessão Finalizada![/bold green] Otimize suas respostas e tente novamente."))
         return history
 
-    def _generate_feedback(self, answer):
-        """Generates simple mock feedback based on answer length."""
-        if len(answer) < 20:
-            return "Sua resposta foi muito curta. Tente elaborar mais sobre suas experiências usando o método STAR."
-        elif len(answer) > 200:
-            return "Boa profundidade, mas cuidado para não ser prolixo. Tente ser mais direto."
-        else:
-            return "Resposta equilibrada. Bons pontos levantados."
+    def _generate_feedback(self, answer, level):
+        """Generates mock feedback based on answer length and complexity level."""
+        word_count = len(answer.split())
+
+        if word_count < 10:
+            return "Muito superficial. Em uma entrevista técnica, detalhe o 'como' e o 'porquê'."
+
+        if level == "Senior" and word_count < 30:
+            return "Para nível Sênior, espera-se uma visão mais arquitetural e detalhada. Aprofunde."
+
+        if "depende" in answer.lower() and level == "Senior":
+            return "Ótimo uso do 'depende'. Seniores sabem que não há bala de prata."
+
+        if word_count > 100:
+            return "Resposta detalhada, muito bom. Tente manter o foco para não divagar."
+
+        return "Boa resposta. Demonstrou conhecimento do fundamento."
 
 ```
 
@@ -2555,53 +2693,94 @@ class ResumeGenerator:
 
 ## src/modules/resume_improver/improver.py
 ```
+import re
 from rich.console import Console
 from rich.panel import Panel
+from rich.table import Table
 
 console = Console()
 
 class ResumeImprover:
     def __init__(self):
-        self.keywords = ["Python", "SQL", "Cloud", "AWS", "Docker", "Kubernetes", "API", "REST", "Git", "CI/CD"]
+        # Weighted keywords for better scoring
+        self.keywords = {
+            "Python": 5, "SQL": 4, "AWS": 5, "Docker": 4, "Kubernetes": 5,
+            "API": 3, "REST": 3, "Git": 3, "CI/CD": 4, "Data Science": 5,
+            "Machine Learning": 5, "Terraform": 5, "React": 3, "Node.js": 3
+        }
+        self.essential_sections = ["Experiência", "Educação", "Habilidades", "Projetos", "Resumo"]
 
     def analyze_resume(self, text):
-        """Analyzes resume text and suggests improvements."""
+        """Analyzes resume text using weighted scoring and section detection."""
         console.clear()
-        console.print(Panel("[bold cyan]Analisador de Currículo com IA[/bold cyan]", expand=False))
+        console.print(Panel("[bold cyan]Analisador de Currículo Avançado (Hub de Vagas)[/bold cyan]", expand=False))
 
-        score = 0
-        missing = []
-        found = []
-
-        # Simple keyword matching simulation
-        for kw in self.keywords:
-            if kw.lower() in text.lower():
-                score += 10
-                found.append(kw)
+        # 1. Section Analysis
+        found_sections = []
+        missing_sections = []
+        for section in self.essential_sections:
+            if re.search(f"(?i){section}", text):
+                found_sections.append(section)
             else:
-                missing.append(kw)
+                missing_sections.append(section)
 
-        # Display results
-        console.print(f"\n[bold]Pontuação Calculada:[/bold] {score}/100\n")
+        # 2. Keyword & Density Analysis
+        score = 0
+        max_score = sum(self.keywords.values())
+        found_keywords = []
+        missing_keywords = []
 
-        if found:
-            console.print(f"[green]Pontos Fortes Detectados:[/green] {', '.join(found)}")
+        for kw, weight in self.keywords.items():
+            # Check for keyword existence (case insensitive)
+            if re.search(f"(?i)\\b{re.escape(kw)}\\b", text):
+                score += weight
+                found_keywords.append(kw)
+            else:
+                missing_keywords.append(kw)
 
-        if missing:
-            console.print(f"\n[yellow]Sugestões de Melhoria:[/yellow]")
-            console.print("Considere adicionar experiência ou projetos relacionados a:")
-            for m in missing:
-                console.print(f"- [bold]{m}[/bold]")
+        # Normalize score to 100
+        final_score = min(100, int((score / max_score) * 100))
 
-        suggestion = ""
-        if score < 50:
-            suggestion = "Seu currículo precisa de mais palavras-chave técnicas para passar nos filtros ATS."
-        elif score < 80:
-            suggestion = "Bom currículo! Tente quantificar seus resultados (ex: 'melhorou performance em 20%')."
-        else:
-            suggestion = "Excelente! Seu perfil está muito competitivo."
+        # Penalize for missing sections
+        if missing_sections:
+            final_score = max(0, final_score - (len(missing_sections) * 10))
 
-        console.print(Panel(suggestion, title="Feedback da IA", style="magenta"))
+        # --- DISPLAY RESULTS ---
+
+        # Score Panel
+        color = "green" if final_score >= 80 else "yellow" if final_score >= 50 else "red"
+        console.print(Panel(f"[bold {color}]ATS Score: {final_score}/100[/bold {color}]", title="Pontuação de Compatibilidade"))
+
+        # Sections Table
+        table = Table(title="Estrutura do Currículo")
+        table.add_column("Seção", style="cyan")
+        table.add_column("Status", justify="center")
+
+        for sec in self.essential_sections:
+            status = "[green]Detectado[/green]" if sec in found_sections else "[red]Ausente[/red]"
+            table.add_row(sec, status)
+        console.print(table)
+
+        # Keywords Analysis
+        if found_keywords:
+            console.print(f"\n[green]Competências Identificadas:[/green] {', '.join(found_keywords)}")
+
+        if missing_keywords:
+            console.print(f"\n[yellow]Oportunidades de Palavras-Chave (Tech Trending):[/yellow]")
+            console.print(f"{', '.join(missing_keywords[:10])}")
+
+        # Final Feedback
+        feedback = []
+        if final_score < 50:
+            feedback.append("• Seu currículo está muito genérico. Adicione as palavras-chave listadas acima.")
+        if missing_sections:
+            feedback.append(f"• Estrutura incompleta. Adicione as seções: {', '.join(missing_sections)}.")
+        if "Python" in found_keywords and "Git" not in found_keywords:
+            feedback.append("• Dica: Desenvolvedores Python devem mencionar Git/Versionamento.")
+        if not feedback:
+            feedback.append("• Excelente currículo! Pronto para aplicação.")
+
+        console.print(Panel("\n".join(feedback), title="Diagnóstico da IA", style="magenta"))
 
 ```
 

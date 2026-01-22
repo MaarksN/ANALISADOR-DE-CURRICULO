@@ -8,6 +8,7 @@ from rich.live import Live
 from rich.table import Table
 from rich.text import Text
 from rich.markdown import Markdown
+from collections import deque
 
 from src.modules.onboarding import OnboardingAgent
 from src.modules.job_intelligence import JobScanner
@@ -55,7 +56,7 @@ class HubDeVagas:
             "networking": 0
         }
         self.last_strategy_update = "Inicializando..."
-        self.interview_prep_status = "Nenhuma entrevista agendada."
+        self.logs = deque(maxlen=8) # Keep last 8 logs for the live panel
 
     def load_state(self):
         """Loads state from disk if available."""
@@ -69,7 +70,6 @@ class HubDeVagas:
 
         if m:
             self.metrics = m
-            # Ensure new metrics keys exist if loaded from old file
             if "networking" not in self.metrics: self.metrics["networking"] = 0
             if "followups" not in self.metrics: self.metrics["followups"] = 0
 
@@ -79,6 +79,11 @@ class HubDeVagas:
     def save_state(self):
         """Saves current state."""
         self.persistence.save_data(self.profile, self.metrics, self.applier.application_history)
+
+    def log(self, message):
+        """Adds a message to the live log."""
+        timestamp = time.strftime("%H:%M:%S")
+        self.logs.append(f"[{timestamp}] {message}")
 
     def start(self):
         self.load_state()
@@ -160,37 +165,42 @@ class HubDeVagas:
                         app = self.applier.apply(opt_profile, job, resume)
                         self.metrics["applied"] += 1
 
-                        # Networking Action (New Module)
+                        # Update Log
+                        status_color = "green" if app.status == "Aplicado" else "red"
+                        self.log(f"Candidatura: {job.company} ({job.title}) - [{status_color}]{app.status}[/{status_color}]")
+
+                        # Networking Action
                         net_action = self.networker.attempt_connection(job.company)
                         if net_action:
                             self.metrics["networking"] += 1
-                            layout["footer"].update(Panel(f"[bold cyan]NETWORKING:[/bold cyan] {net_action}"))
-                            time.sleep(1)
+                            self.log(f"[cyan]Networking:[/cyan] {net_action}")
+                            time.sleep(0.5)
 
-                        # Update Log
-                        layout["footer"].update(Panel(f"Candidatura enviada para {job.company} - {job.title} | Status: {app.status}"))
-
-                        # SIMULATE INTERVIEW (10% chance for demo)
+                        # SIMULATE INTERVIEW
                         if random.random() < 0.1:
                             self.metrics["interviews"] += 1
                             questions = self.coach.generate_questions(job)
-                            q_text = "\n".join([f"- {q}" for q in questions])
-                            self.interview_prep_status = f"[bold]Preparação para {job.company}:[/bold]\n{q_text}\n\n[italic]Feedback IA:[/italic] {self.coach.simulate_feedback()}"
+                            self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
 
-                            # Show interview prep in main temporarily
-                            layout["main"].update(Panel(self.interview_prep_status, title="MÓDULO DE ENTREVISTAS ATIVO", style="bold white on blue"))
-                            time.sleep(3) # Let user read
+                            # Show interview prep temporarily
+                            q_text = "\n".join([f"- {q}" for q in questions])
+                            layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))
+                            time.sleep(2)
+
+                        # Update Footer with Live Logs
+                        log_text = "\n".join(self.logs)
+                        layout["footer"].update(Panel(log_text, title="Log de Eventos em Tempo Real", style="white"))
 
                         time.sleep(0.5)
-                        self.save_state() # Save continuously
+                        self.save_state()
 
                     # 6. Monitoring & Follow-up
                     follow_ups = self.monitoring.check_for_follow_up(self.applier.application_history)
                     if follow_ups:
                         self.metrics["followups"] += len(follow_ups)
                         for action in follow_ups:
-                             layout["footer"].update(Panel(f"[bold yellow]MONITORAMENTO:[/bold yellow] {action}"))
-                             time.sleep(1)
+                             self.log(f"[yellow]Monitoramento:[/yellow] {action}")
+                             time.sleep(0.5)
 
                     # Update Side Panel with Strategy & Metrics
                     stats_text = f"""
@@ -206,9 +216,6 @@ class HubDeVagas:
                     [bold]Estratégia Ativa:[/bold]
                     {self.strategy_engine.get_current_strategy()}
                     [italic]{self.last_strategy_update}[/italic]
-
-                    [bold]Última Ação de IA:[/bold]
-                    Otimização de perfil para {high_match_jobs[-1].title if high_match_jobs else 'N/A'}
                     """
                     layout["side"].update(Panel(stats_text))
 
@@ -237,7 +244,7 @@ class HubDeVagas:
         layout.split(
             Layout(name="header", size=3),
             Layout(name="body", ratio=1),
-            Layout(name="footer", size=3)
+            Layout(name="footer", size=10) # Increased footer size for logs
         )
         layout["body"].split_row(
             Layout(name="side", ratio=1),

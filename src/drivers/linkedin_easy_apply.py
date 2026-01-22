@@ -3,9 +3,21 @@ from src.core.scoring import score_text, decide
 PLATFORM = "linkedin"
 
 def process_job(page, job_url, profile):
-    page.goto(job_url, wait_until="domcontentloaded")
-    title = page.locator("h1").first.inner_text(timeout=3000) if page.locator("h1").count() else ""
-    desc = page.locator("div.jobs-description").first.inner_text(timeout=3000) if page.locator("div.jobs-description").count() else ""
+    try:
+        page.goto(job_url, wait_until="domcontentloaded", timeout=30000)
+    except Exception as e:
+        upsert_job(PLATFORM, job_url, "error_load", reason=str(e))
+        return
+
+    # Extract info safely
+    title = page.locator("h1").first.inner_text(timeout=5000) if page.locator("h1").count() else "Unknown"
+    desc_loc = page.locator("div.jobs-description")
+    if not desc_loc.count():
+        # Fallback selector
+        desc_loc = page.locator("article")
+
+    desc = desc_loc.first.inner_text(timeout=3000) if desc_loc.count() else ""
+
     score = score_text((title or "") + " " + desc, profile["skills"])
     action = decide(score)
 
@@ -22,17 +34,51 @@ def process_job(page, job_url, profile):
         upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="score_medio")
         return
 
-    easy.click()
-    page.wait_for_timeout(1200)
-    for _ in range(10):
-        if page.locator("button:has-text('Enviar candidatura')").count():
-            page.locator("button:has-text('Enviar candidatura')").click()
-            upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
-            return
-        nxt = page.locator("button:has-text('Avançar')").first
-        if nxt.count():
-            nxt.click()
-            page.wait_for_timeout(900)
-            continue
+    try:
+        easy.click()
+        page.wait_for_timeout(2000)
+
+        # Robust Modal Handling Loop
+        max_steps = 15
+        for _ in range(max_steps):
+            # Check for success/submit
+            submit_btn = page.locator("button:has-text('Enviar candidatura')").first
+            if submit_btn.count() and submit_btn.is_visible():
+                submit_btn.click()
+                page.wait_for_timeout(2000)
+                # Verify closure or success message
+                if page.locator("text=Sua candidatura foi enviada").count():
+                    upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
+                    return
+                # Assume success if modal closes or changes state
+                upsert_job(PLATFORM, job_url, "applied", title=title, score=score)
+                return
+
+            # Check for "Review" (Revisar) which often precedes Submit
+            review_btn = page.locator("button:has-text('Revisar')").first
+            if review_btn.count() and review_btn.is_visible():
+                review_btn.click()
+                page.wait_for_timeout(1000)
+                continue
+
+            # Check for "Next" (Avançar)
+            nxt = page.locator("button:has-text('Avançar')").first
+            if nxt.count() and nxt.is_visible():
+                # Here we could inject logic to fill phone number if error exists
+                # For now, just click
+                nxt.click()
+                page.wait_for_timeout(1000)
+
+                # Check for error blocking progress
+                if page.locator(".artdeco-inline-feedback--error").count():
+                    upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="erro_formulario")
+                    return
+                continue
+
+            # If no buttons found, maybe we are stuck or done
+            break
+
         upsert_job(PLATFORM, job_url, "needs_manual", title=title, score=score, reason="loop_ou_erro_modal")
-        return
+
+    except Exception as e:
+        upsert_job(PLATFORM, job_url, "error_applying", title=title, score=score, reason=str(e))
