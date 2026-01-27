@@ -1,4 +1,4 @@
-# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V6 - FINAL REFINED)
+# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V7 - FINAL COMPLETE)
 
 ## .env.example
 ```
@@ -1807,6 +1807,8 @@ from src.modules.interview_simulator.simulator import InterviewSimulator
 from src.modules.email_helper.generator import EmailGenerator
 from src.modules.resume_improver.improver import ResumeImprover
 from src.modules.market_trends.analyzer import MarketAnalyzer
+from src.modules.skills_assessment.quiz import SkillsQuiz
+from src.modules.negotiation.advisor import SalaryAdvisor
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -1828,6 +1830,8 @@ class HubDeVagas:
         self.email_gen = EmailGenerator()
         self.resume_improver = ResumeImprover()
         self.market_analyzer = MarketAnalyzer()
+        self.skills_quiz = SkillsQuiz()
+        self.salary_advisor = SalaryAdvisor()
 
         self.profile = None
         self.metrics = {
@@ -1839,7 +1843,7 @@ class HubDeVagas:
             "networking": 0
         }
         self.last_strategy_update = "Inicializando..."
-        self.logs = deque(maxlen=8) # Keep last 8 logs for the live panel
+        self.logs = deque(maxlen=8)
 
     def load_state(self):
         """Loads state from disk if available."""
@@ -1879,6 +1883,8 @@ class HubDeVagas:
         console.print("3. Gerador de E-mail (Ferramenta)")
         console.print("4. Analisador de Currículo (IA)")
         console.print("5. Tendências de Mercado")
+        console.print("6. Teste de Competências (Quiz)")
+        console.print("7. Consultor de Salário")
         choice = console.input("\n[bold]Escolha uma opção:[/bold] ")
 
         if choice == "2":
@@ -1893,6 +1899,14 @@ class HubDeVagas:
             sys.exit(0)
         elif choice == "5":
             self.market_analyzer.show_trends()
+            sys.exit(0)
+        elif choice == "6":
+            self.skills_quiz.run_quiz()
+            sys.exit(0)
+        elif choice == "7":
+            role = console.input("Cargo alvo: ")
+            level = console.input("Nível (Junior/Pleno/Senior): ")
+            self.salary_advisor.advise(role, level)
             sys.exit(0)
 
         # Default to Dashboard Loop
@@ -1965,12 +1979,11 @@ class HubDeVagas:
                             questions = self.coach.generate_questions(job)
                             self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
 
-                            # Show interview prep temporarily
                             q_text = "\n".join([f"- {q}" for q in questions])
                             layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))
                             time.sleep(2)
 
-                        # Update Footer with Live Logs
+                        # Update Footer
                         log_text = "\n".join(self.logs)
                         layout["footer"].update(Panel(log_text, title="Log de Eventos em Tempo Real", style="white"))
 
@@ -1985,7 +1998,7 @@ class HubDeVagas:
                              self.log(f"[yellow]Monitoramento:[/yellow] {action}")
                              time.sleep(0.5)
 
-                    # Update Side Panel with Strategy & Metrics
+                    # Update Side Panel
                     stats_text = f"""
                     [bold]MÉTRICAS OPERACIONAIS[/bold]
 
@@ -2027,7 +2040,7 @@ class HubDeVagas:
         layout.split(
             Layout(name="header", size=3),
             Layout(name="body", ratio=1),
-            Layout(name="footer", size=10) # Increased footer size for logs
+            Layout(name="footer", size=10)
         )
         layout["body"].split_row(
             Layout(name="side", ratio=1),
@@ -2444,6 +2457,48 @@ class FollowUpAgent:
                 app.notes += " | Follow-up enviado."
 
         return actions
+
+```
+
+## src/modules/negotiation/advisor.py
+```
+from rich.console import Console
+from rich.panel import Panel
+
+console = Console()
+
+class SalaryAdvisor:
+    def __init__(self):
+        # Mock database of salary ranges (BRL)
+        self.salary_db = {
+            "junior": {"min": 3000, "max": 5000},
+            "pleno": {"min": 6000, "max": 9000},
+            "senior": {"min": 10000, "max": 16000},
+            "tech_lead": {"min": 18000, "max": 25000}
+        }
+
+    def advise(self, role, level):
+        console.clear()
+        console.print(Panel("[bold cyan]Consultor de Negociação Salarial[/bold cyan]", expand=False))
+
+        level_key = level.lower()
+        if level_key not in self.salary_db:
+            level_key = "pleno" # Default
+
+        data = self.salary_db[level_key]
+        avg = (data["min"] + data["max"]) / 2
+
+        console.print(f"\n[bold]Cargo:[/bold] {role} ({level})")
+        console.print(f"[bold]Faixa Estimada (BR):[/bold] R$ {data['min']} - R$ {data['max']}")
+        console.print(f"[bold]Média de Mercado:[/bold] R$ {avg}\n")
+
+        console.print("[bold yellow]Estratégia de Negociação:[/bold yellow]")
+        console.print("1. Nunca diga um número primeiro. Pergunte o budget da vaga.")
+        console.print(f"2. Se pressionado, dê um intervalo: 'Estou buscando algo entre R$ {int(avg)} e R$ {data['max']}'.")
+        console.print("3. Valorize benefícios (PLR, Saúde, Remoto) como parte do pacote total.")
+        console.print("4. Pesquise a empresa no Glassdoor antes da reunião.")
+
+        console.print(Panel("Lembre-se: O 'não' você já tem. Negocie com confiança baseada em dados.", style="green"))
 
 ```
 
@@ -3061,5 +3116,55 @@ class VagasBot(HumanoBot):
                 print(f"   [Botão não encontrado] {link}")
         except Exception as e:
             print(f"   [Erro] {e}")
+
+```
+
+## src/modules/skills_assessment/quiz.py
+```
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import Prompt
+
+console = Console()
+
+class SkillsQuiz:
+    def __init__(self):
+        self.quizzes = {
+            "Python": [
+                {"q": "Qual é a saída de print(2 ** 3)?", "options": ["5", "6", "8", "9"], "a": "3"},
+                {"q": "Qual método adiciona um item ao final de uma lista?", "options": ["push()", "add()", "append()", "insert()"], "a": "3"},
+                {"q": "O que é um decorador?", "options": ["Uma classe", "Uma função que modifica outra", "Um comentário", "Um erro"], "a": "2"}
+            ],
+            "SQL": [
+                {"q": "Qual comando é usado para buscar dados?", "options": ["GET", "OPEN", "SELECT", "FETCH"], "a": "3"},
+                {"q": "Qual cláusula filtra registros?", "options": ["WHERE", "FILTER", "LIMIT", "GROUP"], "a": "1"},
+                {"q": "Como remover duplicatas?", "options": ["UNIQUE", "DISTINCT", "DIFFERENT", "REMOVE"], "a": "2"}
+            ]
+        }
+
+    def run_quiz(self):
+        console.clear()
+        console.print(Panel("[bold cyan]Avaliação Técnica - Hub de Vagas[/bold cyan]", expand=False))
+
+        topic = Prompt.ask("Escolha o tema", choices=list(self.quizzes.keys()), default="Python")
+        questions = self.quizzes[topic]
+        score = 0
+
+        for i, item in enumerate(questions, 1):
+            console.print(f"\n[bold yellow]{i}. {item['q']}[/bold yellow]")
+            for idx, opt in enumerate(item['options'], 1):
+                console.print(f"{idx}) {opt}")
+
+            answer = Prompt.ask("Sua resposta", choices=["1", "2", "3", "4"])
+            if answer == item['a']:
+                console.print("[green]Correto![/green]")
+                score += 1
+            else:
+                correct_text = item['options'][int(item['a'])-1]
+                console.print(f"[red]Incorreto. A resposta certa era: {correct_text}[/red]")
+
+        final_score = int((score / len(questions)) * 100)
+        color = "green" if final_score >= 70 else "red"
+        console.print(Panel(f"Pontuação Final: [bold {color}]{final_score}%[/bold {color}]", title="Resultado"))
 
 ```

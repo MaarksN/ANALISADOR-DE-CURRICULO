@@ -24,6 +24,8 @@ from src.modules.interview_simulator.simulator import InterviewSimulator
 from src.modules.email_helper.generator import EmailGenerator
 from src.modules.resume_improver.improver import ResumeImprover
 from src.modules.market_trends.analyzer import MarketAnalyzer
+from src.modules.skills_assessment.quiz import SkillsQuiz
+from src.modules.negotiation.advisor import SalaryAdvisor
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -45,6 +47,8 @@ class HubDeVagas:
         self.email_gen = EmailGenerator()
         self.resume_improver = ResumeImprover()
         self.market_analyzer = MarketAnalyzer()
+        self.skills_quiz = SkillsQuiz()
+        self.salary_advisor = SalaryAdvisor()
 
         self.profile = None
         self.metrics = {
@@ -56,7 +60,7 @@ class HubDeVagas:
             "networking": 0
         }
         self.last_strategy_update = "Inicializando..."
-        self.logs = deque(maxlen=8) # Keep last 8 logs for the live panel
+        self.logs = deque(maxlen=8)
 
     def load_state(self):
         """Loads state from disk if available."""
@@ -96,6 +100,8 @@ class HubDeVagas:
         console.print("3. Gerador de E-mail (Ferramenta)")
         console.print("4. Analisador de Currículo (IA)")
         console.print("5. Tendências de Mercado")
+        console.print("6. Teste de Competências (Quiz)")
+        console.print("7. Consultor de Salário")
         choice = console.input("\n[bold]Escolha uma opção:[/bold] ")
 
         if choice == "2":
@@ -110,6 +116,14 @@ class HubDeVagas:
             sys.exit(0)
         elif choice == "5":
             self.market_analyzer.show_trends()
+            sys.exit(0)
+        elif choice == "6":
+            self.skills_quiz.run_quiz()
+            sys.exit(0)
+        elif choice == "7":
+            role = console.input("Cargo alvo: ")
+            level = console.input("Nível (Junior/Pleno/Senior): ")
+            self.salary_advisor.advise(role, level)
             sys.exit(0)
 
         # Default to Dashboard Loop
@@ -182,12 +196,11 @@ class HubDeVagas:
                             questions = self.coach.generate_questions(job)
                             self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
 
-                            # Show interview prep temporarily
                             q_text = "\n".join([f"- {q}" for q in questions])
                             layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))
                             time.sleep(2)
 
-                        # Update Footer with Live Logs
+                        # Update Footer
                         log_text = "\n".join(self.logs)
                         layout["footer"].update(Panel(log_text, title="Log de Eventos em Tempo Real", style="white"))
 
@@ -202,7 +215,7 @@ class HubDeVagas:
                              self.log(f"[yellow]Monitoramento:[/yellow] {action}")
                              time.sleep(0.5)
 
-                    # Update Side Panel with Strategy & Metrics
+                    # Update Side Panel
                     stats_text = f"""
                     [bold]MÉTRICAS OPERACIONAIS[/bold]
 
@@ -244,7 +257,7 @@ class HubDeVagas:
         layout.split(
             Layout(name="header", size=3),
             Layout(name="body", ratio=1),
-            Layout(name="footer", size=10) # Increased footer size for logs
+            Layout(name="footer", size=10)
         )
         layout["body"].split_row(
             Layout(name="side", ratio=1),
