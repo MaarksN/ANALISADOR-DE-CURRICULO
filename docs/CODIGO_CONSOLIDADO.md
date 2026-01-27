@@ -1,4 +1,4 @@
-# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V7 - FINAL COMPLETE)
+# CÓDIGO FONTE CONSOLIDADO - HUB DE VAGAS (V9 - ULTRA FINAL)
 
 ## .env.example
 ```
@@ -9,18 +9,18 @@ LINKEDIN_EMAIL=marcelinmark@gmail.com
 LINKEDIN_PASSWORD=SUA_SENHA_AQUI
 GUPY_EMAIL=marcelinmark@gmail.com
 GUPY_PASSWORD=SUA_SENHA_AQUI
+OPENAI_API_KEY=sk-...
+TELEGRAM_BOT_TOKEN=123456:ABC-DEF
+TELEGRAM_CHAT_ID=987654321
 
 ```
 
 ## requirements.txt
 ```
-playwright==1.41.0
-pydantic==2.5.3
-python-dotenv==1.0.1
-rich
-faker
-selenium
-webdriver-manager
+openai
+streamlit
+ics
+requests
 
 ```
 
@@ -1314,6 +1314,46 @@ def daily_filename():
 
 ```
 
+## src/core/llm.py
+```
+import os
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
+
+class LLMClient:
+    def __init__(self):
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.client = None
+        if self.api_key and OpenAI:
+            try:
+                self.client = OpenAI(api_key=self.api_key)
+            except:
+                pass
+
+    def is_active(self):
+        return self.client is not None
+
+    def generate_response(self, prompt, system_role="Você é um assistente de carreira útil."):
+        if not self.is_active():
+            return None
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": system_role},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=300
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            return None
+
+```
+
 ## src/core/models.py
 ```
 from typing import List, Optional, Dict
@@ -1465,8 +1505,10 @@ from src.core.browser import open_context
 from src.core.sources import enqueue, extract_gupy_links
 from src.drivers.linkedin_easy_apply import process_job as li_process
 from src.drivers.gupy_fast_apply import process_job as gupy_process
+from src.modules.notifications.telegram_bot import TelegramBot
 
 console = Console()
+telegram = TelegramBot()
 
 PROFILE_PATH = Path("profile_br.json")
 QUEUE_PATH = Path("data") / "queue.jsonl"
@@ -1580,14 +1622,18 @@ def main():
                         li_process(page_li, url, profile)
                         status = seen("linkedin", url)
                         console.print(f"  > Status: {status}")
-                        if status == "applied": applied_in_window += 1
+                        if status == "applied":
+                            applied_in_window += 1
+                            telegram.send_notification(f"🚀 *Aplicação Sucesso (LinkedIn)*\n{url}")
                         continue
 
                     if platform == "gupy":
                         gupy_process(page_gupy, url, profile)
                         status = seen("gupy", url)
                         console.print(f"  > Status: {status}")
-                        if status == "applied": applied_in_window += 1
+                        if status == "applied":
+                            applied_in_window += 1
+                            telegram.send_notification(f"🚀 *Aplicação Sucesso (Gupy)*\n{url}")
                         continue
 
                 except Exception as e:
@@ -1809,6 +1855,7 @@ from src.modules.resume_improver.improver import ResumeImprover
 from src.modules.market_trends.analyzer import MarketAnalyzer
 from src.modules.skills_assessment.quiz import SkillsQuiz
 from src.modules.negotiation.advisor import SalaryAdvisor
+from src.modules.calendar.integration import CalendarManager
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -1832,6 +1879,7 @@ class HubDeVagas:
         self.market_analyzer = MarketAnalyzer()
         self.skills_quiz = SkillsQuiz()
         self.salary_advisor = SalaryAdvisor()
+        self.calendar = CalendarManager()
 
         self.profile = None
         self.metrics = {
@@ -1979,6 +2027,10 @@ class HubDeVagas:
                             questions = self.coach.generate_questions(job)
                             self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
 
+                            # Add to Calendar
+                            ics_file = self.calendar.add_event(f"Entrevista {job.company}", f"Cargo: {job.title}", datetime.now())
+                            self.log(f"[green]📅 Evento criado:[/green] {ics_file}")
+
                             q_text = "\n".join([f"- {q}" for q in questions])
                             layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))
                             time.sleep(2)
@@ -2091,6 +2143,43 @@ class ApplicationBot:
 
         self.application_history.append(app)
         return app
+
+```
+
+## src/modules/calendar/integration.py
+```
+from ics import Calendar, Event
+from datetime import datetime, timedelta
+import os
+
+class CalendarManager:
+    def __init__(self):
+        self.calendar = Calendar()
+        self.filename = "data/entrevistas.ics"
+        self._load()
+
+    def _load(self):
+        if os.path.exists(self.filename):
+            try:
+                with open(self.filename, 'r') as f:
+                    self.calendar = Calendar(f.read())
+            except:
+                pass
+
+    def add_event(self, title, description, start_time, duration_minutes=60):
+        e = Event()
+        e.name = title
+        e.description = description
+        e.begin = start_time
+        e.duration = timedelta(minutes=duration_minutes)
+        self.calendar.events.add(e)
+        self._save()
+        return self.filename
+
+    def _save(self):
+        os.makedirs("data", exist_ok=True)
+        with open(self.filename, 'w') as f:
+            f.writelines(self.calendar)
 
 ```
 
@@ -2230,11 +2319,13 @@ import random
 from rich.panel import Panel
 from rich.console import Console
 from rich.prompt import Prompt
+from src.core.llm import LLMClient
 
 console = Console()
 
 class InterviewSimulator:
     def __init__(self):
+        self.llm = LLMClient()
         self.questions_db = {
             "Junior": [
                 "O que é uma lista em Python?",
@@ -2293,7 +2384,13 @@ class InterviewSimulator:
         return history
 
     def _generate_feedback(self, answer, level):
-        """Generates mock feedback based on answer length and complexity level."""
+        """Generates feedback using LLM if available, otherwise mock logic."""
+        if self.llm.is_active():
+            prompt = f"Avalie a seguinte resposta de um candidato para uma vaga nível {level}. Seja construtivo e breve.\nResposta: {answer}"
+            feedback = self.llm.generate_response(prompt, system_role="Você é um recrutador técnico experiente.")
+            if feedback: return feedback
+
+        # Fallback Logic
         word_count = len(answer.split())
 
         if word_count < 10:
@@ -2533,6 +2630,35 @@ class NetworkAgent:
 
 ```
 
+## src/modules/notifications/telegram_bot.py
+```
+import os
+import requests
+
+class TelegramBot:
+    def __init__(self):
+        self.token = os.getenv("TELEGRAM_BOT_TOKEN")
+        self.chat_id = os.getenv("TELEGRAM_CHAT_ID")
+        self.api_url = f"https://api.telegram.org/bot{self.token}/sendMessage"
+
+    def send_notification(self, message):
+        """Sends a message to the configured Telegram chat."""
+        if not self.token or not self.chat_id:
+            return False
+
+        try:
+            payload = {
+                "chat_id": self.chat_id,
+                "text": message,
+                "parse_mode": "Markdown"
+            }
+            response = requests.post(self.api_url, json=payload, timeout=5)
+            return response.status_code == 200
+        except:
+            return False
+
+```
+
 ## src/modules/onboarding.py
 ```
 from src.core.models import CandidateProfile, Experience, Education, Skill
@@ -2752,11 +2878,13 @@ import re
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from src.core.llm import LLMClient
 
 console = Console()
 
 class ResumeImprover:
     def __init__(self):
+        self.llm = LLMClient()
         # Weighted keywords for better scoring
         self.keywords = {
             "Python": 5, "SQL": 4, "AWS": 5, "Docker": 4, "Kubernetes": 5,
@@ -2770,7 +2898,17 @@ class ResumeImprover:
         console.clear()
         console.print(Panel("[bold cyan]Analisador de Currículo Avançado (Hub de Vagas)[/bold cyan]", expand=False))
 
-        # 1. Section Analysis
+        # 0. Check for LLM
+        if self.llm.is_active():
+            with console.status("[bold green]Analisando com IA Generativa (OpenAI)...[/bold green]"):
+                analysis = self.llm.generate_response(
+                    f"Analise este currículo e dê feedback detalhado sobre pontos fortes, fracos e compatibilidade com vagas de tecnologia:\n\n{text}"
+                )
+            if analysis:
+                console.print(Panel(analysis, title="Análise Profunda (LLM)", style="magenta"))
+                return
+
+        # 1. Section Analysis (Fallback Logic)
         found_sections = []
         missing_sections = []
         for section in self.essential_sections:
@@ -3166,5 +3304,100 @@ class SkillsQuiz:
         final_score = int((score / len(questions)) * 100)
         color = "green" if final_score >= 70 else "red"
         console.print(Panel(f"Pontuação Final: [bold {color}]{final_score}%[/bold {color}]", title="Resultado"))
+
+```
+
+## src/web/app.py
+```
+import streamlit as st
+import pandas as pd
+import sqlite3
+import json
+import os
+from datetime import datetime
+
+# Page Config
+st.set_page_config(page_title="Hub de Vagas - Dashboard Web", page_icon="🚀", layout="wide")
+
+# Sidebar
+st.sidebar.title("Hub de Vagas")
+st.sidebar.markdown("---")
+page = st.sidebar.radio("Navegação", ["Dashboard", "Perfil", "Configurações"])
+
+DB_PATH = "data/autoapply.db"
+PROFILE_PATH = "profile_br.json"
+
+def get_db_connection():
+    if not os.path.exists(DB_PATH):
+        return None
+    return sqlite3.connect(DB_PATH)
+
+if page == "Dashboard":
+    st.title("📊 Monitoramento de Candidaturas")
+
+    conn = get_db_connection()
+    if conn:
+        # Load Data
+        df = pd.read_sql_query("SELECT * FROM jobs", conn)
+        conn.close()
+
+        # Metrics
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Mapeado", len(df))
+        col2.metric("Aplicados", len(df[df['status'] == 'applied']))
+        col3.metric("Taxa de Conversão", f"{len(df[df['status'] == 'applied']) / len(df) * 100:.1f}%" if len(df) > 0 else "0%")
+
+        # Charts
+        st.subheader("Atividade Recente")
+        df['date'] = pd.to_datetime(df['created_at'])
+        daily_counts = df.groupby(df['date'].dt.date).size()
+        st.bar_chart(daily_counts)
+
+        st.subheader("Status por Plataforma")
+        status_counts = df.groupby(['platform', 'status']).size().unstack(fill_value=0)
+        st.bar_chart(status_counts)
+
+        # Table
+        st.subheader("Últimas Vagas")
+        st.dataframe(df.sort_values('created_at', ascending=False).head(20))
+
+    else:
+        st.warning("Banco de dados ainda não criado. Execute o runner primeiro.")
+
+elif page == "Perfil":
+    st.title("👤 Perfil do Candidato")
+
+    if os.path.exists(PROFILE_PATH):
+        with open(PROFILE_PATH, 'r', encoding='utf-8') as f:
+            profile = json.load(f)
+
+        # Display Profile
+        col1, col2 = st.columns(2)
+        with col1:
+            st.text_input("Nome", profile['pessoal']['nome_completo'], disabled=True)
+            st.text_input("Email", profile['pessoal']['email'], disabled=True)
+        with col2:
+            st.text_input("LinkedIn", profile['pessoal']['linkedin'], disabled=True)
+            st.text_input("Telefone", profile['pessoal']['telefone'], disabled=True)
+
+        st.subheader("Habilidades (Skills)")
+        st.write(", ".join(profile['skills']))
+
+        st.subheader("Preferências")
+        st.json(profile['preferencias'])
+
+        st.info("Para editar, modifique o arquivo profile_br.json diretamente.")
+    else:
+        st.error("Perfil não encontrado.")
+
+elif page == "Configurações":
+    st.title("⚙️ Configurações do Sistema")
+    st.write("Variáveis de ambiente carregadas (.env):")
+
+    st.text_input("HEADLESS", os.getenv("HEADLESS", "Não definido"), disabled=True)
+    st.text_input("RUN_MODE", os.getenv("RUN_MODE", "Não definido"), disabled=True)
+
+    if st.button("Limpar Cache de Sessão"):
+        st.success("Cache limpo (Simulado).")
 
 ```

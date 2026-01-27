@@ -26,6 +26,7 @@ from src.modules.resume_improver.improver import ResumeImprover
 from src.modules.market_trends.analyzer import MarketAnalyzer
 from src.modules.skills_assessment.quiz import SkillsQuiz
 from src.modules.negotiation.advisor import SalaryAdvisor
+from src.modules.calendar.integration import CalendarManager
 from src.core.persistence import PersistenceManager
 
 console = Console()
@@ -49,6 +50,7 @@ class HubDeVagas:
         self.market_analyzer = MarketAnalyzer()
         self.skills_quiz = SkillsQuiz()
         self.salary_advisor = SalaryAdvisor()
+        self.calendar = CalendarManager()
 
         self.profile = None
         self.metrics = {
@@ -195,6 +197,10 @@ class HubDeVagas:
                             self.metrics["interviews"] += 1
                             questions = self.coach.generate_questions(job)
                             self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
+
+                            # Add to Calendar
+                            ics_file = self.calendar.add_event(f"Entrevista {job.company}", f"Cargo: {job.title}", datetime.now())
+                            self.log(f"[green]📅 Evento criado:[/green] {ics_file}")
 
                             q_text = "\n".join([f"- {q}" for q in questions])
                             layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))

@@ -2,11 +2,13 @@ import re
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from src.core.llm import LLMClient
 
 console = Console()
 
 class ResumeImprover:
     def __init__(self):
+        self.llm = LLMClient()
         # Weighted keywords for better scoring
         self.keywords = {
             "Python": 5, "SQL": 4, "AWS": 5, "Docker": 4, "Kubernetes": 5,
@@ -20,7 +22,17 @@ class ResumeImprover:
         console.clear()
         console.print(Panel("[bold cyan]Analisador de Currículo Avançado (Hub de Vagas)[/bold cyan]", expand=False))
 
-        # 1. Section Analysis
+        # 0. Check for LLM
+        if self.llm.is_active():
+            with console.status("[bold green]Analisando com IA Generativa (OpenAI)...[/bold green]"):
+                analysis = self.llm.generate_response(
+                    f"Analise este currículo e dê feedback detalhado sobre pontos fortes, fracos e compatibilidade com vagas de tecnologia:\n\n{text}"
+                )
+            if analysis:
+                console.print(Panel(analysis, title="Análise Profunda (LLM)", style="magenta"))
+                return
+
+        # 1. Section Analysis (Fallback Logic)
         found_sections = []
         missing_sections = []
         for section in self.essential_sections:

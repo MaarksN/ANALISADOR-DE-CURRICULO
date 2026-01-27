@@ -3,11 +3,13 @@ import random
 from rich.panel import Panel
 from rich.console import Console
 from rich.prompt import Prompt
+from src.core.llm import LLMClient
 
 console = Console()
 
 class InterviewSimulator:
     def __init__(self):
+        self.llm = LLMClient()
         self.questions_db = {
             "Junior": [
                 "O que é uma lista em Python?",
@@ -66,7 +68,13 @@ class InterviewSimulator:
         return history
 
     def _generate_feedback(self, answer, level):
-        """Generates mock feedback based on answer length and complexity level."""
+        """Generates feedback using LLM if available, otherwise mock logic."""
+        if self.llm.is_active():
+            prompt = f"Avalie a seguinte resposta de um candidato para uma vaga nível {level}. Seja construtivo e breve.\nResposta: {answer}"
+            feedback = self.llm.generate_response(prompt, system_role="Você é um recrutador técnico experiente.")
+            if feedback: return feedback
+
+        # Fallback Logic
         word_count = len(answer.split())
 
         if word_count < 10:

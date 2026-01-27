@@ -12,8 +12,10 @@ from src.core.browser import open_context
 from src.core.sources import enqueue, extract_gupy_links
 from src.drivers.linkedin_easy_apply import process_job as li_process
 from src.drivers.gupy_fast_apply import process_job as gupy_process
+from src.modules.notifications.telegram_bot import TelegramBot
 
 console = Console()
+telegram = TelegramBot()
 
 PROFILE_PATH = Path("profile_br.json")
 QUEUE_PATH = Path("data") / "queue.jsonl"
@@ -127,14 +129,18 @@ def main():
                         li_process(page_li, url, profile)
                         status = seen("linkedin", url)
                         console.print(f"  > Status: {status}")
-                        if status == "applied": applied_in_window += 1
+                        if status == "applied":
+                            applied_in_window += 1
+                            telegram.send_notification(f"🚀 *Aplicação Sucesso (LinkedIn)*\n{url}")
                         continue
 
                     if platform == "gupy":
                         gupy_process(page_gupy, url, profile)
                         status = seen("gupy", url)
                         console.print(f"  > Status: {status}")
-                        if status == "applied": applied_in_window += 1
+                        if status == "applied":
+                            applied_in_window += 1
+                            telegram.send_notification(f"🚀 *Aplicação Sucesso (Gupy)*\n{url}")
                         continue
 
                 except Exception as e:
