@@ -5,8 +5,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
-_cached_driver_path = None
-
 class HumanoBot:
     def __init__(self, headless=False):
         self.driver = None
@@ -14,7 +12,6 @@ class HumanoBot:
         self.wait = None
 
     def iniciar_driver(self):
-        global _cached_driver_path
         options = webdriver.ChromeOptions()
         if self.headless:
             options.add_argument("--headless=new")
@@ -23,16 +20,7 @@ class HumanoBot:
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
 
-        if _cached_driver_path is None:
-            _cached_driver_path = ChromeDriverManager().install()
-
-        try:
-            self.driver = webdriver.Chrome(service=Service(_cached_driver_path), options=options)
-        except Exception as e:
-            print(f">> ⚠️ Driver error (retrying with fresh install): {e}")
-            _cached_driver_path = ChromeDriverManager().install()
-            self.driver = webdriver.Chrome(service=Service(_cached_driver_path), options=options)
-
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         self.wait = WebDriverWait(self.driver, 15)
 
     def dormir_aleatorio(self, min_seg=2, max_seg=5):

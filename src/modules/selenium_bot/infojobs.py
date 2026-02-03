@@ -43,17 +43,8 @@ class InfojobsBot(HumanoBot):
 
     def processar_lista_vagas(self):
         # Coleta links da primeira página
-        # OTIMIZAÇÃO: Coleta todos os links via JS para evitar N+1 round-trips
-        links = self.driver.execute_script("""
-            var links = [];
-            var elements = document.querySelectorAll("div.vaga a.text-decoration-none");
-            for (var i = 0; i < elements.length; i++) {
-                if (elements[i].href) {
-                    links.push(elements[i].href);
-                }
-            }
-            return links;
-        """)
+        vagas = self.driver.find_elements(By.CSS_SELECTOR, "div.vaga a.text-decoration-none")
+        links = [v.get_attribute('href') for v in vagas if v.get_attribute('href')]
 
         # Embaralha a lista para não clicar sempre na ordem exata
         random.shuffle(links)
