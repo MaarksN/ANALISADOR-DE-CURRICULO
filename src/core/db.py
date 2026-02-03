@@ -1,11 +1,20 @@
 import sqlite3
+import threading
 from pathlib import Path
 
 DB_PATH = Path("data") / "autoapply.db"
 
+_local = threading.local()
+
+def get_connection():
+    if not hasattr(_local, "connection"):
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _local.connection = sqlite3.connect(DB_PATH)
+    return _local.connection
+
 def init_db():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(DB_PATH) as con:
+    con = get_connection()
+    with con:
         con.execute("""
             CREATE TABLE IF NOT EXISTS jobs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,10 +30,10 @@ def init_db():
                 UNIQUE (platform, job_url)
             );
         """)
-        con.commit()
 
 def upsert_job(platform, job_url, status, title=None, company=None, location=None, score=0, reason=None):
-    with sqlite3.connect(DB_PATH) as con:
+    con = get_connection()
+    with con:
         con.execute("""
             INSERT INTO jobs (platform, job_url, title, company, location, score, status, reason)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -36,10 +45,9 @@ def upsert_job(platform, job_url, status, title=None, company=None, location=Non
                 status=excluded.status,
                 reason=excluded.reason;
         """, (platform, job_url, title, company, location, score, status, reason))
-        con.commit()
 
 def seen(platform, job_url):
-    with sqlite3.connect(DB_PATH) as con:
-        cur = con.execute("SELECT status FROM jobs WHERE platform=? AND job_url=?", (platform, job_url))
-        row = cur.fetchone()
-        return row[0] if row else None
+    con = get_connection()
+    cur = con.execute("SELECT status FROM jobs WHERE platform=? AND job_url=?", (platform, job_url))
+    row = cur.fetchone()
+    return row[0] if row else None
