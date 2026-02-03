@@ -1,0 +1,16 @@
+[Unit]
+Description=AutoApply (LinkedIn + Gupy)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/autoapply
+ExecStart=/opt/autoapply/.venv/bin/python -m src.core.runner
+Restart=always
+RestartSec=120
+Environment=RUN_MODE=ec2
+Environment=HEADLESS=1
+
+[Install]
+WantedBy=multi-user.target
