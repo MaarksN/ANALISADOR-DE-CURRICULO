@@ -4,6 +4,7 @@ import random
 import time
 import re
 from pathlib import Path
+from itertools import islice
 from datetime import datetime, date
 from rich.console import Console
 from src.core.db import init_db, seen, upsert_job, DB_PATH
@@ -33,11 +34,11 @@ def count_applied_today():
 
 def read_queue(limit=200):
     if not QUEUE_PATH.exists(): return []
-    lines = QUEUE_PATH.read_text(encoding="utf-8").splitlines()
     items = []
-    for ln in lines[:limit]:
-        try: items.append(json.loads(ln))
-        except: pass
+    with QUEUE_PATH.open(encoding="utf-8") as f:
+        for ln in islice(f, limit):
+            try: items.append(json.loads(ln))
+            except: pass
     return items
 
 def main():
