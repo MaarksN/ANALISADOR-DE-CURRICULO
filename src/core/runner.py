@@ -10,7 +10,7 @@ from rich.console import Console
 from src.core.db import init_db, seen, upsert_job, DB_PATH
 from src.core.export import export_daily, daily_filename
 from src.core.browser import open_context
-from src.core.sources import enqueue, extract_gupy_links
+from src.core.sources import enqueue, enqueue_urls, extract_gupy_links
 from src.drivers.linkedin_easy_apply import process_job as li_process
 from src.drivers.gupy_fast_apply import process_job as gupy_process
 from src.modules.notifications.telegram_bot import TelegramBot
@@ -55,10 +55,8 @@ def main():
 
     # Enqueue seeds
     console.print("[cyan]Carregando seeds...[/cyan]")
-    for url in profile.get("seeds", {}).get("linkedin_search_pages", []):
-        enqueue("linkedin_search", url)
-    for url in profile.get("seeds", {}).get("gupy_search_pages", []):
-        enqueue("web_discovery", url)
+    enqueue_urls("linkedin_search", profile.get("seeds", {}).get("linkedin_search_pages", []))
+    enqueue_urls("web_discovery", profile.get("seeds", {}).get("gupy_search_pages", []))
 
     meta_daily = int(profile["preferencias"]["meta_candidaturas_dia"])
     applied_today = count_applied_today()
@@ -114,8 +112,7 @@ def main():
                         page_li.wait_for_timeout(2000)
                         found = set(re.findall(r"https://www\.linkedin\.com/jobs/view/\d+", page_li.content()))
                         console.print(f"  > Encontradas {len(found)} novas vagas.")
-                        for m in found:
-                            enqueue("linkedin", m)
+                        enqueue_urls("linkedin", list(found))
                         continue
 
                     if platform == "web_discovery":
@@ -123,7 +120,7 @@ def main():
                         page_gupy.wait_for_timeout(2000)
                         links = extract_gupy_links(page_gupy.content())
                         console.print(f"  > Encontrados {len(links)} links Gupy.")
-                        for lk in links: enqueue("gupy", lk)
+                        enqueue_urls("gupy", links)
                         continue
 
                     if platform == "linkedin":
