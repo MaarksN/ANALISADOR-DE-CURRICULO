@@ -2,6 +2,7 @@ import json
 import re
 from pathlib import Path
 from urllib.parse import quote
+from typing import Iterable
 
 QUEUE_PATH = Path("data") / "queue.jsonl"
 QUEUE_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -10,6 +11,21 @@ def enqueue(platform: str, url: str, meta: dict | None = None):
     meta = meta or {}
     with QUEUE_PATH.open("a", encoding="utf-8") as f:
         f.write(json.dumps({"platform": platform, "url": url, "meta": meta}, ensure_ascii=False) + "\n")
+
+def enqueue_urls(platform: str, urls: Iterable[str], meta: dict | None = None):
+    meta = meta or {}
+    # Use an iterator to handle both lists and generators,
+    # and to avoid opening the file if the iterable is empty.
+    iterator = iter(urls)
+    try:
+        first_url = next(iterator)
+    except StopIteration:
+        return
+
+    with QUEUE_PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps({"platform": platform, "url": first_url, "meta": meta}, ensure_ascii=False) + "\n")
+        for url in iterator:
+            f.write(json.dumps({"platform": platform, "url": url, "meta": meta}, ensure_ascii=False) + "\n")
 
 def linkedin_search_urls(queries: list[str], geo: str = "106057199"):
     urls = []
