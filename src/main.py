@@ -1,0 +1,276 @@
+import time
+import random
+import sys
+from rich.console import Console
+from rich.layout import Layout
+from rich.panel import Panel
+from rich.live import Live
+from rich.table import Table
+from rich.text import Text
+from rich.markdown import Markdown
+from collections import deque
+
+from src.modules.onboarding import OnboardingAgent
+from src.modules.job_intelligence import JobScanner
+from src.modules.profile_optimizer import ProfileOptimizer
+from src.modules.resume_generator import ResumeGenerator
+from src.modules.applier import ApplicationBot
+from src.modules.interview_prep import InterviewCoach
+from src.modules.decision_engine import StrategyEngine
+from src.modules.monitoring import FollowUpAgent
+from src.modules.networking import NetworkAgent
+from src.modules.reporting import ReportGenerator
+from src.modules.interview_simulator.simulator import InterviewSimulator
+from src.modules.email_helper.generator import EmailGenerator
+from src.modules.resume_improver.improver import ResumeImprover
+from src.modules.market_trends.analyzer import MarketAnalyzer
+from src.modules.skills_assessment.quiz import SkillsQuiz
+from src.modules.negotiation.advisor import SalaryAdvisor
+from src.modules.calendar.integration import CalendarManager
+from src.core.persistence import PersistenceManager
+
+console = Console()
+
+class HubDeVagas:
+    def __init__(self):
+        self.persistence = PersistenceManager()
+        self.onboarding = OnboardingAgent()
+        self.scanner = JobScanner()
+        self.optimizer = ProfileOptimizer()
+        self.resume_gen = ResumeGenerator()
+        self.applier = ApplicationBot()
+        self.coach = InterviewCoach()
+        self.strategy_engine = StrategyEngine()
+        self.monitoring = FollowUpAgent()
+        self.networker = NetworkAgent()
+        self.reporter = ReportGenerator()
+        self.simulator = InterviewSimulator()
+        self.email_gen = EmailGenerator()
+        self.resume_improver = ResumeImprover()
+        self.market_analyzer = MarketAnalyzer()
+        self.skills_quiz = SkillsQuiz()
+        self.salary_advisor = SalaryAdvisor()
+        self.calendar = CalendarManager()
+
+        self.profile = None
+        self.metrics = {
+            "scanned": 0,
+            "matched": 0,
+            "applied": 0,
+            "interviews": 0,
+            "followups": 0,
+            "networking": 0
+        }
+        self.last_strategy_update = "Inicializando..."
+        self.logs = deque(maxlen=8)
+
+    def load_state(self):
+        """Loads state from disk if available."""
+        p, m, apps = self.persistence.load_data()
+        if p:
+            self.profile = p
+            console.print("[green]Perfil carregado do disco.[/green]")
+        else:
+            self.profile = self.onboarding.load_default_profile()
+            console.print("[yellow]Perfil padrão carregado.[/yellow]")
+
+        if m:
+            self.metrics = m
+            if "networking" not in self.metrics: self.metrics["networking"] = 0
+            if "followups" not in self.metrics: self.metrics["followups"] = 0
+
+        if apps:
+            self.applier.application_history = apps
+
+    def save_state(self):
+        """Saves current state."""
+        self.persistence.save_data(self.profile, self.metrics, self.applier.application_history)
+
+    def log(self, message):
+        """Adds a message to the live log."""
+        timestamp = time.strftime("%H:%M:%S")
+        self.logs.append(f"[{timestamp}] {message}")
+
+    def start(self):
+        self.load_state()
+
+        # Simple menu for mode selection
+        console.clear()
+        console.print(Panel("[bold cyan]Hub de Vagas - Central de Comando[/bold cyan]"))
+        console.print("1. Iniciar Ciclo Automático (Dashboard)")
+        console.print("2. Simulador de Entrevista (Interativo)")
+        console.print("3. Gerador de E-mail (Ferramenta)")
+        console.print("4. Analisador de Currículo (IA)")
+        console.print("5. Tendências de Mercado")
+        console.print("6. Teste de Competências (Quiz)")
+        console.print("7. Consultor de Salário")
+        choice = console.input("\n[bold]Escolha uma opção:[/bold] ")
+
+        if choice == "2":
+            self.simulator.run_session()
+            sys.exit(0)
+        elif choice == "3":
+            self.run_email_tool()
+            sys.exit(0)
+        elif choice == "4":
+            text = console.input("Cole o texto do seu currículo aqui: ")
+            self.resume_improver.analyze_resume(text)
+            sys.exit(0)
+        elif choice == "5":
+            self.market_analyzer.show_trends()
+            sys.exit(0)
+        elif choice == "6":
+            self.skills_quiz.run_quiz()
+            sys.exit(0)
+        elif choice == "7":
+            role = console.input("Cargo alvo: ")
+            level = console.input("Nível (Junior/Pleno/Senior): ")
+            self.salary_advisor.advise(role, level)
+            sys.exit(0)
+
+        # Default to Dashboard Loop
+        layout = self.make_layout()
+
+        try:
+            with Live(layout, refresh_per_second=4, screen=True):
+                while True:
+                    # 1. Update Header
+                    layout["header"].update(Panel(Text("HUB DE VAGAS AUTOMÁTICO - OPERANDO", style="bold green", justify="center")))
+
+                    # 2. Decision Engine Analysis
+                    strategy_msg = self.strategy_engine.analyze_performance(self.metrics, [])
+                    self.last_strategy_update = strategy_msg
+
+                    # 3. Scan
+                    layout["main"].update(Panel(Text("Escaneando oportunidades...", style="yellow")))
+                    time.sleep(1)
+
+                    keywords = [s.name for s in self.profile.skills]
+                    jobs = self.scanner.scan_opportunities(keywords)
+                    self.metrics["scanned"] += len(jobs)
+
+                    # 4. Match
+                    high_match_jobs = []
+                    for job in jobs:
+                        score = self.scanner.calculate_match_score(self.profile, job)
+                        if score > 50:
+                            high_match_jobs.append(job)
+                            job.match_score = score
+
+                    self.metrics["matched"] += len(high_match_jobs)
+
+                    # Display Jobs
+                    job_table = Table(title="Oportunidades Recentes")
+                    job_table.add_column("Empresa", style="cyan")
+                    job_table.add_column("Cargo", style="magenta")
+                    job_table.add_column("Match %", justify="right")
+
+                    for job in high_match_jobs[-5:]:
+                        job_table.add_row(job.company, job.title, f"{job.match_score:.1f}%")
+
+                    layout["main"].update(Panel(job_table))
+                    time.sleep(1)
+
+                    # 5. Apply & Interview Simulation
+                    for job in high_match_jobs:
+                        # Optimize
+                        opt_profile = self.optimizer.optimize_for_job(self.profile, job)
+                        # Resume
+                        resume = self.resume_gen.generate_resume(opt_profile, job)
+                        # Apply
+                        app = self.applier.apply(opt_profile, job, resume)
+                        self.metrics["applied"] += 1
+
+                        # Update Log
+                        status_color = "green" if app.status == "Aplicado" else "red"
+                        self.log(f"Candidatura: {job.company} ({job.title}) - [{status_color}]{app.status}[/{status_color}]")
+
+                        # Networking Action
+                        net_action = self.networker.attempt_connection(job.company)
+                        if net_action:
+                            self.metrics["networking"] += 1
+                            self.log(f"[cyan]Networking:[/cyan] {net_action}")
+                            time.sleep(0.5)
+
+                        # SIMULATE INTERVIEW
+                        if random.random() < 0.1:
+                            self.metrics["interviews"] += 1
+                            questions = self.coach.generate_questions(job)
+                            self.log(f"[magenta]Entrevista Agendada:[/magenta] {job.company}")
+
+                            # Add to Calendar
+                            ics_file = self.calendar.add_event(f"Entrevista {job.company}", f"Cargo: {job.title}", datetime.now())
+                            self.log(f"[green]📅 Evento criado:[/green] {ics_file}")
+
+                            q_text = "\n".join([f"- {q}" for q in questions])
+                            layout["main"].update(Panel(f"[bold]Preparação para {job.company}:[/bold]\n{q_text}", title="MÓDULO DE ENTREVISTAS", style="bold white on blue"))
+                            time.sleep(2)
+
+                        # Update Footer
+                        log_text = "\n".join(self.logs)
+                        layout["footer"].update(Panel(log_text, title="Log de Eventos em Tempo Real", style="white"))
+
+                        time.sleep(0.5)
+                        self.save_state()
+
+                    # 6. Monitoring & Follow-up
+                    follow_ups = self.monitoring.check_for_follow_up(self.applier.application_history)
+                    if follow_ups:
+                        self.metrics["followups"] += len(follow_ups)
+                        for action in follow_ups:
+                             self.log(f"[yellow]Monitoramento:[/yellow] {action}")
+                             time.sleep(0.5)
+
+                    # Update Side Panel
+                    stats_text = f"""
+                    [bold]MÉTRICAS OPERACIONAIS[/bold]
+
+                    Escaneados: {self.metrics['scanned']}
+                    Compatíveis: {self.metrics['matched']}
+                    Candidaturas: {self.metrics['applied']}
+                    Entrevistas: {self.metrics['interviews']}
+                    Follow-ups: {self.metrics['followups']}
+                    Networking: {self.metrics['networking']}
+
+                    [bold]Estratégia Ativa:[/bold]
+                    {self.strategy_engine.get_current_strategy()}
+                    [italic]{self.last_strategy_update}[/italic]
+                    """
+                    layout["side"].update(Panel(stats_text))
+
+                    # Pause before next cycle
+                    time.sleep(2)
+
+        except KeyboardInterrupt:
+            console.print("[bold red]Sistema Encerrando... Gerando Relatório.[/bold red]")
+            report_file = self.reporter.generate_daily_report(
+                self.profile, self.metrics, self.applier.application_history, self.strategy_engine.get_current_strategy()
+            )
+            self.save_state()
+            console.print(f"[bold green]Relatório salvo em: {report_file}[/bold green]")
+            sys.exit(0)
+
+    def run_email_tool(self):
+        console.print("[bold]Gerador de E-mail para Networking[/bold]\n")
+        recruiter = console.input("Nome do Recrutador: ")
+        company = console.input("Empresa: ")
+        role = console.input("Cargo: ")
+        email = self.email_gen.generate_cold_email(recruiter, company, role)
+        console.print(Panel(email, title="Template Gerado", style="green"))
+
+    def make_layout(self) -> Layout:
+        layout = Layout()
+        layout.split(
+            Layout(name="header", size=3),
+            Layout(name="body", ratio=1),
+            Layout(name="footer", size=10)
+        )
+        layout["body"].split_row(
+            Layout(name="side", ratio=1),
+            Layout(name="main", ratio=3)
+        )
+        return layout
+
+if __name__ == "__main__":
+    hub = HubDeVagas()
+    hub.start()
