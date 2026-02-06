@@ -81,11 +81,16 @@ def main():
         console.print(f"[red]Erro crítico ao iniciar browsers: {e}[/red]")
         return
 
+    queue = read_queue(limit=5000)
+
     try:
         for w in range(windows):
             if count_applied_today() >= meta_daily: break
 
-            queue = read_queue(limit=400)
+            # If queue is empty, try to reload once in case new items appeared on disk
+            if not queue:
+                queue = read_queue(limit=5000)
+
             if not queue:
                 console.print("[yellow]Fila vazia. Aguardando...[/yellow]")
                 time.sleep(5)
@@ -115,6 +120,7 @@ def main():
                         console.print(f"  > Encontradas {len(found)} novas vagas.")
                         for m in found:
                             enqueue("linkedin", m)
+                            queue.append({"platform": "linkedin", "url": m})
                         continue
 
                     if platform == "web_discovery":
@@ -122,7 +128,9 @@ def main():
                         page_gupy.wait_for_timeout(2000)
                         links = extract_gupy_links(page_gupy.content())
                         console.print(f"  > Encontrados {len(links)} links Gupy.")
-                        for lk in links: enqueue("gupy", lk)
+                        for lk in links:
+                            enqueue("gupy", lk)
+                            queue.append({"platform": "gupy", "url": lk})
                         continue
 
                     if platform == "linkedin":

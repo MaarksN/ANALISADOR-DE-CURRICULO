@@ -2,11 +2,11 @@ import os
 
 # Configuração do Perfil e Bot
 PERFIL = {
-    "nome_completo": "Marcelo Nascimento",
-    "email": "marcelinmark@gmail.com",
-    "telefone": "16999948479",
-    "cidade": "Ribeirão Preto",
-    "cargo_atual": "Analista de Revenue Operations",
+    "nome_completo": "Seu Nome Completo",
+    "email": "seu.email@exemplo.com",
+    "telefone": "99999999999",
+    "cidade": "Sua Cidade",
+    "cargo_atual": "Seu Cargo Atual",
     # Tenta pegar do ambiente ou usa placeholder
     "senha_infojobs": os.getenv("INFOJOBS_PASSWORD", "SUA_SENHA_AQUI"),
     "senha_vagas": os.getenv("VAGAS_PASSWORD", "SUA_SENHA_AQUI"),
