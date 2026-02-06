@@ -211,8 +211,7 @@ class HubDeVagas:
                         layout["footer"].update(Panel(log_text, title="Log de Eventos em Tempo Real", style="white"))
 
                         time.sleep(0.5)
-
-                    self.save_state()
+                        self.save_state()
 
                     # 6. Monitoring & Follow-up
                     follow_ups = self.monitoring.check_for_follow_up(self.applier.application_history)

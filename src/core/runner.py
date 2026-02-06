@@ -3,6 +3,7 @@ import os
 import random
 import time
 import re
+import sqlite3
 from pathlib import Path
 from datetime import datetime, date
 from rich.console import Console
@@ -24,9 +25,12 @@ STATE_GUPY = Path("data") / "sessions" / "gupy_state.json"
 
 def load_profile(): return json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
 
-def count_applied_today():
-    import sqlite3
+def count_applied_today(con=None):
     today = date.today().isoformat()
+    if con:
+        row = con.execute("SELECT COUNT(*) FROM jobs WHERE status='applied' AND substr(created_at, 1, 10)=?", (today,)).fetchone()
+        return row[0] if row else 0
+
     with sqlite3.connect(DB_PATH) as con:
         row = con.execute("SELECT COUNT(*) FROM jobs WHERE status='applied' AND substr(created_at, 1, 10)=?", (today,)).fetchone()
     return row[0] if row else 0
@@ -81,9 +85,11 @@ def main():
         console.print(f"[red]Erro crítico ao iniciar browsers: {e}[/red]")
         return
 
+    conn = None
     try:
+        conn = sqlite3.connect(DB_PATH)
         for w in range(windows):
-            if count_applied_today() >= meta_daily: break
+            if count_applied_today(con=conn) >= meta_daily: break
 
             queue = read_queue(limit=400)
             if not queue:
@@ -153,6 +159,10 @@ def main():
         console.print("\n[red]Interrupção manual.[/red]")
     finally:
         export_daily(DB_PATH, Path(daily_filename()))
+        try:
+            if conn: conn.close()
+        except:
+            pass
         try:
             c1.close(); b1.close(); p1.stop()
             c2.close(); b2.close(); p2.stop()
