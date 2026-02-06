@@ -5,9 +5,9 @@
 RUN_MODE=local
 HEADLESS=0
 TIMEZONE=America/Sao_Paulo
-LINKEDIN_EMAIL=email@exemplo.com
+LINKEDIN_EMAIL=marcelinmark@gmail.com
 LINKEDIN_PASSWORD=SUA_SENHA_AQUI
-GUPY_EMAIL=email@exemplo.com
+GUPY_EMAIL=marcelinmark@gmail.com
 GUPY_PASSWORD=SUA_SENHA_AQUI
 OPENAI_API_KEY=sk-...
 TELEGRAM_BOT_TOKEN=123456:ABC-DEF
@@ -28,9 +28,9 @@ requests
 ```
 {
   "pessoal": {
-    "nome_completo": "Nome Sobrenome",
-    "email": "email@exemplo.com",
-    "telefone": "11999999999",
+    "nome_completo": "Marcelo Nascimento",
+    "email": "marcelinmark@gmail.com",
+    "telefone": "16999948479",
     "linkedin": "https://www.linkedin.com/in/maarkss",
     "cidade": "Ribeirão Preto",
     "estado": "SP",
@@ -507,9 +507,9 @@ export const userProfile = {
     personal: {
       firstName: "Marcelo",
       lastName: "Nascimento",
-      fullName: "Nome Sobrenome",
-      email: "email@exemplo.com",
-      phone: "11999999999",
+      fullName: "Marcelo Nascimento",
+      email: "marcelinmark@gmail.com",
+      phone: "16999948479",
       linkedin: "www.linkedin.com/in/maarkss",
       city: "Ribeirão Preto",
       state: "SP",
@@ -1203,7 +1203,7 @@ R\xb5\x82\xa7m\xf7\x8cr\xe7\x97dR\x9e\xa0r\xe5\xff\xa0\x8ceBM\x836w\xed`\
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Hub de Vagas Automático. Desenvolvido por Nome Sobrenome.</p>
+            <p>&copy; 2025 Hub de Vagas Automático. Desenvolvido por Marcelo Nascimento.</p>
         </div>
     </footer>
 </body>
@@ -3022,9 +3022,9 @@ import os
 
 # Configuração do Perfil e Bot
 PERFIL = {
-    "nome_completo": "Nome Sobrenome",
-    "email": "email@exemplo.com",
-    "telefone": "11999999999",
+    "nome_completo": "Marcelo Nascimento",
+    "email": "marcelinmark@gmail.com",
+    "telefone": "16999948479",
     "cidade": "Ribeirão Preto",
     "cargo_atual": "Analista de Revenue Operations",
     # Tenta pegar do ambiente ou usa placeholder

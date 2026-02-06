@@ -47,14 +47,10 @@ class JobScanner:
         """
         score = 0.0
         # Check title relevance (simplified)
-        job_title_lower = job.title.lower()
-        job_requirements_lower = {req.lower() for req in job.requirements}
-
         for skill in profile.skills:
-            skill_name_lower = skill.name.lower()
-            if skill_name_lower in job_title_lower:
+            if skill.name.lower() in job.title.lower():
                 score += 30.0
-            if skill_name_lower in job_requirements_lower:
+            if skill.name.lower() in [req.lower() for req in job.requirements]:
                 score += 10.0
 
         # Check experience title relevance

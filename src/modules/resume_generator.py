@@ -22,8 +22,10 @@ class ResumeGenerator:
         skills_list = [s.name for s in profile.skills]
         # Bolding/Highlighting matching skills (simulated with *)
         formatted_skills = []
+        # Optimization: Pre-calculate lowercase requirements set for O(1) lookup
+        requirements_lower = {r.lower() for r in job.requirements}
         for skill in skills_list:
-            if skill.lower() in [r.lower() for r in job.requirements]:
+            if skill.lower() in requirements_lower:
                 formatted_skills.append(f"*{skill}*")
             else:
                 formatted_skills.append(skill)
