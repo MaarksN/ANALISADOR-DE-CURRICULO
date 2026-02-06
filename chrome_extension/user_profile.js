@@ -1,14 +1,14 @@
 export const userProfile = {
     personal: {
-      firstName: "SeuNome",
-      lastName: "Sobrenome",
-      fullName: "Seu Nome Completo",
-      email: "seu.email@exemplo.com",
-      phone: "99999999999",
-      linkedin: "www.linkedin.com/in/seu-perfil",
-      city: "Sua Cidade",
+      firstName: "Marcelo",
+      lastName: "Nascimento",
+      fullName: "Marcelo Nascimento",
+      email: "marcelinmark@gmail.com",
+      phone: "16999948479",
+      linkedin: "www.linkedin.com/in/maarkss",
+      city: "Ribeirão Preto",
       state: "SP",
-      summary: "Resumo profissional aqui."
+      summary: "Engenheiro de RevOps e Sales Operations com foco em automação, Python e IA. Transformo processos manuais em máquinas de receita escaláveis. +7 anos de experiência."
     },
     skills: [
       "Revenue Operations", "Sales Operations", "Salesforce", "HubSpot",

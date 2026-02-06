@@ -1,49 +1,136 @@
 import time
-import random
-from src.modules.job_intelligence import JobScanner
-from src.core.models import CandidateProfile, JobOpportunity, Skill, Experience
-from faker import Faker
+import os
+import shutil
+import tempfile
+from unittest.mock import patch
+from datetime import date
 
-fake = Faker()
+# Patch DATA_DIR before importing PersistenceManager if possible,
+# but it is a module level constant.
+# We will patch it using unittest.mock during execution.
 
-def generate_large_profile(num_skills=1000):
-    skills = [Skill(name=fake.word(), level="Expert") for _ in range(num_skills)]
-    return CandidateProfile(
-        name="Test User",
-        email="test@example.com",
-        phone="123",
-        summary="summary",
-        skills=skills,
-        experiences=[],
-        education=[]
+from src.core.models import CandidateProfile, Application, Resume, Experience, Education, Skill
+from src.core.persistence import PersistenceManager
+
+def create_dummy_data():
+    profile = CandidateProfile(
+        name="John Doe",
+        email="john@example.com",
+        phone="1234567890",
+        summary="Experienced Developer",
+        experiences=[
+            Experience(
+                title="Senior Dev",
+                company="Tech Corp",
+                start_date=date(2020, 1, 1),
+                description="Built things."
+            )
+        ],
+        education=[
+            Education(
+                institution="University",
+                degree="BS CS",
+                start_date=date(2016, 1, 1),
+                field_of_study="CS"
+            )
+        ],
+        skills=[Skill(name="Python", level="Expert")]
     )
 
-def generate_large_job(num_requirements=500):
-    requirements = [fake.word() for _ in range(num_requirements)]
-    return JobOpportunity(
-        id="1",
-        title=fake.job(),
-        company="Company",
-        description="Desc",
-        requirements=requirements,
-        url="http://example.com",
-        source="LinkedIn"
-    )
+    applications = []
+    # Create a decent amount of history to make serialization noticeable
+    for i in range(500):
+        app = Application(
+            job_id=f"job_{i}",
+            profile_id=profile.id,
+            resume_id=profile.id, # reusing uuid for simplicity
+            platform="LinkedIn"
+        )
+        applications.append(app)
 
-def benchmark():
-    scanner = JobScanner()
-    profile = generate_large_profile(num_skills=2000)
-    job = generate_large_job(num_requirements=1000)
+    metrics = {"scanned": 1000, "applied": 500}
 
-    start_time = time.time()
-    iterations = 100
-    for _ in range(iterations):
-        scanner.calculate_match_score(profile, job)
-    end_time = time.time()
+    return profile, metrics, applications
 
-    total_time = end_time - start_time
-    print(f"Total time for {iterations} iterations: {total_time:.4f} seconds")
-    print(f"Average time per iteration: {total_time/iterations:.6f} seconds")
+def benchmark_save_inside_loop(pm, profile, metrics, applications, iterations=10):
+    start_time = time.perf_counter()
+
+    for i in range(iterations):
+        # Simulate adding a new application
+        new_app = Application(
+            job_id=f"new_job_{i}",
+            profile_id=profile.id,
+            resume_id=profile.id,
+            platform="LinkedIn"
+        )
+        applications.append(new_app)
+        metrics["applied"] += 1
+
+        # The inefficient call
+        pm.save_data(profile, metrics, applications)
+
+    end_time = time.perf_counter()
+    return end_time - start_time
+
+def benchmark_save_outside_loop(pm, profile, metrics, applications, iterations=10):
+    start_time = time.perf_counter()
+
+    for i in range(iterations):
+        # Simulate adding a new application
+        new_app = Application(
+            job_id=f"new_job_opt_{i}",
+            profile_id=profile.id,
+            resume_id=profile.id,
+            platform="LinkedIn"
+        )
+        applications.append(new_app)
+        metrics["applied"] += 1
+
+    # The optimized call
+    pm.save_data(profile, metrics, applications)
+
+    end_time = time.perf_counter()
+    return end_time - start_time
+
+def run_benchmark():
+    # Create a temp directory for data
+    temp_dir = tempfile.mkdtemp()
+
+    # Patch the constants in persistence module
+    with patch("src.core.persistence.DATA_DIR", temp_dir), \
+         patch("src.core.persistence.PROFILE_FILE", os.path.join(temp_dir, "profile.json")), \
+         patch("src.core.persistence.METRICS_FILE", os.path.join(temp_dir, "metrics.json")), \
+         patch("src.core.persistence.APPLICATIONS_FILE", os.path.join(temp_dir, "applications.json")):
+
+        pm = PersistenceManager()
+
+        # Prepare data
+        profile, metrics, applications = create_dummy_data()
+
+        # Benchmark inefficient
+        # Copy list to not affect the next run
+        apps_1 = list(applications)
+        metrics_1 = metrics.copy()
+
+        print("Running benchmark: Save INSIDE loop...")
+        duration_inside = benchmark_save_inside_loop(pm, profile, metrics_1, apps_1, iterations=20)
+        print(f"Time taken (Inside Loop): {duration_inside:.4f} seconds")
+
+        # Benchmark optimized
+        apps_2 = list(applications)
+        metrics_2 = metrics.copy()
+
+        print("Running benchmark: Save OUTSIDE loop...")
+        duration_outside = benchmark_save_outside_loop(pm, profile, metrics_2, apps_2, iterations=20)
+        print(f"Time taken (Outside Loop): {duration_outside:.4f} seconds")
+
+        if duration_inside > 0:
+            improvement = (duration_inside - duration_outside) / duration_inside * 100
+            print(f"Improvement: {improvement:.2f}%")
+            print(f"Speedup: {duration_inside / duration_outside:.2f}x")
+
+    # Cleanup
+    shutil.rmtree(temp_dir)
 
 if __name__ == "__main__":
-    benchmark()
+    run_benchmark()
