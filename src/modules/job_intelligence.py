@@ -46,16 +46,22 @@ class JobScanner:
         Calculates a simple match score based on keyword overlap.
         """
         score = 0.0
+
+        # Pre-calculate lowercased values to avoid re-computation in the loop
+        job_title_lower = job.title.lower()
+        job_requirements_lower = {req.lower() for req in job.requirements}
+
         # Check title relevance (simplified)
         for skill in profile.skills:
-            if skill.name.lower() in job.title.lower():
+            skill_name_lower = skill.name.lower()
+            if skill_name_lower in job_title_lower:
                 score += 30.0
-            if skill.name.lower() in [req.lower() for req in job.requirements]:
+            if skill_name_lower in job_requirements_lower:
                 score += 10.0
 
         # Check experience title relevance
         for exp in profile.experiences:
-             if exp.title.lower() in job.title.lower():
+             if exp.title.lower() in job_title_lower:
                  score += 20.0
 
         # Cap at 100
