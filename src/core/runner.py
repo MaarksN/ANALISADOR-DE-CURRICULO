@@ -3,8 +3,6 @@ import os
 import random
 import time
 import re
-import sqlite3
-import contextlib
 from pathlib import Path
 from datetime import datetime, date
 from rich.console import Console
@@ -98,56 +96,55 @@ def main():
 
             console.print(f"\n--- Janela {w+1}/{windows} ---")
 
-            with contextlib.closing(sqlite3.connect(DB_PATH, isolation_level=None)) as conn:
-                for item in queue:
-                    if applied_in_window >= per_window: break
-                    platform = item.get("platform")
-                    url = item.get("url")
+            for item in queue:
+                if applied_in_window >= per_window: break
+                platform = item.get("platform")
+                url = item.get("url")
 
-                    if not url: continue
-                    if seen(platform if platform in ("linkedin", "gupy") else "source", url, conn=conn):
+                if not url: continue
+                if seen(platform if platform in ("linkedin", "gupy") else "source", url):
+                    continue
+
+                console.print(f"Processando: {platform} - {url[:50]}...")
+
+                try:
+                    if platform == "linkedin_search":
+                        page_li.goto(url, wait_until="domcontentloaded")
+                        page_li.wait_for_timeout(2000)
+                        found = set(re.findall(r"https://www\.linkedin\.com/jobs/view/\d+", page_li.content()))
+                        console.print(f"  > Encontradas {len(found)} novas vagas.")
+                        for m in found:
+                            enqueue("linkedin", m)
                         continue
 
-                    console.print(f"Processando: {platform} - {url[:50]}...")
+                    if platform == "web_discovery":
+                        page_gupy.goto(url, wait_until="domcontentloaded")
+                        page_gupy.wait_for_timeout(2000)
+                        links = extract_gupy_links(page_gupy.content())
+                        console.print(f"  > Encontrados {len(links)} links Gupy.")
+                        for lk in links: enqueue("gupy", lk)
+                        continue
 
-                    try:
-                        if platform == "linkedin_search":
-                            page_li.goto(url, wait_until="domcontentloaded")
-                            page_li.wait_for_timeout(2000)
-                            found = set(re.findall(r"https://www\.linkedin\.com/jobs/view/\d+", page_li.content()))
-                            console.print(f"  > Encontradas {len(found)} novas vagas.")
-                            for m in found:
-                                enqueue("linkedin", m)
-                            continue
+                    if platform == "linkedin":
+                        li_process(page_li, url, profile)
+                        status = seen("linkedin", url)
+                        console.print(f"  > Status: {status}")
+                        if status == "applied":
+                            applied_in_window += 1
+                            telegram.send_notification(f"🚀 *Aplicação Sucesso (LinkedIn)*\n{url}")
+                        continue
 
-                        if platform == "web_discovery":
-                            page_gupy.goto(url, wait_until="domcontentloaded")
-                            page_gupy.wait_for_timeout(2000)
-                            links = extract_gupy_links(page_gupy.content())
-                            console.print(f"  > Encontrados {len(links)} links Gupy.")
-                            for lk in links: enqueue("gupy", lk)
-                            continue
+                    if platform == "gupy":
+                        gupy_process(page_gupy, url, profile)
+                        status = seen("gupy", url)
+                        console.print(f"  > Status: {status}")
+                        if status == "applied":
+                            applied_in_window += 1
+                            telegram.send_notification(f"🚀 *Aplicação Sucesso (Gupy)*\n{url}")
+                        continue
 
-                        if platform == "linkedin":
-                            li_process(page_li, url, profile)
-                            status = seen("linkedin", url, conn=conn)
-                            console.print(f"  > Status: {status}")
-                            if status == "applied":
-                                applied_in_window += 1
-                                telegram.send_notification(f"🚀 *Aplicação Sucesso (LinkedIn)*\n{url}")
-                            continue
-
-                        if platform == "gupy":
-                            gupy_process(page_gupy, url, profile)
-                            status = seen("gupy", url, conn=conn)
-                            console.print(f"  > Status: {status}")
-                            if status == "applied":
-                                applied_in_window += 1
-                                telegram.send_notification(f"🚀 *Aplicação Sucesso (Gupy)*\n{url}")
-                            continue
-
-                    except Exception as e:
-                        console.print(f"  [red]Erro no loop: {e}[/red]")
+                except Exception as e:
+                    console.print(f"  [red]Erro no loop: {e}[/red]")
 
             sleep_s = random.randint(30, 60) # Reduced for demo/testing responsiveness
             console.print(f"[blue]Dormindo por {sleep_s}s...[/blue]")

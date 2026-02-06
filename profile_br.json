@@ -1,19 +1,19 @@
 {
   "pessoal": {
-    "nome_completo": "Marcelo Nascimento",
-    "email": "marcelinmark@gmail.com",
-    "telefone": "16999948479",
-    "linkedin": "https://www.linkedin.com/in/maarkss",
-    "cidade": "Ribeirão Preto",
-    "estado": "SP",
+    "nome_completo": "Nome Sobrenome",
+    "email": "email@exemplo.com",
+    "telefone": "11999999999",
+    "linkedin": "https://www.linkedin.com/in/usuario",
+    "cidade": "Cidade",
+    "estado": "UF",
     "pais": "Brasil"
   },
   "preferencias": {
     "idioma_ui": "pt-BR",
     "modalidade": ["Remoto", "Hibrido", "Presencial"],
-    "localizacoes_alvo": ["Brasil", "Ribeirão Preto SP"],
+    "localizacoes_alvo": ["Brasil", "São Paulo SP"],
     "meta_candidaturas_dia": 50,
-    "cv_nome_arquivo": "CV_Marcelo_Nascimento.pdf"
+    "cv_nome_arquivo": "CV_Usuario.pdf"
   },
   "skills": [
     "Revenue Operations", "Sales Operations", "RevOps", "Sales Enablement", "CRM",
@@ -26,7 +26,7 @@
     "SPIN", "AIDA"
   ],
   "documentos": {
-    "cv_pdf_path": "./docs/CV_Marcelo_Nascimento.pdf"
+    "cv_pdf_path": "./docs/CV_Usuario.pdf"
   },
   "seeds": {
     "linkedin_search_pages": [

@@ -38,12 +38,7 @@ def upsert_job(platform, job_url, status, title=None, company=None, location=Non
         """, (platform, job_url, title, company, location, score, status, reason))
         con.commit()
 
-def seen(platform, job_url, conn=None):
-    if conn:
-        cur = conn.execute("SELECT status FROM jobs WHERE platform=? AND job_url=?", (platform, job_url))
-        row = cur.fetchone()
-        return row[0] if row else None
-
+def seen(platform, job_url):
     with sqlite3.connect(DB_PATH) as con:
         cur = con.execute("SELECT status FROM jobs WHERE platform=? AND job_url=?", (platform, job_url))
         row = cur.fetchone()
