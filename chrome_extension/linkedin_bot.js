@@ -55,8 +55,8 @@ async function handleModal() {
 
         if (submitBtn) {
             log("Enviando candidatura...");
-            // submitBtn.click(); // UNCOMMENT TO ACTUALLY APPLY
-            // await sleep(2000);
+            submitBtn.click(); // UNCOMMENT TO ACTUALLY APPLY
+            await sleep(2000);
 
             // Close modal after submit (usually "Done" button appears)
             const closeBtn = document.querySelector('button[aria-label="Dismiss"]');
