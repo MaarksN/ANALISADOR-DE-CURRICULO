@@ -9,28 +9,21 @@ TEST_DB = Path("data") / "functional_test.db"
 class TestDBFunctional(unittest.TestCase):
     def setUp(self):
         # Point db module to test db
+        self.original_db_path = db.DB_PATH
         db.DB_PATH = TEST_DB
-        # Clear any existing local connection in the thread
-        if hasattr(db._local, "connection"):
-            try:
-                db._local.connection.close()
-            except:
-                pass
-            del db._local.connection
 
         if TEST_DB.exists():
             TEST_DB.unlink()
 
-    def tearDown(self):
-        if hasattr(db._local, "connection"):
-            db._local.connection.close()
-            del db._local.connection
-        if TEST_DB.exists():
-            TEST_DB.unlink()
-
-    def test_upsert_and_seen(self):
+        # Initialize DB for test
         db.init_db()
 
+    def tearDown(self):
+        if TEST_DB.exists():
+            TEST_DB.unlink()
+        db.DB_PATH = self.original_db_path
+
+    def test_upsert_and_seen(self):
         # 1. Insert new job
         db.upsert_job(
             platform="linkedin",
@@ -56,20 +49,6 @@ class TestDBFunctional(unittest.TestCase):
         # 4. Verify update
         status = db.seen("linkedin", "http://linkedin.com/job/1")
         self.assertEqual(status, "rejected")
-
-    def test_connection_persistence(self):
-        # Verify that multiple calls use the same connection object
-        db.init_db()
-        con1 = db.get_connection()
-        db.upsert_job("p", "u", "s")
-        con2 = db.get_connection()
-
-        self.assertIs(con1, con2)
-
-        # Verify it works across "transactions"
-        db.upsert_job("p2", "u2", "s")
-        status = db.seen("p2", "u2")
-        self.assertEqual(status, "s")
 
 if __name__ == "__main__":
     unittest.main()
